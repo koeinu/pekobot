@@ -11,19 +11,14 @@ const guildIds = process.env.GUILD_ID;
 
 console.log(token, clientId, guildIds);
 
-export const makeCmds = async () => {
-  const cmds = [];
-  const commandFiles = fs
-    .readdirSync("./src/commands")
-    .filter((file) => file.endsWith(".js"));
-
-  for (const file of commandFiles) {
-    const command = await import(`./commands/${file}`);
-    cmds.push(command.default.data.toJSON());
-  }
-
-  return cmds;
-};
+export const disabledCommands = {
+  '584977240358518784': [
+    'gptDict', 'youtube', 'relay'
+  ],
+  '999666683176308807': [
+    'jigsaw', 'betedit', 'gptDict', 'youtube'
+  ]
+}
 
 const rest = new REST({ version: "10" }).setToken(token);
 
