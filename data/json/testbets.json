@@ -1,0 +1,1 @@
+{"betType":1,"description":"test description","bettingAllowed":true,"categories":[{"name":"Category 1","content":{"Option 1":[],"Option 2":[{"id":2,"name":"Test user 2"},{"id":1,"name":"Test user"}],"Option 3":[]}},{"name":"Category 2","content":{"Option 4":[{"id":2,"name":"Test user 2"}],"Option 5":[{"id":1,"name":"Test user"}],"Option 6":[]}}]}
