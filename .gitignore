@@ -1,4 +1,7 @@
-.env
-.idea
-data
+.glitchdotcom.json
+.node-gyp
 node_modules
+config.json
+.env
+json
+data

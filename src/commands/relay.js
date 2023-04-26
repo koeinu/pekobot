@@ -82,8 +82,13 @@ export default {
         .addStringOption((option) =>
           option
             .setRequired(true)
-            .setName("msg")
-            .setDescription("Start message")
+            .setName("start_msg_id")
+            .setDescription("Start message ID")
+        )
+        .addStringOption((option) =>
+          option
+            .setName("end_msg_id")
+            .setDescription("End message ID (optional)")
         )
     ),
   async execute(interaction, discordClient) {
@@ -109,13 +114,17 @@ export default {
         const guild = await discordClient.guilds.cache.get(guildId);
         const channel = await guild.channels.cache.get(channelId);
         const startMessage = await channel.messages.fetch(options[0].value);
+        const endMessage = options[1] ? await channel.messages.fetch(options[1].value) : undefined;
 
         console.log("start message:", startMessage.content);
 
         let messages = [
           startMessage,
-          ...Array.from(await fetchMessages(channel, startMessage.id)),
+          ...Array.from(await fetchMessages(channel, startMessage.id, endMessage?.id)),
         ];
+        if (endMessage) {
+          messages.push(endMessage);
+        }
 
         console.log("fetched messages:", messages.length);
 
@@ -282,7 +291,7 @@ export default {
   },
 };
 
-async function fetchMessages(channel, startId, limit = 500) {
+async function fetchMessages(channel, startId, endId, limit = 500) {
   const toReturn = [];
   let lastId;
 
@@ -292,6 +301,7 @@ async function fetchMessages(channel, startId, limit = 500) {
       limit: Math.min(limit, 100),
       cache: false,
       after: startId, // The date time you want it from
+      before: endId
     };
     if (lastId) {
       options.after = lastId;
