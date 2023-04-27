@@ -114,13 +114,17 @@ export default {
         const guild = await discordClient.guilds.cache.get(guildId);
         const channel = await guild.channels.cache.get(channelId);
         const startMessage = await channel.messages.fetch(options[0].value);
-        const endMessage = options[1] ? await channel.messages.fetch(options[1].value) : undefined;
+        const endMessage = options[1]
+          ? await channel.messages.fetch(options[1].value)
+          : undefined;
 
         console.log("start message:", startMessage.content);
 
         let messages = [
           startMessage,
-          ...Array.from(await fetchMessages(channel, startMessage.id, endMessage?.id)),
+          ...Array.from(
+            await fetchMessages(channel, startMessage.id, endMessage?.id)
+          ),
         ];
         if (endMessage) {
           messages.push(endMessage);
@@ -299,23 +303,27 @@ async function fetchMessages(channel, startId, endId, limit = 500) {
     console.log("msg count: ", toReturn.length, "...");
     const options = {
       limit: Math.min(limit, 100),
-      cache: false,
+      cache: true,
       after: startId, // The date time you want it from
-      before: endId
     };
     if (lastId) {
       options.after = lastId;
     }
 
     const messages = await channel.messages.fetch(options);
-    const values = Array.from(messages.values()).reverse();
+    let values = Array.from(messages.values()).reverse();
+    const foundEndMessage = values.find((el) => el.id === endId);
+    if (foundEndMessage) {
+      const foundEndMessageIndex = values.indexOf(foundEndMessage);
+      values = values.filter((el, index) => index < foundEndMessageIndex);
+    }
     toReturn.push(...values);
     const lastMessage = messages.first();
     lastId = lastMessage.id;
     console.log("lastId:", lastId);
     console.log("last message:", lastMessage.content);
 
-    if (messages.size < 100 || toReturn.length > limit) {
+    if (values.length < 100 || toReturn.length > limit) {
       break;
     }
   }
