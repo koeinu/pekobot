@@ -18,7 +18,6 @@ const TWITTER_RELAY_DATA = [
     src: "usadapekora",
     feedIds: [
       "1098377642111160330", // test server, pekora feed
-      "1098786610167939092", // peko server, pekora test feed
       "683200298629857331", // peko server, tweet feed
     ],
     poemIds: [
@@ -30,7 +29,6 @@ const TWITTER_RELAY_DATA = [
     src: "uraakapeko",
     feedIds: [
       "1098377642111160330", // test server, pekora feed
-      "1098786610167939092", // peko server, pekora test feed
       "683200298629857331", // peko server, tweet feed
     ],
     poemIds: [
