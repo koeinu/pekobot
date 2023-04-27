@@ -20,7 +20,7 @@ const openai = new OpenAIApi(configuration);
 
 let isGPTing = false;
 
-const MOD_THRESHOLDS = {
+export const MOD_THRESHOLDS = {
   sexual: 0.2,
   hate: 0.5,
   violence: 0.5,

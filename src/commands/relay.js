@@ -39,6 +39,14 @@ const dateOptions = {
   },
   dateFormatter = new Intl.DateTimeFormat([], dateOptions);
 
+// const streamTimeOptions = {
+//     hour: "numeric",
+//     minute: "numeric",
+//     second: "numeric",
+//     hour12: false,
+//   },
+//   streamTimeFormatter = new Intl.DateTimeFormat([], streamTimeOptions);
+
 export default {
   data: new SlashCommandBuilder()
     .setName("tl_relay")
@@ -183,15 +191,27 @@ export default {
           interaction,
           "Please wait, forming timestamps.."
         );
-        const startTime = new Date();
+        const options = getOptions(interaction);
+        const streamUrl = options.length > 0 ? options[0].value : undefined;
+        // const streamStartedAt = streamUrl
+        //   ? await getYoutubeStartTimestamp(streamUrl)
+        //   : undefined;
+
+        const dumpingStartTime = new Date();
         const relayTexts = [];
         let firstTs = undefined;
         for (let i = 0; i < uniqueRelays.length; i++) {
           const relay = uniqueRelays[i];
           let ts = undefined;
+          // let streamTs = undefined;
           if (relay.source?.createdTimestamp) {
             // easier way
             ts = formatter.format(new Date(relay.source.createdTimestamp));
+            // streamTs = streamStartedAt
+            //   ? streamTimeFormatter.format(
+            //       new Date(relay.source.createdTimestamp - streamStartedAt)
+            //     )
+            //   : undefined;
             if (!firstTs) {
               firstTs = new Date(relay.source.createdTimestamp);
             }
@@ -204,6 +224,11 @@ export default {
             const message = await channel.messages.fetch(relay.sourceId);
             console.log("dumping message ", relay.sourceId);
             ts = formatter.format(message.createdAt);
+            // streamTs = streamStartedAt
+            //   ? streamTimeFormatter.format(
+            //       new Date(message.createdAt - streamStartedAt)
+            //     )
+            //   : undefined;
             if (!firstTs) {
               firstTs = message.createdAt;
             }
@@ -213,22 +238,20 @@ export default {
             `[${ts}] ${relay.content.replaceAll("`", "").replace(">", "")}`
           );
         }
-        const passedMS = new Date().getTime() - startTime.getTime();
+
+        const passedMS = new Date().getTime() - dumpingStartTime.getTime();
         const elapsedMS = Math.max(0, 2000 - passedMS);
         if (elapsedMS > 0) {
           await sleep(() => {}, elapsedMS);
         }
-        const options = getOptions(interaction);
+
+        // now safe to do the actual dump
+
         const streamDate =
           dateFormatter.format(firstTs) || dateFormatter.format(new Date());
         let fileName = `archive_${streamDate}.txt`;
-        let message = undefined;
-        if (options.length > 0) {
-          const streamUrl = options[0].value;
-          message = `Archive for ${streamDate}, url: ${streamUrl}`;
-        } else {
-          message = `Archive for ${streamDate}`;
-        }
+        let message =
+          `Archive for ${streamDate}` + streamUrl ? `, ${streamUrl}` : "";
 
         console.log("prepared to dump tls:");
         console.log(relayTexts);

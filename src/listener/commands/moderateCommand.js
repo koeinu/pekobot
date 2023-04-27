@@ -1,6 +1,6 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import extractUrls from "extract-urls";
-import { moderateMessage } from "../../utils/openaiUtils.js";
+import { MOD_THRESHOLDS, moderateMessage } from "../../utils/openaiUtils.js";
 
 const sendToChannels = async (discordClient, text, channels) => {
   const foundChannels = channels
@@ -34,7 +34,10 @@ const gatherMessageInfo = (msg, triggerData) => {
   parts.push(
     `Reasons: ${Object.entries(triggerData.categories)
       .filter((el) => el[1])
-      .map((el) => el[0])
+      .map((el) => {
+        const category = el[0];
+        return `${category}: ${triggerData.category_scores[category]} > ${MOD_THRESHOLDS[category]}`;
+      })
       .join(", ")}`
   );
   parts.push(`Content: ${msg.content}`);
