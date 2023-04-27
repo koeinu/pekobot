@@ -242,31 +242,6 @@ export default {
           false,
           false
         );
-        // const sumMessage = (parts) => parts.join("\n");
-        // const sumLength = (parts) => sumMessage(parts).length;
-        // let parts = [];
-        // for (let i = 0; i < relayTexts.length; i++) {
-        //   if (sumLength(parts) > 2000) {
-        //     console.log("sending", sumMessage(parts));
-        //     await sendEmbedMessage(
-        //       interaction.channel,
-        //       sumMessage(parts),
-        //       false,
-        //       false
-        //     );
-        //     parts = [];
-        //   }
-        //   parts.push(relayTexts[i]);
-        // }
-        // if (parts.length > 0) {
-        //   console.log("sending", sumMessage(parts));
-        //   await sendEmbedMessage(
-        //     interaction.channel,
-        //     sumMessage(parts),
-        //     false,
-        //     false
-        //   );
-        // }
         break;
       }
       case "clear": {
