@@ -85,7 +85,7 @@ export class GptCommand extends AbstractCommand {
       );
       return;
     }
-    if (!(await this.rateLimitPass(msg, "sharedHandle"))) {
+    if (!(await this.rateLimitPass(msg, "gptSharedHandle"))) {
       return;
     }
 

@@ -38,7 +38,7 @@ export class HaikuCommand extends AbstractCommand {
     const haiku = await detectHaiku(text);
     console.log(`Detected haiku: ${haiku}`);
     if (haiku) {
-      if (!(await this.rateLimitPass(msg, "sharedHandle"))) {
+      if (!(await this.rateLimitPass(msg, "haikuSharedHandle"))) {
         return;
       }
       const haikuText = `*${haiku.l1.join(" ")}*\n*${haiku.l2.join(

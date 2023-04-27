@@ -8,7 +8,6 @@ import { listDictionary } from "../model/gptDict.js";
 
 dotenv.config();
 const key = process.env.OPENAI_KEY;
-const botName = process.env.BOT_NAME;
 
 const api = new ChatGPTAPI({
   apiKey: key,

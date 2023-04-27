@@ -37,7 +37,7 @@ export class StreakCommand extends AbstractCommand {
     const text = msg.content.trim();
     const trigger = this.triggerCheck(msg, text);
     if (trigger) {
-      if (!(await this.rateLimitPass(msg, "sharedHandle"))) {
+      if (!(await this.rateLimitPass(msg, "streakSharedHandle"))) {
         return;
       }
       this.resetTrigger(msg, text);
@@ -51,7 +51,8 @@ export class StreakCommand extends AbstractCommand {
           setTimeout(() => {
             const toSend = text.includes("にーん")
               ? "にーん…"
-              : text.includes("おつぺこ") || text.includes("otsupeko")
+              : text.includes("おつぺこ") ||
+                text.toLowerCase().includes("otsupeko")
               ? "おつぺこ〜"
               : text;
             msg.channel.send(toSend).catch((e) => {
@@ -69,7 +70,7 @@ export class StreakCommand extends AbstractCommand {
       emojiPattern.test(text) ||
       text.includes("にーん") ||
       text.includes("おつぺこ") ||
-      text.includes("otsupeko")
+      text.toLowerCase().includes("otsupeko")
     );
   }
 }
