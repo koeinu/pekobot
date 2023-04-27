@@ -23,7 +23,7 @@ export class CommandListener {
       new DeeplCommand(), // intercepts
       new CatchPoemCommand(), // intercepts
       new StreakCommand(), // doesn't intercept
-      new BotMentionedCommand(), // 30%, intercepts
+      new BotMentionedCommand(), // 50%, intercepts
       new PekCommand(), // 30% intercepts
       new SameReactCommand(), // 4% intercepts
       new ReactCommand(), // 1% intercepts

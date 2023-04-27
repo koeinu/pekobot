@@ -16,7 +16,10 @@ export class BotMentionedCommand extends AbstractCommand {
     this.prohibitedUsers = prohibitedRNGUsers;
     this.channels = ["1070086039445717124"];
     this.intercept = true;
-    this.probability = 0.3;
+    this.probability = 0.5;
+    this.triggerUsers = [
+      "184334990614593537", // Hermit
+    ];
   }
   async execute(msg) {
     console.log(
@@ -34,7 +37,8 @@ export class BotMentionedCommand extends AbstractCommand {
       (text.toLowerCase().includes("peko-bot") ||
         text.toLowerCase().includes("peko bot") ||
         text.toLowerCase().includes("pekobot") ||
-        text.toLowerCase().includes("this bot"))
+        text.toLowerCase().includes("this bot") ||
+        text.toLowerCase().includes("damn bot"))
     );
   }
 }

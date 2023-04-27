@@ -8,6 +8,7 @@ import { listDictionary } from "../model/gptDict.js";
 
 dotenv.config();
 const key = process.env.OPENAI_KEY;
+const botName = process.env.BOT_NAME;
 
 const api = new ChatGPTAPI({
   apiKey: key,
@@ -21,9 +22,9 @@ const openai = new OpenAIApi(configuration);
 let isGPTing = false;
 
 export const MOD_THRESHOLDS = {
-  sexual: 0.2,
+  sexual: 0.3,
   hate: 0.5,
-  violence: 0.5,
+  violence: 0.75,
   "self-harm": 0.6,
   "sexual/minors": 0.4,
   "hate/threatening": 0.5,
@@ -142,16 +143,31 @@ export const GPTL_PARAMS = {
   temperature: 0,
 };
 
-export const gptMood = async (text, moodsArray, reactMood) => {
-  const parts = [
-    `${
-      reactMood
-        ? "You must choose one mood which Usada Pekora would use to react at the message."
-        : "Determine the mood of the message."
-    } Available response options: ${moodsArray.join(
-      ", "
-    )}. There is also a special option 'other' if you think that there is no good option provided`,
-  ];
+export const gptReaction = async (text, actionsArray, reactMode) => {
+  if (!reactMode) {
+    return Promise.resolve({ text: undefined });
+  }
+  const parts = [];
+  parts.push(
+    `Choose a fitting action type, which Usada Pekora would respond to a message.`
+  );
+  parts.push(`The available actions: ${actionsArray.join(", ")}`);
+  parts.push(`The message: "${text}"`);
+
+  return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
+};
+export const gptMood = async (text, moodsArray, reactMode) => {
+  const parts = [];
+  if (reactMode) {
+    parts.push(`Choose one of the the moods she would react with.`);
+    parts.push(`The available moods are: ${moodsArray.join(", ")}`);
+  } else {
+    parts.push("Determine the mood of the message.");
+    parts.push(`The available moods are: ${moodsArray.join(", ")}`);
+  }
+  parts.push(
+    `There is also a special option 'other' if you think that there is no good option that you were provided with.`
+  );
   parts.push(`The message: "${text}"`);
 
   return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
