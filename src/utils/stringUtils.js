@@ -135,7 +135,7 @@ export const printTLInfo = (countContainer, timeMs, metaData) => {
           countContainer.limit
         } | `
       : "") +
-    `TL time: ${(timeMs / 1000).toFixed(0)}s` +
+    `TL time: ${((timeMs || 0) / 1000).toFixed(0)}s` +
     (metaData ? ` | ${metaData.pt}pt, ${metaData.ct}ct` : "")
   );
 };
