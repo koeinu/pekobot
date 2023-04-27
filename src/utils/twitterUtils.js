@@ -5,8 +5,10 @@ import { CATCH_TWEET_TIMEOUT } from "./constants.js";
 
 import { ETwitterStreamEvent, TwitterApi } from "twitter-api-v2";
 
-const BEARER_TOKEN =
-  "AAAAAAAAAAAAAAAAAAAAABuhlgEAAAAAwP6IRcRryQuoLGOzyynicDIIzKc%3DcsY4BisZCWnKPnV3S4EFfuJqra7tMbplIqZofF3Uv0S1yn1zBt";
+import dotenv from "dotenv";
+dotenv.config();
+
+const BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
 
 const client = new TwitterApi(BEARER_TOKEN);
 let catchingPoem = false;
