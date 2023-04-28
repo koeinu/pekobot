@@ -40,7 +40,7 @@ export class DeeplCommand extends AbstractCommand {
   }
 
   async execute(msg) {
-    let text = getTextMessageContent(msg);
+    let text = await getTextMessageContent(msg);
     const parsed = text.split(" ");
     const sourceLanguage = LANGUAGES.find((el) =>
       parsed.map((el) => el.toUpperCase()).includes(el)
@@ -61,7 +61,7 @@ export class DeeplCommand extends AbstractCommand {
         msg.reference.messageId
       );
       replyMessage = repliedTo;
-      text = getTextMessageContent(repliedTo);
+      text = await getTextMessageContent(repliedTo);
     }
 
     url = parseAttachmentUrl(replyMessage);
@@ -72,10 +72,9 @@ export class DeeplCommand extends AbstractCommand {
 
     if (isCount) {
       const count = getCounter("deepl");
-      replyEmbedMessage(replyMessage, printTLInfo(count)).catch((e) => {
+      return replyEmbedMessage(replyMessage, printTLInfo(count)).catch((e) => {
         console.error(`Couldn't print OCR: ${e}`);
       });
-      return;
     }
 
     console.log(`translating ${text || "image"}`);
@@ -108,7 +107,7 @@ export class DeeplCommand extends AbstractCommand {
     }
 
     let tlData = await ApiUtils.GetTranslation(text, deeplLanguage);
-    replyCustomEmbed(
+    return replyCustomEmbed(
       replyMessage,
       undefined,
       formatTLText(tlData.text),
@@ -119,7 +118,8 @@ export class DeeplCommand extends AbstractCommand {
       console.error(`Couldn't send the translation: ${e}`);
     });
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     return text.indexOf("~deepl") === 0;
   }
 }

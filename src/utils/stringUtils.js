@@ -1,3 +1,5 @@
+import fetch from "isomorphic-fetch";
+
 export const MAX_BET_LENGTH = 20;
 export const MAX_CATEGORY_LENGTH = 40;
 export const validateString = (betValue, maxLength) => {
@@ -28,15 +30,18 @@ export const formGPTPrompt = (repliedUsername, repliedText, username, text) => {
   return "";
 };
 
-export const formChainGPTPrompt = (msgStructList) => {
-  return `Write your next answer to the following conversation:\n${msgStructList
-    .map((msgStruct) => {
-      const extractedText = extractCommandMessage(msgStruct.msg);
+export const formChainGPTPrompt = async (msgStructList) => {
+  const msgs = await Promise.all(
+    msgStructList.map(async (msgStruct) => {
+      const extractedText = await extractCommandMessage(msgStruct.msg);
       const extractedName = msgStruct.username;
 
       return `${extractedName}: ${extractedText}`;
     })
-    .join("\n")}`;
+  );
+  return `Write your next answer to the following conversation:\n${msgs.join(
+    "\n"
+  )}`;
 };
 
 export const extractCommandMessage = (str) => {
@@ -53,18 +58,26 @@ export const extractCommandMessage = (str) => {
 };
 
 // preferring embed description text
-export const getTextMessageContent = (msg) => {
-  let toReturn = extractCommandMessage(
-    msg.content !== undefined ? msg.content : msg.text
-  );
+export const getTextMessageContent = async (msg) => {
+  if (msg.attachments.size > 0) {
+    const attachment = msg.attachments.first();
+    if (attachment.name.includes(".txt")) {
+      const url = attachment.url;
+      const response = await fetch(url);
+      const text = await response.text();
+      return text;
+    }
+  }
   if (msg.embeds.length > 0) {
     const embedContent = msg.embeds[0].description;
     if (embedContent && embedContent.length > 0) {
-      toReturn = embedContent;
+      return embedContent;
     }
   }
 
-  return toReturn;
+  return extractCommandMessage(
+    msg.content !== undefined ? msg.content : msg.text
+  );
 };
 export const formatTLText = (text, isGpt) =>
   isGpt

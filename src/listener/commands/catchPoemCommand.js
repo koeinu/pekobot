@@ -17,7 +17,8 @@ export class CatchPoemCommand extends AbstractCommand {
     });
     catchTweets();
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     return text.indexOf("~poem") === 0;
   }
 }

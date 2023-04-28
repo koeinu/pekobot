@@ -14,7 +14,9 @@ export class BotMentionedCommand extends AbstractCommand {
     ];
     this.prohibitedChannels = prohibitedRNGChannels;
     this.prohibitedUsers = prohibitedRNGUsers;
-    this.channels = ["1070086039445717124"];
+    this.channels = [
+      "1070086039445717124", // ts, test
+    ];
     this.intercept = true;
     this.probability = 0.5;
     this.triggerUsers = [
@@ -27,11 +29,13 @@ export class BotMentionedCommand extends AbstractCommand {
     );
 
     const reactCommand = new ReactCommand();
-    if (reactCommand.commandMatch(msg.content)) {
-      await reactCommand.execute(msg, undefined, true);
+    const match = await reactCommand.commandMatch(msg);
+    if (match) {
+      return reactCommand.execute(msg, undefined, true);
     }
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     return (
       text &&
       (text.toLowerCase().includes("peko-bot") ||

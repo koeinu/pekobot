@@ -18,6 +18,7 @@ import {
 import { formatTL } from "../utils/stringUtils.js";
 
 import { SlashCommandBuilder } from "discord.js";
+import { allowedAuthors } from "../listener/commands/relayChannels.js";
 
 const options = {
     month: "numeric",
@@ -141,7 +142,13 @@ export default {
         console.log("fetched messages:", messages.length);
 
         const rmc = new RelayMessageCommand();
-        const TLs = messages.filter((el) => rmc.commandMatch(el.content));
+        const TLs = [];
+        for (let el of messages) {
+          const isMatch = await rmc.commandMatch(el);
+          if (isMatch) {
+            TLs.push(el);
+          }
+        }
 
         console.log("found TLS:", TLs.length);
 
@@ -150,7 +157,7 @@ export default {
         updateRelays([]);
         TLs.forEach((msg) => {
           const text = msg.content;
-          if (msg.author.id !== "214207327451086848") {
+          if (!allowedAuthors.includes(msg.author.id)) {
             // Zabine
             console.log("SKIPPING AUTHOR", msg.author, ":", text);
           } else {
@@ -251,7 +258,7 @@ export default {
           dateFormatter.format(firstTs) || dateFormatter.format(new Date());
         let fileName = `archive_${streamDate}.txt`;
         let message =
-          `Archive for ${streamDate}` + streamUrl ? `, ${streamUrl}` : "";
+          `Archive for ${streamDate}` + (streamUrl ? `, ${streamUrl}` : "");
 
         console.log("prepared to dump tls:");
         console.log(relayTexts);

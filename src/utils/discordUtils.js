@@ -169,13 +169,13 @@ export const sendWithAttachment = async (
 
 export const sendCustomEmbed = async (
   target,
-  stringText,
-  title,
-  stringMessage,
-  url,
-  link,
-  footerString,
-  timeStamp,
+  stringText = undefined,
+  title = undefined,
+  stringMessage = undefined,
+  url = undefined,
+  link = undefined,
+  footerString = undefined,
+  timeStamp = undefined,
   ephemeral = true
 ) => {
   const embed = new EmbedBuilder().setColor(PEKO_COLOR);

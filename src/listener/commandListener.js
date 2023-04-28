@@ -15,12 +15,12 @@ import { ModerateCommand } from "./commands/moderateCommand.js";
 export class CommandListener {
   constructor(client) {
     this.commands = [
-      new ModerateCommand(), // toppest priority, doesn't intercept
       new LinkFilterCommand(), // top priority, intercepts
       new RelayMessageCommand(), // high priority, intercepts
       new GptlCommand(), // intercepts
-      new GptCommand(), // doesn't intercept
       new DeeplCommand(), // intercepts
+      new GptCommand(), // intercepts
+      new ModerateCommand(), // doesn't intercept
       new CatchPoemCommand(), // intercepts
       new StreakCommand(), // doesn't intercept
       new BotMentionedCommand(), // 50%, intercepts
@@ -33,21 +33,24 @@ export class CommandListener {
   }
   async processMessage(msg) {
     let commandIntercepted = false;
-    this.commands.forEach((command) => {
+    for (let command of this.commands) {
       if (commandIntercepted) {
-        return;
+        console.warn(
+          `skipping intercepted ${command.name} for ${this.getMessage(
+            msg
+          )} in ${msg.channel.name}, ${msg.guild.name}`
+        );
+        continue;
       }
-      if (
-        command.commandMatch(msg.content) &&
-        this.shouldProcessMsg(msg, command)
-      ) {
+      const match = await command.commandMatch(msg);
+      if (match && this.shouldProcessMsg(msg, command)) {
         console.log(
           `Executing command ${command.name} for ${this.getMessage(msg)} in ${
             msg.channel.name
           }, ${msg.guild.name}`
         );
         commandIntercepted = commandIntercepted || command.intercept;
-        command.execute(msg, this.client).catch((e) => {
+        await command.execute(msg, this.client).catch((e) => {
           console.error(
             `Couldn't execute command ${command.name} (${this.getMsgInfo(
               msg
@@ -55,12 +58,13 @@ export class CommandListener {
           );
         });
       }
-    });
+    }
   }
   async processMessageUpdate(oldMsg, newMsg) {
-    this.commands.some((command) => {
+    for (let command of this.commands) {
+      const match = await command.commandMatch(oldMsg);
       if (
-        command.commandMatch(oldMsg.content) &&
+        match &&
         this.shouldProcessMsg(oldMsg, command) &&
         command.executeUpdate
       ) {
@@ -77,12 +81,13 @@ export class CommandListener {
           );
         });
       }
-    });
+    }
   }
   async processMessageDelete(msg) {
-    this.commands.forEach((command) => {
+    for (let command of this.commands) {
+      const match = await command.commandMatch(msg);
       if (
-        command.commandMatch(msg.content) &&
+        match &&
         this.shouldProcessMsg(msg, command) &&
         command.executeDelete
       ) {
@@ -101,7 +106,7 @@ export class CommandListener {
           );
         });
       }
-    });
+    }
   }
 
   getMessage(msg) {

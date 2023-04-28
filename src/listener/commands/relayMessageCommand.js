@@ -5,7 +5,7 @@ import { fetchMessage } from "../../utils/discordUtils.js";
 
 import { addRelay, loadRelays, updateRelays } from "../../model/relay.js";
 
-import { channels, targetChannels } from "./relayChannels.js";
+import { allowedAuthors, channels, targetChannels } from "./relayChannels.js";
 
 export class RelayMessageCommand extends AbstractCommand {
   constructor() {
@@ -17,11 +17,6 @@ export class RelayMessageCommand extends AbstractCommand {
   }
   async execute(msg, discordClient) {
     const text = msg.content;
-    if (msg.author.id !== "214207327451086848") {
-      // Zabine
-      console.log("SKIPPING AUTHOR", msg.author, ":", text);
-      return;
-    }
     const relaysFile = loadRelays();
     if (relaysFile.enabled === false) {
       return;
@@ -126,7 +121,13 @@ export class RelayMessageCommand extends AbstractCommand {
     }
   }
 
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
+    if (!allowedAuthors.includes(msg.author.id)) {
+      // Zabine
+      console.log("SKIPPING AUTHOR", msg.author, ":", text);
+      return false;
+    }
     const trimmedText = text.trim();
     if (
       trimmedText.indexOf("chat:") === 0 ||

@@ -105,13 +105,10 @@ export class ReactCommand extends AbstractCommand {
     );
     const reacts = moodsReacts[msg.guild.id];
     const actions = actionsReacts[msg.guild.id];
-    if (!reacts && !actions) {
-      return;
-    }
     const reactData = Object.entries(reacts || {});
     const actionsData = Object.entries(actions || {});
 
-    gptReaction(
+    return gptReaction(
       msg.content,
       actionsData.map((el) => el[0]),
       reactMood
@@ -161,7 +158,13 @@ export class ReactCommand extends AbstractCommand {
         console.error(`Couldn't determine the message mood: ${e}`);
       });
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const reacts = moodsReacts[msg.guild.id];
+    const actions = actionsReacts[msg.guild.id];
+    if (!reacts && !actions) {
+      return false;
+    }
+    const text = msg.content;
     const urls = extractUrls(text);
     return (!urls || urls.length === 0) && text.indexOf("~") !== 0;
   }

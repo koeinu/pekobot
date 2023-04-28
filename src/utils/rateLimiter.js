@@ -10,7 +10,7 @@ export class CustomRateLimiter {
 
   take(entityId) {
     if (this.entities[entityId] === undefined) {
-      console.log("ts 1:", new Date().getTime());
+      console.warn(`rate++ ${entityId}: 0 / ${this.amount}`);
       this.entities[entityId] = { count: 1, ts: new Date().getTime() };
       setTimeout(() => {
         this.entities[entityId] = undefined;
@@ -18,10 +18,10 @@ export class CustomRateLimiter {
       return { result: false };
     } else {
       console.warn(
-        `Trying to increase for ${entityId}: currently ${this.entities[entityId].count} out of ${this.amount}`
+        `rate++ ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
       );
       if (this.entities[entityId].count === this.amount) {
-        console.log("ts 2:", new Date().getTime());
+        console.warn(`rate hit!`);
         return {
           result: true,
           ts: this.entities[entityId].ts + this.interval - new Date().getTime(),

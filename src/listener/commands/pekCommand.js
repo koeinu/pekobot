@@ -25,17 +25,19 @@ export class PekCommand extends AbstractCommand {
     this.triggerUsers = [
       "184334990614593537", // Hermit
     ];
+    this.intercept = true;
   }
   async execute(msg) {
     // if (!(await this.rateLimitPass(msg))) {
     //   return;
     // }
     // increaseCounter("pek");
-    msg.react("<:pek:775493108154236938>").catch((e) => {
+    return msg.react("<:pek:775493108154236938>").catch((e) => {
       console.error(`Couldn't pek: ${e}`);
     });
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     return text.match(/\bpek\b/i);
   }
 }

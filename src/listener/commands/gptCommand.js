@@ -8,6 +8,8 @@ import {
 } from "../../utils/stringUtils.js";
 import { reply } from "../../utils/discordUtils.js";
 import { GPT_SYSTEM_MESSAGE } from "../../utils/openaiUtils.js";
+import { H_M_S, S_MS } from "../../utils/constants.js";
+import { CustomRateLimiter } from "../../utils/rateLimiter.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
   if (msg.type === MessageType.Reply) {
@@ -21,25 +23,27 @@ const getReplyChain = async (msg, msgChain = [msg]) => {
   return msgChain;
 };
 
-const formatMessagesAsChat = (msgChain) => {
+const formatMessagesAsChat = async (msgChain) => {
   const list = msgChain.reverse();
-  return list.map((el) => ({
-    msg: getTextMessageContent(el),
-    username: el.author.username,
-  }));
+  return Promise.all(
+    list.map(async (el) => ({
+      msg: await getTextMessageContent(el),
+      username: el.author.username,
+    }))
+  );
 };
 
 export class GptCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "gpt";
-    // this.rateLimiter = new CustomRateLimiter(
-    //   "GPT",
-    //   1,
-    //   S_MS * H_M_S * 15,
-    //   [],
-    //   false
-    // );
+    this.rateLimiter = new CustomRateLimiter(
+      "GPT",
+      1,
+      S_MS * H_M_S * 4,
+      ["Mod"],
+      false
+    );
     this.guilds = [
       // ts
       "1061909810943115337",
@@ -48,58 +52,30 @@ export class GptCommand extends AbstractCommand {
       // DDF
       "533314828308054016",
       // miko
-      "584977240358518784",
-    ];
-    this.allowedChannels = [
-      "1098366878382031000", // ts, peko consulting,
-      "1070086039445717124", // ts, testing ground
-      "1063492591716405278", // peko testing ground
-      "921428703865630800", // DDF redacted
-      "1098913878445920306", // DDF consulting
-      "1098929695724146819", // miko ticket
+      // "584977240358518784",
     ];
     this.consultingChanels = [
       "1098366878382031000", // peko consulting,
       "1098913878445920306", // DDF consulting,
     ];
+    this.intercept = true;
   }
   async execute(msg) {
-    const repliedToMessage = msg.reference
-      ? await msg.channel.messages.fetch(msg.reference.messageId)
-      : undefined;
-    let shouldReply = false;
-    if (repliedToMessage && repliedToMessage.author.username === "peko-bot") {
-      shouldReply = true;
-    }
-    if (
-      msg.content.indexOf("~gpt") === 0 ||
-      this.consultingChanels.some((ch) => {
-        return `${msg.channel.id}` === `${ch}`;
-      })
-    ) {
-      shouldReply = true;
-    }
-    if (!shouldReply) {
-      console.log(
-        `gpt, ignoring (${msg.content} at ${msg.channel.name}, ${msg.guild.name})`
-      );
-      return;
-    }
     if (!(await this.rateLimitPass(msg, "gptSharedHandle"))) {
       return;
     }
 
     const replyChain = await getReplyChain(msg);
-    const msgList = formatMessagesAsChat(replyChain);
+    const msgList = await formatMessagesAsChat(replyChain);
 
-    const gptPrompt = formChainGPTPrompt(msgList);
+    const gptPrompt = await formChainGPTPrompt(msgList);
 
     if (gptPrompt.length > 0) {
       msg.channel.sendTyping().catch((e) => {
         console.error(`Couldn't send typing: ${e}`);
       });
 
-      gpt(gptPrompt, GPT_SYSTEM_MESSAGE(msg))
+      return gpt(gptPrompt, GPT_SYSTEM_MESSAGE(msg))
         .then((data) => {
           const response = data.text;
           if (response) {
@@ -123,7 +99,21 @@ export class GptCommand extends AbstractCommand {
         });
     }
   }
-  commandMatch() {
-    return true;
+  async commandMatch(msg) {
+    const repliedToMessage = msg.reference
+      ? await msg.channel.messages.fetch(msg.reference.messageId)
+      : undefined;
+    if (repliedToMessage && repliedToMessage.author.username === "peko-bot") {
+      return true;
+    }
+    if (
+      msg.content.indexOf("~gpt") === 0 ||
+      this.consultingChanels.some((ch) => {
+        return `${msg.channel.id}` === `${ch}`;
+      })
+    ) {
+      return true;
+    }
+    return false;
   }
 }

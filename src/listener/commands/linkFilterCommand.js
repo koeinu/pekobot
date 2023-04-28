@@ -30,7 +30,7 @@ export class LinkFilterCommand extends AbstractCommand {
         const channelId = await getYoutubeChannelId(url);
         const bannedKey = Object.keys(bans).find((el) => el === channelId);
         if (bannedKey) {
-          replyEmbedMessage(
+          return replyEmbedMessage(
             msg,
             `This link is not allowed on this server.\n\nReason: ${bans[bannedKey]}`
           )
@@ -44,12 +44,12 @@ export class LinkFilterCommand extends AbstractCommand {
                 });
               }, DELETE_MESSAGE_TIMEOUT);
             });
-          return;
         }
       }
     }
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     const urls = extractUrls(text);
     return urls ? urls.length > 0 : false;
   }

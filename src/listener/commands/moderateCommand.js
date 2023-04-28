@@ -59,10 +59,10 @@ export class ModerateCommand extends AbstractCommand {
       `moderating ${msg.content} at ${msg.channel.name}, ${msg.guild.name}`
     );
 
-    moderateMessage(msg)
+    return moderateMessage(msg)
       .then((triggerData) => {
         if (triggerData && triggerData.flagged) {
-          sendToChannels(
+          return sendToChannels(
             discordClient,
             gatherMessageInfo(msg, triggerData),
             this.channelsToSend
@@ -73,7 +73,8 @@ export class ModerateCommand extends AbstractCommand {
         console.error(`Couldn't moderate message ${msg.content}: ${e}`);
       });
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     const emojiPattern = /^<:\w+:\d+>$/;
     const urls = extractUrls(text);
     return (

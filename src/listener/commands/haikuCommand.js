@@ -29,6 +29,9 @@ export class HaikuCommand extends AbstractCommand {
       // peko
       "683140640166510717",
     ];
+    // this.channels = [
+    //   "1101619891037016126", // RNG debug channel
+    // ];
     this.probability = 0.03;
     this.prohibitedChannels = prohibitedRNGChannels;
     this.prohibitedUsers = prohibitedRNGUsers;
@@ -45,7 +48,7 @@ export class HaikuCommand extends AbstractCommand {
         " "
       )}*\n*${haiku.l3.join(" ")}*`;
 
-      sendCustomEmbed(
+      return sendCustomEmbed(
         msg.channel,
         undefined,
         undefined,
@@ -58,7 +61,7 @@ export class HaikuCommand extends AbstractCommand {
       });
     }
   }
-  commandMatch() {
+  async commandMatch() {
     return true;
   }
 }

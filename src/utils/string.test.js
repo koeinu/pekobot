@@ -17,8 +17,8 @@ describe("string utils", () => {
     const str = extractCommandMessage("~gpt ぺこなんだよ");
     expect(str).toEqual("ぺこなんだよ");
   });
-  test("extract msg", () => {
-    const str = getTextMessageContent({
+  test("extract msg", async () => {
+    const str = await getTextMessageContent({
       content: "~gpt tell me the current time",
       embeds: [],
     });

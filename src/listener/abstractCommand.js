@@ -1,8 +1,9 @@
 import { formatMSToHMS } from "../utils/stringUtils.js";
 
-import { S_MS } from "../utils/constants.js";
+import { H_M_S, S_MS } from "../utils/constants.js";
 
 import { sleep } from "../utils/discordUtils.js";
+import { CustomRateLimiter } from "../utils/rateLimiter.js";
 
 export class AbstractCommand {
   constructor() {
@@ -28,21 +29,35 @@ export class AbstractCommand {
   }
 
   resetTrigger(msg, customHandle = undefined) {
-    this.triggerer.reset(customHandle ? customHandle : msg.author.id);
+    if (this.triggerer) {
+      this.triggerer.reset(customHandle ? customHandle : msg.author.id);
+    }
   }
 
-  triggerCheck(msg, customHandle = undefined) {
-    if (this.triggerer) {
-      const trigger = this.triggerer.take(
-        customHandle ? customHandle : msg.author.id
+  triggerCheck(
+    msg,
+    triggerName,
+    initValue,
+    cooldown,
+    customHandle = undefined
+  ) {
+    if (!this.triggerer) {
+      this.triggerer = new CustomRateLimiter(
+        triggerName,
+        initValue,
+        cooldown,
+        [],
+        false
       );
-      console.warn(`Trigger check for ${msg.content}: ${trigger.result}`);
-      if (trigger.result) {
-        return true;
-      }
     }
-
-    return false;
+    const trigger = this.triggerer.take(
+      customHandle ? customHandle : msg.author.id
+    );
+    console.warn(`Trigger check for ${msg.content}: ${trigger.result}`);
+    if (trigger.result) {
+      this.triggerer = undefined;
+    }
+    return !!trigger.result;
   }
 
   async rateLimitPass(msg, customHandle = undefined) {

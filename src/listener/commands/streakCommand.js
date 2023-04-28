@@ -7,17 +7,13 @@ import { prohibitedRNGChannels } from "./prohibitedRNG.js";
 
 const STREAK_TIMEOUT = 2000; //ms
 
+const pickRandomTriggerValue = () => Math.round(Math.random() * 3 + 4);
+
 export class StreakCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "streak";
-    this.triggerer = new CustomRateLimiter(
-      "streak_triggerer",
-      5,
-      S_MS * H_M_S * 2, // 2 min
-      [],
-      false
-    );
+
     this.rateLimiter = new CustomRateLimiter(
       "streak_limiter",
       1,
@@ -35,14 +31,20 @@ export class StreakCommand extends AbstractCommand {
   }
   async execute(msg) {
     const text = msg.content.trim();
-    const trigger = this.triggerCheck(msg, text);
+    const trigger = this.triggerCheck(
+      msg,
+      "streak_triggerer",
+      pickRandomTriggerValue(),
+      S_MS * H_M_S * 2,
+      text
+    );
     if (trigger) {
       if (!(await this.rateLimitPass(msg, "streakSharedHandle"))) {
         return;
       }
       this.resetTrigger(msg, text);
 
-      msg.channel
+      return msg.channel
         .sendTyping()
         .catch((e) => {
           console.error(`Couldn't send typing: ${e}`);
@@ -55,7 +57,7 @@ export class StreakCommand extends AbstractCommand {
                 text.toLowerCase().includes("otsupeko")
               ? "おつぺこ〜"
               : text;
-            msg.channel.send(toSend).catch((e) => {
+            return msg.channel.send(toSend).catch((e) => {
               console.error(
                 `Couldn't send a streak message ${msg.content} in ${msg.channel}: ${e}`
               );
@@ -64,7 +66,8 @@ export class StreakCommand extends AbstractCommand {
         });
     }
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     const emojiPattern = /^<:\w+:\d+>$/;
     return (
       emojiPattern.test(text) ||

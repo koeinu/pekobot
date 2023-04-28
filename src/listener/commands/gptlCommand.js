@@ -53,7 +53,7 @@ export class GptlCommand extends AbstractCommand {
     this.intercept = true;
   }
   async execute(msg) {
-    let text = getTextMessageContent(msg);
+    let text = await getTextMessageContent(msg);
     const parsed = text.split(" ");
     const sourceLanguage = LANGUAGES.find((el) =>
       parsed.map((el) => el.toUpperCase()).includes(el)
@@ -71,7 +71,7 @@ export class GptlCommand extends AbstractCommand {
         msg.reference.messageId
       );
       replyMessage = repliedTo;
-      text = getTextMessageContent(repliedTo);
+      text = await getTextMessageContent(repliedTo);
     }
 
     url = parseAttachmentUrl(replyMessage);
@@ -82,10 +82,9 @@ export class GptlCommand extends AbstractCommand {
 
     if (isCount) {
       const count = getCounter("deepl");
-      replyEmbedMessage(replyMessage, printTLInfo(count)).catch((e) => {
+      return replyEmbedMessage(replyMessage, printTLInfo(count)).catch((e) => {
         console.error(`Couldn't print OCR: ${e}`);
       });
-      return;
     }
 
     console.log(`translating ${text || "image"}`);
@@ -124,7 +123,7 @@ export class GptlCommand extends AbstractCommand {
         console.error(`Couldn't send typing: ${e}`);
       });
 
-      ApiUtils.GetTranslation(text, undefined, msg, true)
+      return ApiUtils.GetTranslation(text, undefined, msg, true)
         .then((tlData) => {
           if (tlData.text) {
             const toSend = formatTLText(tlData.text, tlData.isGpt);
@@ -153,7 +152,8 @@ export class GptlCommand extends AbstractCommand {
         });
     }
   }
-  commandMatch(text) {
+  async commandMatch(msg) {
+    const text = msg.content;
     return text.indexOf("~gptl") === 0;
   }
 }
