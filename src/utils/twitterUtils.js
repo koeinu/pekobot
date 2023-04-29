@@ -20,6 +20,8 @@ dotenv.config();
 
 const BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
 
+console.log(`twitter token: ${BEARER_TOKEN}`);
+
 const client = new TwitterApi(BEARER_TOKEN);
 let catchingPoem = false;
 
