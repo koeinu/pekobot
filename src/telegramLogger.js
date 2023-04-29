@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 dotenv.config();
 const token = process.env.TG_BOT_TOKEN;
 
+export const originalConsoleLog = console.log;
+export const originalConsoleError = console.error;
+export const originalConsoleWarn = console.warn;
+
 export class TelegramBotWrapper {
   constructor() {
     if (token) {
@@ -20,16 +24,28 @@ export class TelegramBotWrapper {
     }
     this.logsId = -1001906303858;
     this.errorsId = -1001906303858;
+    this.warningsId = -1001838776203;
   }
 
   sendLog(...args) {
     if (this.bot) {
-      this.bot.sendMessage(this.logsId, [...args].join(" "));
+      this.bot.sendMessage(this.logsId, [...args].join(" ")).catch((e) => {
+        originalConsoleError(e);
+      });
     }
   }
   sendError(...args) {
     if (this.bot) {
-      this.bot.sendMessage(this.errorsId, [...args].join(" "));
+      this.bot.sendMessage(this.errorsId, [...args].join(" ")).catch((e) => {
+        originalConsoleError(e);
+      });
+    }
+  }
+  sendWarning(...args) {
+    if (this.bot) {
+      this.bot.sendMessage(this.warningsId, [...args].join(" ")).catch((e) => {
+        originalConsoleError(e);
+      });
     }
   }
 }
