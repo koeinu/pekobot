@@ -139,7 +139,7 @@ const makeWholePuzzle = async (username, imageUrl, nop) => {
   const sl = await page.$("#short-link");
   const puzzleUrl = await page.evaluate((sl) => sl.value, sl);
 
-  console.warn("intermediate link:", puzzleUrl);
+  console.log("intermediate link:", puzzleUrl);
   await page.goto(puzzleUrl);
 
   let toReturn = puzzleUrl;

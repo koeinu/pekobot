@@ -74,7 +74,7 @@ export class AbstractCommand {
       const limited = this.rateLimiter.take(
         customHandle ? customHandle : msg.author.id
       );
-      console.warn(`Limit check for ${msg.content}: ${limited.result}`);
+      console.log(`Limit check for ${msg.content}: ${limited.result}`);
       if (limited.result) {
         if (this.rateLimiter.alertUser) {
           await msg.react("<:PekoDerp:709152458978492477>").catch((e) => {

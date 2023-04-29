@@ -253,9 +253,8 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
   }
 
   console.warn(
-    `GPT tokens: ${res.detail.usage.prompt_tokens}pt, ${res.detail.usage.completion_tokens}ct`
+    `GPT tokens: ${res.detail.usage.prompt_tokens}pt, ${res.detail.usage.completion_tokens}ct; GPT answer: ${result}`
   );
-  console.warn(`GPT answer: ${result}`);
   isGPTing = false;
   return {
     text: result,
