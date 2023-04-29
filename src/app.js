@@ -13,11 +13,11 @@ console.log = (...args) => {
   originalConsoleLog(...args);
 };
 console.error = (...args) => {
-  bot.sendError(...args);
+  bot.sendError({ ...args });
   originalConsoleError(...args);
 };
 console.warn = (...args) => {
-  bot.sendWarning(...args);
+  bot.sendWarning({ ...args });
   originalConsoleWarn(...args);
 };
 // const cron = require("./resetCounterCronJob");
