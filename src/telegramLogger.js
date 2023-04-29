@@ -7,25 +7,25 @@ export class TelegramBotWrapper {
   constructor() {
     if (token) {
       this.bot = new TelegramBot(token, { polling: true });
-      this.bot.on("channel_post", (msg) => {
-        const chatId = msg.chat.id;
-
-        // send a message to the chat acknowledging receipt of their message
-        this.bot.sendMessage(chatId, "Received your message");
-      });
+      // this.bot.on("channel_post", (msg) => {
+      //   const chatId = msg.chat.id;
+      //
+      //   // send a message to the chat acknowledging receipt of their message
+      //   this.bot.sendMessage(chatId, "Received your message");
+      // });
     }
     this.logsId = -1001906303858;
     this.errorsId = -1001906303858;
   }
 
-  sendLog(message) {
+  sendLog(...args) {
     if (this.bot) {
-      this.bot.sendMessage(this.logsId, message);
+      this.bot.sendMessage(this.logsId, [...args].join(" "));
     }
   }
-  sendError(message) {
+  sendError(...args) {
     if (this.bot) {
-      this.bot.sendMessage(this.errorsId, message);
+      this.bot.sendMessage(this.errorsId, [...args].join(" "));
     }
   }
 }

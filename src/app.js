@@ -7,13 +7,13 @@ const bot = new TelegramBotWrapper();
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 
-console.log = (message) => {
-  bot.sendLog(message);
-  originalConsoleLog(message);
+console.log = (...args) => {
+  bot.sendLog(...args);
+  originalConsoleLog(...args);
 };
-console.error = (message) => {
-  bot.sendError(message);
-  originalConsoleError(message);
+console.error = (...args) => {
+  bot.sendError(...args);
+  originalConsoleError(...args);
 };
 // const cron = require("./resetCounterCronJob");
 

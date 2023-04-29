@@ -136,7 +136,7 @@ const onStreamTweet = async (tweet, discordClient) => {
 
 export const connectToStream = async (discordClient) => {
   const rules = await client.v2.streamRules();
-  console.log("rules:", JSON.stringify(rules));
+  console.log("rules:", rules.data);
   const usersToRelay = TWITTER_RELAY_DATA.map((el) => el.src);
   if (rules.data?.length) {
     if (
