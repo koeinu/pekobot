@@ -4,8 +4,17 @@ import { Configuration, OpenAIApi } from "openai";
 
 import dotenv from "dotenv";
 import { listDictionary } from "../model/gptDict.js";
-import { MIKO_SERVER, PEKO_SERVER, TEST_SERVER_2 } from "./ids/guilds.js";
-import { RP_CHANNELS, RP_CHANNELS_2 } from "./ids/channels.js";
+import {
+  ASSISTANT_SERVERS,
+  MIKO_SERVER,
+  PEKO_SERVER,
+  TEST_SERVER_2,
+} from "./ids/guilds.js";
+import {
+  ASSISTANT_CHANNELS,
+  RP_CHANNELS,
+  RP_CHANNELS_2,
+} from "./ids/channels.js";
 
 dotenv.config();
 const key = process.env.OPENAI_KEY;
@@ -113,11 +122,19 @@ export const messageContextArray = (msg) => {
     if (app) {
       parts.push(`{Appearance ${botInspiration}:}`, ...app);
     }
+  } else if (
+    ASSISTANT_SERVERS.includes(msg.guild.id) ||
+    ASSISTANT_CHANNELS.includes(msg.channel.id)
+  ) {
+    parts.push(
+      `You are an assistant bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${botName}.`,
+      `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${botName}.`
+    );
   } else {
     parts.push(
       `You are a bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${botName} and your personality is inspired by ${botInspiration}.`,
       `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${botName}.`,
-      `If asked a question, make an effort to help. Otherwise be creative and funny${
+      `If asked a question, make an effort to help. Otherwise be playful, creative and funny${
         botGobi ? `, insert word ${botGobi} in the sentences sometimes.` : ""
       }`,
       `You are allowed to roleplay as a metallic android which looks similar to ${botInspiration}.`
@@ -143,9 +160,7 @@ export const serverRules = (msg) => {
       parts.push(
         "3. Don't pretend to be anyone else in any situation.",
         "4. When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.",
-        "5. Respond only with statements. Don't ask anything and don't try to continue the dialogue.",
-        "6. If the prompt is a question, try to help.",
-        "7. If the prompt is not a question, be playful, creative and cheeky about your answers."
+        "5. Respond only with statements. Don't ask anything and don't try to continue the dialogue."
       );
       break;
     }
