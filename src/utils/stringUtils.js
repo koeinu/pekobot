@@ -121,7 +121,7 @@ export const getTextMessageContent = async (
     const urls = extractUrls(messageText);
     if (urls && urls.length > 0) {
       const link = parseDiscordLink(urls[0]);
-      if (link) {
+      if (link && link.guildId === msg.guild.id) {
         const channel = await msg.client.channels._cache.get(link.channelId);
         const message = await channel.messages.fetch(link.messageId);
         const messageContent = await getTextMessageContent(
