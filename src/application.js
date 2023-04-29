@@ -218,7 +218,7 @@ export class Application {
       if (this.connectedToStreamFeed) {
         return;
       }
-      await sleep(() => {}, 10000);
+      await sleep(() => {}, 1000 * 60 * 5);
       console.log("Another attempt to connect to twitter feed..");
     }
   }
