@@ -6,6 +6,15 @@ import { CATCH_TWEET_TIMEOUT } from "./constants.js";
 import { ETwitterStreamEvent, TwitterApi } from "twitter-api-v2";
 
 import dotenv from "dotenv";
+import {
+  PEKO_PEKORA_FEED,
+  PEKO_STREAM,
+  TEST_INA_FEED,
+  TEST_PEKORA_FEED,
+  TEST_POEM_FEED,
+  TEST_TEST_FEED,
+  TEST_TEST_POEM_FEED,
+} from "./ids/channels.js";
 dotenv.config();
 
 const BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
@@ -16,46 +25,27 @@ let catchingPoem = false;
 const TWITTER_RELAY_DATA = [
   {
     src: "usadapekora",
-    feedIds: [
-      "1098377642111160330", // test server, pekora feed
-      "683200298629857331", // peko server, tweet feed
-    ],
-    poemIds: [
-      "1098777254298918973", // test server, pekora poem feed
-      "1056187525753999442", // peko server, stream chat. important!!!!!!!!!!!!!!!!!!!!
-    ],
+    feedIds: [TEST_PEKORA_FEED, PEKO_PEKORA_FEED],
+    poemIds: [TEST_POEM_FEED, PEKO_STREAM],
   },
   {
     src: "uraakapeko",
-    feedIds: [
-      "1098377642111160330", // test server, pekora feed
-      "683200298629857331", // peko server, tweet feed
-    ],
-    poemIds: [
-      "1098777254298918973", // test server, pekora poem feed
-    ],
+    feedIds: [TEST_PEKORA_FEED, PEKO_PEKORA_FEED],
+    poemIds: [],
   },
   {
     src: "koeinu",
-    feedIds: [
-      "1098777824954957834", // test server, my feed
-    ],
-    poemIds: [
-      "1098777887827574884", // test server, my poem feed
-    ],
+    feedIds: [TEST_TEST_FEED],
+    poemIds: [TEST_TEST_POEM_FEED],
   },
   {
     src: "ninomaeinanis",
-    feedIds: [
-      "1098909222349053963", // test server, ina feed
-    ],
+    feedIds: [TEST_INA_FEED],
     poemIds: [],
   },
   {
     src: "wooperfuri",
-    feedIds: [
-      "1098909222349053963", // test server, ina feed
-    ],
+    feedIds: [TEST_INA_FEED],
     poemIds: [],
   },
 ];
