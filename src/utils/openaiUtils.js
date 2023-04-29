@@ -141,7 +141,7 @@ export const messageContextArray = (msg) => {
     );
   }
 
-  return parts.join("\n");
+  return parts.join(" ");
 };
 
 export const serverRules = (msg) => {

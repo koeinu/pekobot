@@ -7,6 +7,8 @@ export const originalConsoleLog = console.log;
 export const originalConsoleError = console.error;
 export const originalConsoleWarn = console.warn;
 
+const MESSAGE_MAX_LENGTH = 4000;
+
 export class TelegramBotWrapper {
   constructor() {
     if (token) {
@@ -27,50 +29,40 @@ export class TelegramBotWrapper {
     this.warningsId = -1001838776203;
   }
 
+  async sendMessage(id, str) {
+    const parts = str.match(/.{1,4000}/g);
+    for (let part of parts) {
+      await this.bot.sendMessage(id, part).catch((e) => {
+        originalConsoleError(e);
+      });
+    }
+  }
+
+  makeString(...args) {
+    return args
+      .map((el) => JSON.stringify(el, null, 1))
+      .join(" ")
+      .replaceAll("\\n", "")
+      .replaceAll("\n", "")
+      .replaceAll('"', "");
+  }
+
   sendLog(...args) {
     if (this.bot) {
-      this.bot
-        .sendMessage(
-          this.logsId,
-          args
-            .map((el) => JSON.stringify(el, null, 1))
-            .join(" ")
-            .replaceAll("\n", "%0A")
-        )
-        .catch((e) => {
-          originalConsoleError(e);
-        });
+      this.sendMessage(this.logsId, this.makeString(...args)).catch((e) => {
+        originalConsoleError(e);
+      });
     }
   }
   sendError(...args) {
-    if (this.bot) {
-      this.bot
-        .sendMessage(
-          this.errorsId,
-          args
-            .map((el) => JSON.stringify(el, null, 1))
-            .join(" ")
-            .replaceAll("\n", "%0A")
-        )
-        .catch((e) => {
-          originalConsoleError(e);
-        });
-    }
+    this.sendMessage(this.errorsId, this.makeString(...args)).catch((e) => {
+      originalConsoleError(e);
+    });
   }
   sendWarning(...args) {
-    if (this.bot) {
-      this.bot
-        .sendMessage(
-          this.warningsId,
-          args
-            .map((el) => JSON.stringify(el, null, 1))
-            .join(" ")
-            .replaceAll("\n", "%0A")
-        )
-        .catch((e) => {
-          originalConsoleError(e);
-        });
-    }
+    this.sendMessage(this.warningsId, this.makeString(...args)).catch((e) => {
+      originalConsoleError(e);
+    });
   }
 }
 
