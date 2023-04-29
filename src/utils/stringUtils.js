@@ -1,5 +1,12 @@
 import fetch from "isomorphic-fetch";
 
+import dotenv from "dotenv";
+import { botInspiration } from "./openaiUtils.js";
+import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
+import { ApiUtils } from "./apiUtils.js";
+
+dotenv.config();
+const botName = process.env.BOT_NAME;
 export const MAX_BET_LENGTH = 20;
 export const MAX_CATEGORY_LENGTH = 40;
 export const validateString = (betValue, maxLength) => {
@@ -30,18 +37,38 @@ export const formGPTPrompt = (repliedUsername, repliedText, username, text) => {
   return "";
 };
 
-export const formChainGPTPrompt = async (msgStructList) => {
-  const msgs = await Promise.all(
-    msgStructList.map(async (msgStruct) => {
-      const extractedText = await extractCommandMessage(msgStruct.msg);
-      const extractedName = msgStruct.username;
+export const formChainGPTPrompt = async (msgStructList, rpMode = false) => {
+  const msgs = (
+    await Promise.all(
+      msgStructList.map(async (msgStruct) => {
+        const extractedText = await extractCommandMessage(msgStruct.msg);
+        const extractedName = msgStruct.username;
+        const finalName =
+          rpMode && extractedName === botName ? botInspiration : extractedName;
 
-      return `${extractedName}: ${extractedText}`;
-    })
-  );
-  return `Write your next answer to the following conversation:\n${msgs.join(
-    "\n"
-  )}`;
+        return extractedText && extractedText.length > 0
+          ? `${finalName}: ${extractedText}`
+          : undefined;
+      })
+    )
+  ).filter((el) => el !== undefined);
+  const finalMsgArray = [];
+  const reversedMsgs = msgs.reverse();
+  for (let m of reversedMsgs) {
+    if (finalMsgArray.map((el) => el.content).join("\n").length < 3000) {
+      finalMsgArray.push(m);
+    }
+  }
+  finalMsgArray.reverse();
+  const toReturn =
+    finalMsgArray.length > 0
+      ? [
+          `{Current dialog starts here:}`,
+          finalMsgArray.join("\n"),
+          `${rpMode ? botInspiration : botName}:`,
+        ]
+      : [];
+  return toReturn.join("\n");
 };
 
 export const extractCommandMessage = (str) => {
@@ -58,27 +85,73 @@ export const extractCommandMessage = (str) => {
 };
 
 // preferring embed description text
-export const getTextMessageContent = async (msg) => {
+export const getTextMessageContent = async (
+  msg,
+  canOCR,
+  silentAttachments = false
+) => {
+  const parts = [];
+  let countObject = undefined;
+  const messageText = extractCommandMessage(
+    msg.content !== undefined ? msg.content : msg.text
+  );
+  if (messageText && messageText.length > 0) {
+    parts.push(
+      extractCommandMessage(msg.content !== undefined ? msg.content : msg.text)
+    );
+  }
+
   if (msg.attachments.size > 0) {
     const attachment = msg.attachments.first();
     if (attachment.name.includes(".txt")) {
       const url = attachment.url;
       const response = await fetch(url);
       const text = await response.text();
-      return text;
+      if (!silentAttachments) {
+        parts.push("Text attachment:");
+      }
+      parts.push(text);
+    } else if (canOCR) {
+      const imageUrl = parseAttachmentUrl(msg);
+
+      console.log(`translating image`);
+
+      if (imageUrl !== undefined) {
+        try {
+          if (canIncreaseCounter("deepl")) {
+            msg.channel.sendTyping().catch((e) => {
+              console.error(`Couldn't send typing: ${e}`);
+            });
+
+            const text = await ApiUtils.OCRRequest(imageUrl, undefined, false);
+            console.log("parsed OCR text: ", text);
+            countObject = increaseCounter("deepl");
+            if (!silentAttachments) {
+              parts.push("Image attachment:");
+            }
+            parts.push(text);
+          }
+        } catch (errMsg) {
+          console.error(errMsg);
+        }
+      }
     }
   }
   if (msg.embeds.length > 0) {
-    const embedContent = msg.embeds[0].description;
-    if (embedContent && embedContent.length > 0) {
-      return embedContent;
-    }
+    msg.embeds.forEach((embed) => {
+      const embedContent = embed.description;
+      if (embedContent && embedContent.length > 0) {
+        if (!silentAttachments) {
+          parts.push("Embedded attachment:");
+        }
+        parts.push(embedContent);
+      }
+    });
   }
 
-  return extractCommandMessage(
-    msg.content !== undefined ? msg.content : msg.text
-  );
+  return { countObject, text: parts.join("\n") };
 };
+
 export const formatTLText = (text, isGpt) =>
   isGpt
     ? `<:openai:1099665985784520824> **TL:** \`${text}\``
@@ -127,7 +200,7 @@ export const getCurrentMonthName = () => {
 };
 
 function extractMessageTags(str) {
-  const regex = /[\[](START|END)[\]]/g;
+  const regex = /[[](START|END)[\]]/g;
   return str.replace(regex, "").trim();
 }
 

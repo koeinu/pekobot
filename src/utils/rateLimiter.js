@@ -32,6 +32,24 @@ export class CustomRateLimiter {
       }
     }
   }
+  check(entityId) {
+    if (this.entities[entityId] === undefined) {
+      this.entities[entityId] = { count: 0, ts: new Date().getTime() };
+      setTimeout(() => {
+        this.entities[entityId] = undefined;
+      }, this.interval);
+      return { result: false };
+    } else {
+      if (this.entities[entityId].count === this.amount) {
+        return {
+          result: true,
+          ts: this.entities[entityId].ts + this.interval - new Date().getTime(),
+        };
+      } else {
+        return { result: false };
+      }
+    }
+  }
 
   reset(entityId) {
     if (this.entities[entityId] !== undefined) {

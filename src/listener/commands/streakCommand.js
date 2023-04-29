@@ -3,7 +3,8 @@ import { AbstractCommand } from "../abstractCommand.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
 
 import { H_M_S, S_MS } from "../../utils/constants.js";
-import { prohibitedRNGChannels } from "./prohibitedRNG.js";
+import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
 
 const STREAK_TIMEOUT = 2000; //ms
 
@@ -21,13 +22,8 @@ export class StreakCommand extends AbstractCommand {
       [],
       false
     );
-    this.guilds = [
-      // ts
-      "1061909810943115337",
-      // peko
-      "683140640166510717",
-    ];
-    this.prohibitedChannels = prohibitedRNGChannels;
+    this.guilds = [TEST_SERVER, PEKO_SERVER];
+    this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
   }
   async execute(msg) {
     const text = msg.content.trim();

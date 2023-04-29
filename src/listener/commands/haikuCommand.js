@@ -1,10 +1,16 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { detectHaiku } from "../../utils/haiku.js";
+import { detectHaiku } from "../../utils/haikuUtils.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 
 import { sendCustomEmbed } from "../../utils/discordUtils.js";
-import { prohibitedRNGChannels, prohibitedRNGUsers } from "./prohibitedRNG.js";
+import {
+  PEKO_TEST,
+  PROHIBITED_RNG_CHANNELS,
+  TEST_MAIN,
+} from "../../utils/ids/channels.js";
+import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 
 export class HaikuCommand extends AbstractCommand {
   constructor() {
@@ -19,22 +25,19 @@ export class HaikuCommand extends AbstractCommand {
     );
     this.channels = [
       // ts
-      "1070086039445717124",
+      TEST_MAIN,
       // btg
-      "1063492591716405278",
+      PEKO_TEST,
     ];
     this.guilds = [
       // ts
-      "1061909810943115337",
+      TEST_SERVER,
       // peko
-      "683140640166510717",
+      PEKO_SERVER,
     ];
-    // this.channels = [
-    //   "1101619891037016126", // RNG debug channel
-    // ];
     this.probability = 0.03;
-    this.prohibitedChannels = prohibitedRNGChannels;
-    this.prohibitedUsers = prohibitedRNGUsers;
+    this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
+    this.prohibitedUsers = PROHIBITED_RNG_USERS;
   }
   async execute(msg) {
     const text = msg.content;

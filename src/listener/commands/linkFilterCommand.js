@@ -5,6 +5,7 @@ import { replyEmbedMessage } from "../../utils/discordUtils.js";
 import { listBans } from "../../model/youtube.js";
 
 import { getYoutubeChannelId } from "../../utils/youtubeUtils.js";
+import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
 
 const DELETE_MESSAGE_TIMEOUT = 2000; //ms
 
@@ -12,12 +13,7 @@ export class LinkFilterCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "linkfilter";
-    this.guilds = [
-      // ts
-      "1061909810943115337",
-      // peko
-      "683140640166510717",
-    ];
+    this.guilds = [TEST_SERVER, PEKO_SERVER];
     this.intercept = false;
   }
   async execute(msg) {

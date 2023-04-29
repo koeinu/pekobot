@@ -1,6 +1,6 @@
 import { formatMSToHMS } from "../utils/stringUtils.js";
 
-import { H_M_S, S_MS } from "../utils/constants.js";
+import { S_MS } from "../utils/constants.js";
 
 import { sleep } from "../utils/discordUtils.js";
 import { CustomRateLimiter } from "../utils/rateLimiter.js";
@@ -94,6 +94,27 @@ export class AbstractCommand {
               console.error(`Couldn't alert the rate limit to the user: ${e}`);
             });
         }
+        return false;
+      }
+    }
+
+    return true;
+  }
+  rateLimitCheck(msg, customHandle = undefined) {
+    if (this.rateLimiter) {
+      if (this.rateLimiter.ignoreRoles) {
+        if (
+          this.rateLimiter.ignoreRoles.some((privelegedRole) =>
+            msg.member.roles.cache.find((role) => role.name === privelegedRole)
+          )
+        ) {
+          return true;
+        }
+      }
+      const limited = this.rateLimiter.check(
+        customHandle ? customHandle : msg.author.id
+      );
+      if (limited.result) {
         return false;
       }
     }

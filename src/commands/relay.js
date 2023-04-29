@@ -18,7 +18,8 @@ import {
 import { formatTL } from "../utils/stringUtils.js";
 
 import { SlashCommandBuilder } from "discord.js";
-import { allowedAuthors } from "../listener/commands/relayChannels.js";
+
+import { RELAY_AUTHORS } from "../utils/ids/users.js";
 
 const options = {
     month: "numeric",
@@ -157,7 +158,7 @@ export default {
         updateRelays([]);
         TLs.forEach((msg) => {
           const text = msg.content;
-          if (!allowedAuthors.includes(msg.author.id)) {
+          if (!RELAY_AUTHORS.includes(msg.author.id)) {
             // Zabine
             console.log("SKIPPING AUTHOR", msg.author, ":", text);
           } else {

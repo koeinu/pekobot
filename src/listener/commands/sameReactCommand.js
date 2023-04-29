@@ -1,5 +1,7 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { prohibitedRNGChannels, prohibitedRNGUsers } from "./prohibitedRNG.js";
+import { PROHIBITED_RNG_CHANNELS, TEST_RNG } from "../../utils/ids/channels.js";
+import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 
 export class SameReactCommand extends AbstractCommand {
   constructor() {
@@ -7,16 +9,14 @@ export class SameReactCommand extends AbstractCommand {
     this.name = "same_react";
     this.guilds = [
       // ts
-      "1061909810943115337",
+      TEST_SERVER,
       // peko
-      "683140640166510717",
+      PEKO_SERVER,
     ];
-    this.channels = [
-      "1101619891037016126", // RNG debug channel
-    ];
+    this.channels = [TEST_RNG];
     this.probability = 0.04;
-    this.prohibitedChannels = prohibitedRNGChannels;
-    this.prohibitedUsers = prohibitedRNGUsers;
+    this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
+    this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.intercept = true;
   }
   async execute(msg) {

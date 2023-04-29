@@ -1,7 +1,9 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { prohibitedRNGChannels, prohibitedRNGUsers } from "./prohibitedRNG.js";
 import { gptMood, gptReaction } from "../../utils/openaiUtils.js";
 import extractUrls from "extract-urls";
+import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
+import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 
 const moodsReacts = {
   "1061909810943115337": {
@@ -88,15 +90,10 @@ export class ReactCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "react";
-    this.guilds = [
-      // ts
-      "1061909810943115337",
-      // peko
-      "683140640166510717",
-    ];
+    this.guilds = [TEST_SERVER, PEKO_SERVER];
     this.probability = 0.01;
-    this.prohibitedChannels = prohibitedRNGChannels;
-    this.prohibitedUsers = prohibitedRNGUsers;
+    this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
+    this.prohibitedUsers = PROHIBITED_RNG_USERS;
     // this.channels = ["1070086039445717124", "1063492591716405278"];
   }
   async execute(msg, discordClient, reactMood = false) {

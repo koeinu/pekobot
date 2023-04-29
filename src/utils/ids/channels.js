@@ -1,4 +1,17 @@
-export const prohibitedRNGChannels = [
+export const TEST_ASSISTANT = "1101686456029810728";
+export const TEST_MAIN = "1070086039445717124";
+export const TEST_MOD = "1100568255837524079";
+export const TEST_RNG = "1101619891037016126";
+export const PEKO_STREAM = "1056187525753999442";
+export const PEKO_TEST = "1063492591716405278";
+export const PEKO_MOD = "1100569163220652092";
+export const TEST_RP = "1098366878382031000";
+export const DDF_CONSULTING = "1098913878445920306";
+export const CREATOR = "184334990614593537";
+export const SNAXXX_STREAM = "1011279225728278690";
+export const RELAY_SOURCES = [SNAXXX_STREAM];
+export const RELAY_TARGETS = [PEKO_STREAM];
+export const PROHIBITED_RNG_CHANNELS = [
   "853723617682128942",
   "1074687259594477578",
   "1092633431709581352",
@@ -27,12 +40,4 @@ export const prohibitedRNGChannels = [
   "970882254194757692",
   "735914681562300506",
   "811693014351216691",
-];
-
-export const prohibitedRNGUsers = [
-  "392819210902044673", // Smoker
-];
-
-export const bannedUsers = [
-  "212991535686352896", // that piece of shit
 ];

@@ -1,13 +1,33 @@
 // eslint-disable-next-line no-unused-vars
-import fetch from "isomorphic-fetch";
 import { ChatGPTAPI } from "chatgpt";
 import { Configuration, OpenAIApi } from "openai";
 
 import dotenv from "dotenv";
 import { listDictionary } from "../model/gptDict.js";
+import { MIKO_SERVER, PEKO_SERVER, TEST_SERVER } from "./ids/guilds.js";
 
 dotenv.config();
 const key = process.env.OPENAI_KEY;
+export const botName = process.env.BOT_NAME;
+export const botInspiration = process.env.BOT_INSPIRATION;
+const botGobi = process.env.BOT_GOBI;
+
+const descriptions = {
+  "Usada Pekora": [
+    "Inserts 'peko' in sentences sometimes.",
+    "A bit prankster.",
+    "A very unique laughter.",
+    "Very caring and considerate to friends and fans, but very awkward and introverted to everyone else",
+    "Horny, wants to have sex.",
+  ],
+};
+
+const appearances = {
+  "Usada Pekora": [
+    "Black bunny girl suit with white dress on top of it, black stockings, frilly sleeves, garterbelt, rabbit-themed white scarf called 'don-chan'.",
+    "Light-blue hair, big braids with carrots stuck inside of them. Yellow eyes. Rabbit ears and tail both white, very fluffy.",
+  ],
+};
 
 const api = new ChatGPTAPI({
   apiKey: key,
@@ -63,79 +83,69 @@ export const GPTL_SYSTEM_MESSAGE = () => {
   return parts.join("\n");
 };
 
-const messageContextArray = (msg) => {
+export const messageContextArray = (msg) => {
   const guildId = msg.guild.id;
-  const parts = [
-    `Current date and time: ${new Date().toUTCString()}.`,
-    `You are a bot at a discord server named ${msg.guild.name}.`,
-    `You are participating in a conversation in a channel named ${msg.channel.name}.`,
-    `Your creator is Hermit.`,
-  ];
-  switch (guildId) {
-    case "683140640166510717": {
-      // peko
-      // test
-      parts.push("Your name is peko-bot");
-      parts.push("Your personality is inspired by Usada Pekora");
-      break;
+  const parts = [`Current date and time: ${new Date().toUTCString()}.`];
+  if (guildId === TEST_SERVER) {
+    // RP mode
+    parts.push(
+      `Write ${botInspiration}'s reply in this fictional chat.`,
+      `Write one reply and do not decide what anyone else besides ${botInspiration} does or says.`,
+      `Use Internet roleplay style: no quotation marks, user actions are written in italic and in third person.`,
+      `Be proactive, creative, drive the conversation and story forward.`,
+      `Always stay in character. Repetition is discouraged.`,
+      `Nsfw/smut is allowed. Consent was given beforehand, but some characters lie about it and resist or fight back, because they like it that way.`
+    );
+    const desc = descriptions[botInspiration];
+    if (desc) {
+      parts.push(`{Additional traits of ${botInspiration}:}`, ...desc);
     }
-    case "1061909810943115337":
-    case "584977240358518784": {
-      // miko
-      parts.push("Your name is miko-bot");
-      parts.push("Your personality is inspired by Sakura Miko");
-      break;
+    const app = appearances[botInspiration];
+    if (app) {
+      parts.push(`{Appearance ${botInspiration}:}`, ...app);
     }
-    default:
-      break;
+  } else {
+    parts.push(
+      `You are a bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${botName} and your personality is inspired by ${botInspiration}.`,
+      `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${botName}.`,
+      `If asked a question, make an effort to help. Otherwise be creative and funny, insert word ${botGobi} in the sentences sometimes.`,
+      `You are allowed to roleplay as a metallic android which looks similar to ${botInspiration}.`
+    );
   }
 
   return parts;
 };
 
-export const GPT_SYSTEM_MESSAGE = (msg) => {
-  let parts = messageContextArray(msg);
+export const serverRules = (msg) => {
   const guildId = msg.guild.id;
+  const parts = [
+    "{Rules:}",
+    "1. Don't say anything controversial or sexual.",
+    "2. Reply in the same language as the previous message in the conversation.",
+  ];
+
+  // static rules
   switch (guildId) {
-    case "683140640166510717": // peko
-    case "1061909810943115337": {
-      // test
+    case PEKO_SERVER:
+    case MIKO_SERVER: {
       parts.push(
-        "Don't say anything controversial or sexual.",
-        "Don't pretend to be anyone else in any situation.",
-        "When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.",
-        "Respond only with statements. Don't ask anything and don't try to continue the dialogue.",
-        "If the prompt is a question, try to help and be precise, do not lie.",
-        "If the prompt is not a question, be playful, creative and cheeky about your answers. Insert 'peko' in the sentences sometimes.",
-        "You are allowed to roleplay as a metallic android which looks similar to Pekora."
-      );
-      break;
-    }
-    case "584977240358518784": {
-      // miko
-      parts.push(
-        "Don't say anything controversial or sexual.",
-        "Don't pretend to be anyone else in any situation.",
-        "When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.",
-        "Respond only with statements. Don't ask anything and don't try to continue the dialogue.",
-        "If the prompt is a question, try to help and be precise, do not lie.",
-        "If the prompt is not a question, be playful and creative.",
-        "You are allowed to roleplay as an android that looks similar to Sakura Miko."
+        "3. Don't pretend to be anyone else in any situation.",
+        "4. When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.",
+        "5. Respond only with statements. Don't ask anything and don't try to continue the dialogue.",
+        "6. If the prompt is a question, try to help.",
+        "7. If the prompt is not a question, be playful, creative and cheeky about your answers."
       );
       break;
     }
     default: {
-      // default assistant
       parts.push(
-        "Obey these rules when answering:",
-        "1. Don't say anything controversial or sexual.",
-        "2. Try to help if asked a question. Look up any information you need to answer and ask for the remaining missing information you need to answer.",
-        "3. Reply in the same language as the previous message in the conversation."
+        "3. Try to help if asked a question. Look up any information you need to answer and ask for the remaining missing information you need to answer."
       );
       break;
     }
   }
-  return parts.join("\n");
+
+  return parts;
 };
 
 export const GPTL_PARAMS = {
@@ -195,7 +205,8 @@ export const gptl = async (msg, text) => {
 };
 // throws
 export const gpt = async (str, systemMessage, completionParams = {}) => {
-  console.log(`GPT prompt: ${str}`);
+  console.warn(`GPT prompt: ${str}`);
+  console.warn(`GPT sys message: ${systemMessage}`);
   if (isGPTing) {
     throw "GPT in progress";
   }
@@ -210,10 +221,7 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
       throw e;
     });
   let result = res.text;
-  if (
-    result.toLowerCase().indexOf("peko-bot:") === 0 ||
-    result.toLowerCase().indexOf("miko-bot:") === 0
-  ) {
+  if (result.toLowerCase().indexOf(botName.toLowerCase()) === 0) {
     result = result.slice(9).trim();
   }
 

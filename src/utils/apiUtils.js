@@ -9,8 +9,14 @@ import { trimBrackets } from "./stringUtils.js";
 
 dotenv.config();
 
+const ocrCache = {};
+const tlCache = {};
+
 export class ApiUtils {
   static async OCRRequest(url, hint, isText) {
+    if (ocrCache[url]) {
+      return ocrCache[url];
+    }
     let googleApiKey = process.env.GOOGLE_PK;
     googleApiKey = googleApiKey.replace(/\\n/g, "\n");
     const options = {
@@ -40,13 +46,19 @@ export class ApiUtils {
     if (hasError) {
       throw hasError;
     }
-    return isText
+    const toReturn = isText
       ? parsePages(result.fullTextAnnotation?.pages)
       : result.fullTextAnnotation?.text;
+
+    ocrCache[url] = toReturn;
+    return toReturn;
   }
 
   // throws
   static async GetTranslation(text, source, msg, isGpt = false) {
+    if (tlCache[text] && tlCache[text].isGpt === isGpt) {
+      return tlCache[text];
+    }
     const startTime = new Date();
     let response = undefined;
     let metadata = undefined;
@@ -87,12 +99,14 @@ export class ApiUtils {
       });
       response = t.data.translations[0].text;
     }
-    return {
+    const toReturn = {
       time: new Date().getTime() - startTime.getTime(),
       text: response,
       metaData: metadata,
       isGpt: isGptResult,
     };
+    tlCache[text] = toReturn;
+    return toReturn;
   }
 }
 

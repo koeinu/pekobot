@@ -1,5 +1,12 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { prohibitedRNGChannels, prohibitedRNGUsers } from "./prohibitedRNG.js";
+import {
+  CREATOR,
+  PEKO_TEST,
+  PROHIBITED_RNG_CHANNELS,
+  TEST_MAIN,
+} from "../../utils/ids/channels.js";
+import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 
 export class PekCommand extends AbstractCommand {
   constructor() {
@@ -7,24 +14,12 @@ export class PekCommand extends AbstractCommand {
     this.name = "pek";
     // 5 requests per 30s
     // this.rateLimiter = new RateLimiter("pek", 1, S_MS * H_M_S * 10);
-    this.channels = [
-      // peko, test channel
-      "1063492591716405278",
-      // test server, test channel
-      "1070086039445717124",
-    ];
-    this.guilds = [
-      // ts
-      "1061909810943115337",
-      // peko
-      "683140640166510717",
-    ];
+    this.channels = [PEKO_TEST, TEST_MAIN];
+    this.guilds = [TEST_SERVER, PEKO_SERVER];
     this.probability = 0.4;
-    this.prohibitedChannels = prohibitedRNGChannels;
-    this.prohibitedUsers = prohibitedRNGUsers;
-    this.triggerUsers = [
-      "184334990614593537", // Hermit
-    ];
+    this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
+    this.prohibitedUsers = PROHIBITED_RNG_USERS;
+    this.triggerUsers = [CREATOR];
     this.intercept = true;
   }
   async execute(msg) {

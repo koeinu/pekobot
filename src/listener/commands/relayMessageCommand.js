@@ -5,14 +5,15 @@ import { fetchMessage } from "../../utils/discordUtils.js";
 
 import { addRelay, loadRelays, updateRelays } from "../../model/relay.js";
 
-import { allowedAuthors, channels, targetChannels } from "./relayChannels.js";
+import { RELAY_SOURCES, RELAY_TARGETS } from "../../utils/ids/channels.js";
+import { RELAY_AUTHORS } from "../../utils/ids/users.js";
 
 export class RelayMessageCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "relay";
-    this.channels = channels;
-    this.targetChannels = targetChannels;
+    this.channels = RELAY_SOURCES;
+    this.targetChannels = RELAY_TARGETS;
     this.intercept = true;
   }
   async execute(msg, discordClient) {
@@ -123,9 +124,7 @@ export class RelayMessageCommand extends AbstractCommand {
 
   async commandMatch(msg) {
     const text = msg.content;
-    if (!allowedAuthors.includes(msg.author.id)) {
-      // Zabine
-      console.log("SKIPPING AUTHOR", msg.author, ":", text);
+    if (!RELAY_AUTHORS.includes(msg.author.id)) {
       return false;
     }
     const trimmedText = text.trim();

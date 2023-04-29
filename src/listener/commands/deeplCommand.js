@@ -3,17 +3,9 @@ import { MessageType } from "discord.js";
 import { AbstractCommand } from "../abstractCommand.js";
 import { ApiUtils } from "../../utils/apiUtils.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
-import {
-  formatTLText,
-  parseAttachmentUrl,
-  printTLInfo,
-} from "../../utils/stringUtils.js";
+import { formatTLText, printTLInfo } from "../../utils/stringUtils.js";
 
-import {
-  canIncreaseCounter,
-  getCounter,
-  increaseCounter,
-} from "../../model/counter.js";
+import { getCounter } from "../../model/counter.js";
 
 import {
   replyCustomEmbed,
@@ -21,8 +13,8 @@ import {
 } from "../../utils/discordUtils.js";
 
 import { H_M_S, LANGUAGES, S_MS } from "../../utils/constants.js";
-import { bannedUsers } from "./prohibitedRNG.js";
 import { getTextMessageContent } from "../../utils/stringUtils.js";
+import { BANNED_USERS } from "../../utils/ids/users.js";
 
 export class DeeplCommand extends AbstractCommand {
   constructor() {
@@ -36,38 +28,28 @@ export class DeeplCommand extends AbstractCommand {
       ["Mod"]
     );
     this.intercept = true;
-    this.bannedUsers = bannedUsers;
+    this.bannedUsers = BANNED_USERS;
   }
 
   async execute(msg) {
-    let text = await getTextMessageContent(msg);
-    const parsed = text.split(" ");
+    const canOCR = this.rateLimitCheck(msg);
+    let data = await getTextMessageContent(msg, canOCR, true);
+    const parsed = data.text.split(" ");
     const sourceLanguage = LANGUAGES.find((el) =>
       parsed.map((el) => el.toUpperCase()).includes(el)
     );
-    const googleOCRlanguage = sourceLanguage
-      ? sourceLanguage.toLowerCase()
-      : undefined;
     const deeplLanguage = sourceLanguage
       ? sourceLanguage.toUpperCase()
       : undefined;
-    const isText = parsed.includes("text");
     const isCount = parsed.includes("count");
 
-    let url;
     let replyMessage = msg;
     if (msg.type === MessageType.Reply) {
       const repliedTo = await msg.channel.messages.fetch(
         msg.reference.messageId
       );
       replyMessage = repliedTo;
-      text = await getTextMessageContent(repliedTo);
-    }
-
-    url = parseAttachmentUrl(replyMessage);
-
-    if (!text && !url) {
-      return;
+      data = await getTextMessageContent(repliedTo, canOCR, true);
     }
 
     if (isCount) {
@@ -77,43 +59,16 @@ export class DeeplCommand extends AbstractCommand {
       });
     }
 
-    console.log(`translating ${text || "image"}`);
+    console.log(`translating ${data.text || "image"}`);
 
-    let countObject = undefined;
-
-    if (url !== undefined) {
-      try {
-        if (!canIncreaseCounter("deepl")) {
-          throw "Monthly command limit exceeded";
-        }
-        if (!(await this.rateLimitPass(msg))) {
-          return;
-        }
-
-        msg.channel.sendTyping().catch((e) => {
-          console.error(`Couldn't send typing: ${e}`);
-        });
-
-        text = await ApiUtils.OCRRequest(url, googleOCRlanguage, isText);
-        console.log("parsed OCR text: ", text);
-        countObject = increaseCounter("deepl");
-      } catch (errMsg) {
-        console.error(errMsg);
-      }
-    } else {
-      msg.channel.sendTyping().catch((e) => {
-        console.error(`Couldn't send typing: ${e}`);
-      });
-    }
-
-    let tlData = await ApiUtils.GetTranslation(text, deeplLanguage);
+    let tlData = await ApiUtils.GetTranslation(data.text, deeplLanguage);
     return replyCustomEmbed(
       replyMessage,
       undefined,
       formatTLText(tlData.text),
       undefined,
       undefined,
-      printTLInfo(countObject, tlData.time)
+      printTLInfo(data.countObject, tlData.time)
     ).catch((e) => {
       console.error(`Couldn't send the translation: ${e}`);
     });

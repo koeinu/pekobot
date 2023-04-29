@@ -8,42 +8,25 @@ import {
 import {
   formatTLText,
   getTextMessageContent,
-  parseAttachmentUrl,
   printTLInfo,
 } from "../../utils/stringUtils.js";
-import { H_M_S, LANGUAGES, S_MS } from "../../utils/constants.js";
+import { H_M_S, S_MS } from "../../utils/constants.js";
 import { MessageType } from "discord.js";
-import {
-  canIncreaseCounter,
-  getCounter,
-  increaseCounter,
-} from "../../model/counter.js";
+import { getCounter } from "../../model/counter.js";
 import { ApiUtils } from "../../utils/apiUtils.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
+import {
+  DDF_SERVER,
+  MIKO_SERVER,
+  PEKO_SERVER,
+  TEST_SERVER,
+} from "../../utils/ids/guilds.js";
 
 export class GptlCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "gptl";
-    this.guilds = [
-      // ts
-      "1061909810943115337",
-      // peko
-      "683140640166510717",
-      // miko
-      "584977240358518784",
-      // DD
-      "533314828308054016",
-    ];
-    // this.allowedChannels = [
-    //   "1098366878382031000", // ts, peko consulting,
-    //   "1070086039445717124", // ts, testing ground
-    //   "1063492591716405278", // peko testing ground
-    //   "1098929695724146819", // miko ticket
-    //   "1098913878445920306", // dd, gpt channel
-    //   "921428703865630800", // dd, redacted
-    //   "1098786610167939092", // peko test feed
-    // ];
+    this.guilds = [TEST_SERVER, PEKO_SERVER, MIKO_SERVER, DDF_SERVER];
     this.rateLimiter = new CustomRateLimiter(
       "Optical Image Recognition + GPT3.5",
       1,
@@ -53,31 +36,18 @@ export class GptlCommand extends AbstractCommand {
     this.intercept = true;
   }
   async execute(msg) {
-    let text = await getTextMessageContent(msg);
-    const parsed = text.split(" ");
-    const sourceLanguage = LANGUAGES.find((el) =>
-      parsed.map((el) => el.toUpperCase()).includes(el)
-    );
-    const googleOCRlanguage = sourceLanguage
-      ? sourceLanguage.toLowerCase()
-      : undefined;
-    const isText = parsed.includes("text");
+    const canOCR = this.rateLimitCheck(msg);
+    let data = await getTextMessageContent(msg, canOCR, true);
+    const parsed = data.text.split(" ");
     const isCount = parsed.includes("count");
 
-    let url;
     let replyMessage = msg;
     if (msg.type === MessageType.Reply) {
       const repliedTo = await msg.channel.messages.fetch(
         msg.reference.messageId
       );
       replyMessage = repliedTo;
-      text = await getTextMessageContent(repliedTo);
-    }
-
-    url = parseAttachmentUrl(replyMessage);
-
-    if (!text && !url) {
-      return;
+      data = await getTextMessageContent(repliedTo, canOCR, true);
     }
 
     if (isCount) {
@@ -87,43 +57,14 @@ export class GptlCommand extends AbstractCommand {
       });
     }
 
-    console.log(`translating ${text || "image"}`);
-
-    let countObject = undefined;
-
-    if (url !== undefined) {
-      try {
-        if (!canIncreaseCounter("deepl")) {
-          throw "Monthly command limit exceeded";
-        }
-        if (!(await this.rateLimitPass(msg))) {
-          return;
-        }
-
-        msg.channel.sendTyping().catch((e) => {
-          console.error(`Couldn't send typing: ${e}`);
-        });
-
-        text = await ApiUtils.OCRRequest(url, googleOCRlanguage, isText);
-        console.log("parsed OCR text: ", text);
-        countObject = increaseCounter("deepl");
-      } catch (errMsg) {
-        console.error(errMsg);
-      }
-    } else {
-      msg.channel.sendTyping().catch((e) => {
-        console.error(`Couldn't send typing: ${e}`);
-      });
-    }
-
     console.log(`SYSTEM_MESSAGE:`, GPTL_SYSTEM_MESSAGE());
 
-    if (text.length > 0) {
+    if (data.text.length > 0) {
       msg.channel.sendTyping().catch((e) => {
         console.error(`Couldn't send typing: ${e}`);
       });
 
-      return ApiUtils.GetTranslation(text, undefined, msg, true)
+      return ApiUtils.GetTranslation(data.text, undefined, msg, true)
         .then((tlData) => {
           if (tlData.text) {
             const toSend = formatTLText(tlData.text, tlData.isGpt);
@@ -134,7 +75,7 @@ export class GptlCommand extends AbstractCommand {
               toSend,
               undefined,
               undefined,
-              printTLInfo(countObject, tlData.time, tlData.metaData)
+              printTLInfo(data.countObject, tlData.time, tlData.metaData)
             );
           } else {
             return replyCustomEmbed(
@@ -143,7 +84,7 @@ export class GptlCommand extends AbstractCommand {
               `Beep boop, looks like I'm overloaded with requests, peko.. Try again later!`,
               undefined,
               undefined,
-              printTLInfo(countObject, tlData.time, tlData.metaData)
+              printTLInfo(data.countObject, tlData.time, tlData.metaData)
             );
           }
         })

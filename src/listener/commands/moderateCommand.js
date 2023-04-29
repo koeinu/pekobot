@@ -1,6 +1,9 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import extractUrls from "extract-urls";
 import { MOD_THRESHOLDS, moderateMessage } from "../../utils/openaiUtils.js";
+import { PEKO_MOD, TEST_MOD } from "../../utils/ids/channels.js";
+
+import { PEKO_SERVER } from "../../utils/ids/guilds.js";
 
 const sendToChannels = async (discordClient, text, channels) => {
   const foundChannels = channels
@@ -48,11 +51,8 @@ export class ModerateCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "moderate";
-    this.guilds = [
-      // "1061909810943115337", // ts
-      "683140640166510717", // peko
-    ];
-    this.channelsToSend = ["1100568255837524079", "1100569163220652092"];
+    this.guilds = [PEKO_SERVER];
+    this.channelsToSend = [TEST_MOD, PEKO_MOD];
   }
   async execute(msg, discordClient) {
     console.log(

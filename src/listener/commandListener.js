@@ -35,11 +35,11 @@ export class CommandListener {
     let commandIntercepted = false;
     for (let command of this.commands) {
       if (commandIntercepted) {
-        console.warn(
-          `skipping intercepted ${command.name} for ${this.getMessage(
-            msg
-          )} in ${msg.channel.name}, ${msg.guild.name}`
-        );
+        // console.warn(
+        //   `skipping intercepted ${command.name} for ${this.getMessage(
+        //     msg
+        //   )} in ${msg.channel.name}, ${msg.guild.name}`
+        // );
         continue;
       }
       const match = await command.commandMatch(msg);

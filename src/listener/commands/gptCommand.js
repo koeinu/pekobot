@@ -1,15 +1,28 @@
 import { AbstractCommand } from "../abstractCommand.js";
 
-import { gpt } from "../../utils/openaiUtils.js";
+import {
+  gpt,
+  messageContextArray,
+  serverRules,
+} from "../../utils/openaiUtils.js";
 import { MessageType } from "discord.js";
 import {
   getTextMessageContent,
   formChainGPTPrompt,
 } from "../../utils/stringUtils.js";
 import { reply } from "../../utils/discordUtils.js";
-import { GPT_SYSTEM_MESSAGE } from "../../utils/openaiUtils.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
+import {
+  DDF_CONSULTING,
+  TEST_ASSISTANT,
+  TEST_RP,
+} from "../../utils/ids/channels.js";
+import {
+  DDF_SERVER,
+  PEKO_SERVER,
+  TEST_SERVER,
+} from "../../utils/ids/guilds.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
   if (msg.type === MessageType.Reply) {
@@ -23,11 +36,11 @@ const getReplyChain = async (msg, msgChain = [msg]) => {
   return msgChain;
 };
 
-const formatMessagesAsChat = async (msgChain) => {
+const formatMessagesAsChat = async (msgChain, canOCR) => {
   const list = msgChain.reverse();
   return Promise.all(
     list.map(async (el) => ({
-      msg: await getTextMessageContent(el),
+      msg: (await getTextMessageContent(el, canOCR)).text,
       username: el.author.username,
     }))
   );
@@ -46,36 +59,37 @@ export class GptCommand extends AbstractCommand {
     );
     this.guilds = [
       // ts
-      "1061909810943115337",
-      // peko
-      "683140640166510717",
-      // DDF
-      "533314828308054016",
-      // miko
-      // "584977240358518784",
+      TEST_SERVER,
+      PEKO_SERVER,
+      DDF_SERVER,
+      // MIKO_SERVER,
     ];
-    this.consultingChanels = [
-      "1098366878382031000", // peko consulting,
-      "1098913878445920306", // DDF consulting,
-    ];
+    this.consultingChanels = [TEST_RP, TEST_ASSISTANT, DDF_CONSULTING];
     this.intercept = true;
   }
   async execute(msg) {
     if (!(await this.rateLimitPass(msg, "gptSharedHandle"))) {
       return;
     }
+    const canOCR = this.rateLimitCheck(msg);
 
     const replyChain = await getReplyChain(msg);
-    const msgList = await formatMessagesAsChat(replyChain);
+    const msgList = await formatMessagesAsChat(replyChain, canOCR);
 
-    const gptPrompt = await formChainGPTPrompt(msgList);
+    const gptPrompt = await formChainGPTPrompt(
+      msgList,
+      msg.guild.id === TEST_SERVER && msg.channel.id !== TEST_ASSISTANT
+    );
 
     if (gptPrompt.length > 0) {
       msg.channel.sendTyping().catch((e) => {
         console.error(`Couldn't send typing: ${e}`);
       });
 
-      return gpt(gptPrompt, GPT_SYSTEM_MESSAGE(msg))
+      return gpt(
+        [messageContextArray(msg), serverRules(msg), gptPrompt].join("\n"),
+        ""
+      )
         .then((data) => {
           const response = data.text;
           if (response) {
