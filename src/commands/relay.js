@@ -1,6 +1,7 @@
 import { RelayMessageCommand } from "../listener/commands/relayMessageCommand.js";
 import {
   checkPermissions,
+  fetchMessages,
   followUpEmbedMessage,
   getOptions,
   replyEmbedMessage,
@@ -300,39 +301,3 @@ export default {
     }
   },
 };
-
-async function fetchMessages(channel, startId, endId, limit = 500) {
-  const toReturn = [];
-  let lastId;
-
-  while (true) {
-    console.log("msg count: ", toReturn.length, "...");
-    const options = {
-      limit: Math.min(limit, 100),
-      cache: true,
-      after: startId, // The date time you want it from
-    };
-    if (lastId) {
-      options.after = lastId;
-    }
-
-    const messages = await channel.messages.fetch(options);
-    let values = Array.from(messages.values()).reverse();
-    const foundEndMessage = values.find((el) => el.id === endId);
-    if (foundEndMessage) {
-      const foundEndMessageIndex = values.indexOf(foundEndMessage);
-      values = values.filter((el, index) => index < foundEndMessageIndex);
-    }
-    toReturn.push(...values);
-    const lastMessage = messages.first();
-    lastId = lastMessage.id;
-    console.log("lastId:", lastId);
-    console.log("last message:", lastMessage.content);
-
-    if (values.length < 100 || toReturn.length > limit) {
-      break;
-    }
-  }
-
-  return toReturn;
-}

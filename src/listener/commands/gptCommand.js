@@ -11,7 +11,7 @@ import {
   getTextMessageContent,
   formChainGPTPrompt,
 } from "../../utils/stringUtils.js";
-import { reply } from "../../utils/discordUtils.js";
+import { fetchMessages, reply } from "../../utils/discordUtils.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
@@ -74,14 +74,14 @@ export class GptCommand extends AbstractCommand {
       return;
     }
     const canOCR = this.rateLimitCheck(msg);
+    const rpMode = msg.channel.id === TEST_RP;
 
-    const replyChain = await getReplyChain(msg);
+    const replyChain = rpMode
+      ? (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
+      : await getReplyChain(msg);
     const msgList = await formatMessagesAsChat(replyChain, canOCR);
 
-    const gptPrompt = await formChainGPTPrompt(
-      msgList,
-      msg.guild.id === TEST_SERVER && msg.channel.id !== TEST_ASSISTANT
-    );
+    const gptPrompt = await formChainGPTPrompt(msgList, rpMode);
 
     if (gptPrompt.length > 0) {
       msg.channel.sendTyping().catch((e) => {

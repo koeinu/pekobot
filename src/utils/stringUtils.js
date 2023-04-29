@@ -11,6 +11,12 @@ dotenv.config();
 const botName = process.env.BOT_NAME;
 export const MAX_BET_LENGTH = 20;
 export const MAX_CATEGORY_LENGTH = 40;
+export const GPT_TOKENS_LIMIT_TOKEN = 4096;
+export const GPT_PROMPT_LIMIT_TOKEN = 3600;
+export const GPT_TOKENS_LIMIT_CHAR = 4000 * 4;
+export const GPT_PROMPT_LIMIT_CHAR = 3600 * 4;
+export const GPT_INFORMATIVE_CONTENT_LIMIT_CHAR = GPT_PROMPT_LIMIT_CHAR - 2000;
+
 export const validateString = (betValue, maxLength) => {
   if (betValue.length === 0) {
     throw "The argument is empty.";
@@ -57,7 +63,10 @@ export const formChainGPTPrompt = async (msgStructList, rpMode = false) => {
   const finalMsgArray = [];
   const reversedMsgs = msgs.reverse();
   for (let m of reversedMsgs) {
-    if (finalMsgArray.map((el) => el.content).join("\n").length < 3000) {
+    if (
+      finalMsgArray.map((el) => el.content).join("\n").length <
+      GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
+    ) {
       finalMsgArray.push(m);
     }
   }
