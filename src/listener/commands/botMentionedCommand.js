@@ -18,7 +18,7 @@ export class BotMentionedCommand extends AbstractCommand {
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.channels = [TEST_MAIN];
     this.intercept = true;
-    this.probability = 0.5;
+    this.probability = 0.35;
     this.triggerUsers = [
       CREATOR, // Hermit
     ];
@@ -42,7 +42,7 @@ export class BotMentionedCommand extends AbstractCommand {
         text.toLowerCase().includes("peko bot") ||
         text.toLowerCase().includes("pekobot") ||
         text.toLowerCase().includes("this bot") ||
-        text.toLowerCase().includes("damn bot") ||
+        text.toLowerCase().includes("good bot") ||
         text.toLowerCase().includes(botName))
     );
   }

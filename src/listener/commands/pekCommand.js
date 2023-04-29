@@ -16,7 +16,7 @@ export class PekCommand extends AbstractCommand {
     // this.rateLimiter = new RateLimiter("pek", 1, S_MS * H_M_S * 10);
     this.channels = [PEKO_TEST, TEST_MAIN];
     this.guilds = [TEST_SERVER, PEKO_SERVER];
-    this.probability = 0.4;
+    this.probability = 0.3;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.triggerUsers = [CREATOR];

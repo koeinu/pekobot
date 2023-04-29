@@ -23,7 +23,7 @@ export class CommandListener {
       new ModerateCommand(), // doesn't intercept
       new CatchPoemCommand(), // intercepts
       new StreakCommand(), // doesn't intercept
-      new BotMentionedCommand(), // 50%, intercepts
+      new BotMentionedCommand(), // 35%, intercepts
       new PekCommand(), // 30% intercepts
       new SameReactCommand(), // 4% intercepts
       new ReactCommand(), // 1% intercepts

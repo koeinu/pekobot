@@ -1,5 +1,5 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { PROHIBITED_RNG_CHANNELS, TEST_RNG } from "../../utils/ids/channels.js";
+import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
 import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 
@@ -13,7 +13,6 @@ export class SameReactCommand extends AbstractCommand {
       // peko
       PEKO_SERVER,
     ];
-    this.channels = [TEST_RNG];
     this.probability = 0.04;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
