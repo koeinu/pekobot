@@ -107,7 +107,7 @@ export class ApiUtils {
       isGpt: isGptResult,
     };
 
-    console.warn(`final translation: ${toReturn}`);
+    console.warn(`final translation:`, toReturn);
     tlCache[text] = toReturn;
     return toReturn;
   }
