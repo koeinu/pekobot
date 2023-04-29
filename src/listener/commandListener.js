@@ -35,17 +35,12 @@ export class CommandListener {
     let commandIntercepted = false;
     for (let command of this.commands) {
       if (commandIntercepted) {
-        // console.warn(
-        //   `skipping intercepted ${command.name} for ${this.getMessage(
-        //     msg
-        //   )} in ${msg.channel.name}, ${msg.guild.name}`
-        // );
         continue;
       }
       const match = await command.commandMatch(msg);
       const processData = this.shouldProcessMsg(msg, command);
-      console.log(processData.reason);
       if (match && processData.result) {
+        console.log(`executing ${processData.reason}`);
         commandIntercepted = commandIntercepted || command.intercept;
         await command.execute(msg, this.client).catch((e) => {
           console.error(
@@ -62,7 +57,7 @@ export class CommandListener {
       const match = await command.commandMatch(oldMsg);
       const processData = this.shouldProcessMsg(oldMsg, command);
       if (match && processData.result && command.executeUpdate) {
-        console.log(processData.reason);
+        console.log(`updating ${processData.reason}`);
         command.executeUpdate(oldMsg, newMsg, this.client).catch((e) => {
           console.error(
             `Couldn't execute update command ${command.name} (${this.getMsgInfo(
@@ -78,7 +73,7 @@ export class CommandListener {
       const match = await command.commandMatch(msg);
       const processData = this.shouldProcessMsg(msg, command);
       if (match && processData.result && command.executeDelete) {
-        console.log(`Executing delete ${processData.reason}`);
+        console.log(`deleting ${processData.reason}`);
         command.executeDelete(msg, this.client).catch((e) => {
           console.error(
             `Couldn't execute delete command ${
