@@ -26,6 +26,7 @@ import _path from "path";
 import { fileURLToPath } from "url";
 import { JSON_FILE_NAME, convertJsonToParsed } from "./model/bets.js";
 import { loadFile } from "./utils/fileUtils.js";
+import { H_M_S, S_MS } from "./utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -218,7 +219,11 @@ export class Application {
       if (this.connectedToStreamFeed) {
         return;
       }
-      await sleep(() => {}, 1000 * 60 * 5);
+
+      const MINUTES = 5;
+      console.log(`Reconnecting in ${MINUTES} mins..`);
+
+      await sleep(() => {}, MINUTES * H_M_S * S_MS);
       console.log("Another attempt to connect to twitter feed..");
     }
   }
