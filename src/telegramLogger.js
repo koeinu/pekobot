@@ -6,7 +6,11 @@ const token = process.env.TG_BOT_TOKEN;
 export class TelegramBotWrapper {
   constructor() {
     if (token) {
-      this.bot = new TelegramBot(token, { polling: true });
+      try {
+        this.bot = new TelegramBot(token, { polling: true });
+      } catch (e) {
+        console.error(e);
+      }
       // this.bot.on("channel_post", (msg) => {
       //   const chatId = msg.chat.id;
       //

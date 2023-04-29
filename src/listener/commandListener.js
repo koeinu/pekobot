@@ -43,12 +43,9 @@ export class CommandListener {
         continue;
       }
       const match = await command.commandMatch(msg);
-      if (match && this.shouldProcessMsg(msg, command)) {
-        console.log(
-          `Executing command ${command.name} for ${this.getMessage(msg)} in ${
-            msg.channel.name
-          }, ${msg.guild.name}`
-        );
+      const processData = this.shouldProcessMsg(msg, command);
+      console.log(processData.reason);
+      if (match && processData.result) {
         commandIntercepted = commandIntercepted || command.intercept;
         await command.execute(msg, this.client).catch((e) => {
           console.error(
@@ -63,16 +60,9 @@ export class CommandListener {
   async processMessageUpdate(oldMsg, newMsg) {
     for (let command of this.commands) {
       const match = await command.commandMatch(oldMsg);
-      if (
-        match &&
-        this.shouldProcessMsg(oldMsg, command) &&
-        command.executeUpdate
-      ) {
-        console.log(
-          `Executing update ${command.name} for ${this.getMessage(oldMsg)} in ${
-            oldMsg.channel.name
-          }, ${oldMsg.guild.name}`
-        );
+      const processData = this.shouldProcessMsg(oldMsg, command);
+      if (match && processData.result && command.executeUpdate) {
+        console.log(processData.reason);
         command.executeUpdate(oldMsg, newMsg, this.client).catch((e) => {
           console.error(
             `Couldn't execute update command ${command.name} (${this.getMsgInfo(
@@ -86,16 +76,9 @@ export class CommandListener {
   async processMessageDelete(msg) {
     for (let command of this.commands) {
       const match = await command.commandMatch(msg);
-      if (
-        match &&
-        this.shouldProcessMsg(msg, command) &&
-        command.executeDelete
-      ) {
-        console.log(
-          `Executing delete ${command.name} for ${this.getMessage(msg)} in ${
-            msg.channel.name
-          }, ${msg.guild.name}`
-        );
+      const processData = this.shouldProcessMsg(msg, command);
+      if (match && processData.result && command.executeDelete) {
+        console.log(`Executing delete ${processData.reason}`);
         command.executeDelete(msg, this.client).catch((e) => {
           console.error(
             `Couldn't execute delete command ${
@@ -128,46 +111,47 @@ export class CommandListener {
   shouldProcessMsg(msg, command) {
     // do not respond to system messages and to other bots
     if (msg.system || msg.author.bot) {
-      console.log(
-        `${command.name}, ignoring bot/system msg (${this.getMsgInfo(msg)})`
-      );
-
-      return false;
+      return {
+        result: false,
+        reason: `${command.name}, ignoring bot/system msg (${this.getMsgInfo(
+          msg
+        )})`,
+      };
     }
 
     if (command.triggerUsers) {
       if (command.triggerUsers.some((el) => el === msg.author.id)) {
-        console.log(
-          `${command.name}, triggered by user ${
+        return {
+          result: true,
+          reason: `${command.name}, triggered by user ${
             msg.author.username
-          } (${this.getMsgInfo(msg)})`
-        );
-        return true;
+          } (${this.getMsgInfo(msg)})`,
+        };
       }
     }
 
     // check if user can trigger a command
     if (command.prohibitedUsers) {
       if (command.prohibitedUsers.some((el) => el === msg.author.id)) {
-        console.log(
-          `${command.name}, ignoring prohibited user ${
+        return {
+          result: false,
+          reason: `${command.name}, ignoring prohibited user ${
             msg.author.username
-          } (${this.getMsgInfo(msg)})`
-        );
-        return false;
+          } (${this.getMsgInfo(msg)})`,
+        };
       }
     }
     if (command.bannedUsers) {
       if (command.bannedUsers.some((el) => el === msg.author.id)) {
-        console.log(
-          `${command.name}, ignoring banned user ${
-            msg.author.username
-          } (${this.getMsgInfo(msg)})`
-        );
         msg.react("<:PekoFAQ:839873776488284160>").catch((e) => {
           console.error(`Couldn't FAQ: ${e}`);
         });
-        return false;
+        return {
+          result: false,
+          reason: `${command.name}, ignoring banned user ${
+            msg.author.username
+          } (${this.getMsgInfo(msg)})`,
+        };
       }
     }
     // check if guild is allowed
@@ -176,13 +160,12 @@ export class CommandListener {
         return `${msg.guild.id}` === `${g}`;
       });
       if (!result) {
-        console.log(
-          `${command.name}, guild filtered: ${
+        return {
+          result: false,
+          reason: `${command.name}, guild filtered: ${
             command.guilds
-          } (${this.getMsgInfo(msg)})`
-        );
-
-        return false;
+          } (${this.getMsgInfo(msg)})`,
+        };
       }
     }
     // check if channel is phohibited
@@ -191,12 +174,12 @@ export class CommandListener {
         return `${msg.channel.id}` === `${ch}`;
       });
       if (result) {
-        console.log(
-          `${command.name} -> prohibited channel filtered: ${
+        return {
+          result: false,
+          reason: `${command.name} -> prohibited channel filtered: ${
             command.prohibitedChannels
-          } (${this.getMsgInfo(msg)})`
-        );
-        return false;
+          } (${this.getMsgInfo(msg)})`,
+        };
       }
     }
     // check if channel is allowed
@@ -205,13 +188,12 @@ export class CommandListener {
         return `${msg.channel.id}` === `${g}`;
       });
       if (!result) {
-        console.log(
-          `${command.name}, channel filtered: ${
+        return {
+          result: false,
+          reason: `${command.name}, channel filtered: ${
             command.allowedChannels
-          } (${this.getMsgInfo(msg)})`
-        );
-
-        return false;
+          } (${this.getMsgInfo(msg)})`,
+        };
       }
     }
 
@@ -221,12 +203,12 @@ export class CommandListener {
         return `${msg.channel.id}` === `${ch}`;
       });
       if (result) {
-        console.log(
-          `${command.name}, channel OK: ${command.channels} (${this.getMsgInfo(
-            msg
-          )})`
-        );
-        return true;
+        return {
+          result: true,
+          reason: `${command.name}, channel OK: ${
+            command.channels
+          } (${this.getMsgInfo(msg)})`,
+        };
       }
     }
 
@@ -235,16 +217,18 @@ export class CommandListener {
       const value = Math.random();
       const result = value <= command.probability;
 
-      if (!result) {
-        console.log(
-          `${command.name}, % filtered: ${value} (${this.getMsgInfo(msg)})`
-        );
-      }
-
-      return result;
+      return {
+        result,
+        reason: `${command.name}, ${value}/${
+          command.probability
+        } (${this.getMsgInfo(msg)})`,
+      };
     }
 
     // if no guilds, channels or probability is set, the command is allowed to be executed by default
-    return true;
+    return {
+      result: true,
+      reason: `${command.name}, default (${this.getMsgInfo(msg)})`,
+    };
   }
 }
