@@ -1,7 +1,6 @@
 import { Application } from "./application.js";
 import {
   originalConsoleError,
-  originalConsoleLog,
   originalConsoleWarn,
   TelegramBotWrapper,
 } from "./telegramLogger.js";
