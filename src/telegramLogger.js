@@ -27,25 +27,40 @@ export class TelegramBotWrapper {
     this.warningsId = -1001838776203;
   }
 
-  sendLog(args) {
+  sendLog(...args) {
     if (this.bot) {
-      this.bot.sendMessage(this.logsId, args).catch((e) => {
-        originalConsoleError(e);
-      });
+      this.bot
+        .sendMessage(
+          this.logsId,
+          args.map((el) => JSON.stringify(el, null, 1)).join(" ")
+        )
+        .catch((e) => {
+          originalConsoleError(e);
+        });
     }
   }
-  sendError(args) {
+  sendError(...args) {
     if (this.bot) {
-      this.bot.sendMessage(this.errorsId, args).catch((e) => {
-        originalConsoleError(e);
-      });
+      this.bot
+        .sendMessage(
+          this.errorsId,
+          args.map((el) => JSON.stringify(el, null, 1)).join(" ")
+        )
+        .catch((e) => {
+          originalConsoleError(e);
+        });
     }
   }
-  sendWarning(args) {
+  sendWarning(...args) {
     if (this.bot) {
-      this.bot.sendMessage(this.warningsId, args).catch((e) => {
-        originalConsoleError(e);
-      });
+      this.bot
+        .sendMessage(
+          this.warningsId,
+          args.map((el) => JSON.stringify(el, null, 1)).join(" ")
+        )
+        .catch((e) => {
+          originalConsoleError(e);
+        });
     }
   }
 }
