@@ -230,11 +230,13 @@ export const gptl = async (msg, text) => {
 };
 // throws
 export const gpt = async (str, systemMessage, completionParams = {}) => {
-  console.warn(`GPT prompt: ${str}`);
-  console.warn(`GPT sys message: ${systemMessage}`);
   if (isGPTing) {
     throw "GPT in progress";
   }
+
+  console.warn(`GPT prompt: ${str}`);
+  console.warn(`GPT sys message: ${systemMessage}`);
+
   isGPTing = true;
   const res = await api
     .sendMessage(str, {
@@ -250,9 +252,10 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
     result = result.slice(9).trim();
   }
 
-  console.log(
+  console.warn(
     `GPT tokens: ${res.detail.usage.prompt_tokens}pt, ${res.detail.usage.completion_tokens}ct`
   );
+  console.warn(`GPT answer: ${result}`);
   isGPTing = false;
   return {
     text: result,
