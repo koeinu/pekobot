@@ -1,5 +1,5 @@
 import { Application } from "./application.js";
-import { TelegramBotWrapper } from "./telegramLogger.js.js";
+import { TelegramBotWrapper } from "./telegramLogger.js";
 
 const app = new Application();
 const bot = new TelegramBotWrapper();
