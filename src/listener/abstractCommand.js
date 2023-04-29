@@ -53,7 +53,7 @@ export class AbstractCommand {
     const trigger = this.triggerer.take(
       customHandle ? customHandle : msg.author.id
     );
-    console.warn(`Trigger check for ${msg.content}: ${trigger.result}`);
+    console.log(`Trigger check for ${msg.content}: ${trigger.result}`);
     if (trigger.result) {
       this.triggerer = undefined;
     }

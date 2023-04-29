@@ -38,51 +38,57 @@ export class CommandListener {
         continue;
       }
       const match = await command.commandMatch(msg);
-      const processData = this.shouldProcessMsg(msg, command);
-      if (match && processData.result) {
-        console.log(`executing ${processData.reason}`);
-        commandIntercepted = commandIntercepted || command.intercept;
-        await command.execute(msg, this.client).catch((e) => {
-          console.error(
-            `Couldn't execute command ${command.name} (${this.getMsgInfo(
-              msg
-            )}): ${e}`
-          );
-        });
+      if (match) {
+        const processData = this.shouldProcessMsg(msg, command);
+        if (processData.result) {
+          console.log(`executing ${processData.reason}`);
+          commandIntercepted = commandIntercepted || command.intercept;
+          await command.execute(msg, this.client).catch((e) => {
+            console.error(
+              `Couldn't execute command ${command.name} (${this.getMsgInfo(
+                msg
+              )}): ${e}`
+            );
+          });
+        }
       }
     }
   }
   async processMessageUpdate(oldMsg, newMsg) {
     for (let command of this.commands) {
       const match = await command.commandMatch(oldMsg);
-      const processData = this.shouldProcessMsg(oldMsg, command);
-      if (match && processData.result && command.executeUpdate) {
-        console.log(`updating ${processData.reason}`);
-        command.executeUpdate(oldMsg, newMsg, this.client).catch((e) => {
-          console.error(
-            `Couldn't execute update command ${command.name} (${this.getMsgInfo(
-              oldMsg
-            )}): ${e}`
-          );
-        });
+      if (match) {
+        const processData = this.shouldProcessMsg(oldMsg, command);
+        if (processData.result && command.executeUpdate) {
+          console.log(`updating ${processData.reason}`);
+          command.executeUpdate(oldMsg, newMsg, this.client).catch((e) => {
+            console.error(
+              `Couldn't execute update command ${
+                command.name
+              } (${this.getMsgInfo(oldMsg)}): ${e}`
+            );
+          });
+        }
       }
     }
   }
   async processMessageDelete(msg) {
     for (let command of this.commands) {
       const match = await command.commandMatch(msg);
-      const processData = this.shouldProcessMsg(msg, command);
-      if (match && processData.result && command.executeDelete) {
-        console.log(`deleting ${processData.reason}`);
-        command.executeDelete(msg, this.client).catch((e) => {
-          console.error(
-            `Couldn't execute delete command ${
-              command.name
-            } for ${this.getMessage(msg)} in ${msg.channel.name}, ${
-              msg.guild.name
-            }: ${e}`
-          );
-        });
+      if (match) {
+        const processData = this.shouldProcessMsg(msg, command);
+        if (processData.result && command.executeDelete) {
+          console.log(`deleting ${processData.reason}`);
+          command.executeDelete(msg, this.client).catch((e) => {
+            console.error(
+              `Couldn't execute delete command ${
+                command.name
+              } for ${this.getMessage(msg)} in ${msg.channel.name}, ${
+                msg.guild.name
+              }: ${e}`
+            );
+          });
+        }
       }
     }
   }
@@ -138,9 +144,6 @@ export class CommandListener {
     }
     if (command.bannedUsers) {
       if (command.bannedUsers.some((el) => el === msg.author.id)) {
-        msg.react("<:PekoFAQ:839873776488284160>").catch((e) => {
-          console.error(`Couldn't FAQ: ${e}`);
-        });
         return {
           result: false,
           reason: `${command.name}, ignoring banned user ${

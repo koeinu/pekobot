@@ -130,7 +130,6 @@ const makeWholePuzzle = async (username, imageUrl, nop) => {
   await page.type("input[name=puzzle-nop]", `${nop}`);
   await page.evaluate(() => {
     const element = document.querySelector("form center input"); // select thrid row td element like so
-    console.warn(element);
     element.click();
   });
 
@@ -140,7 +139,7 @@ const makeWholePuzzle = async (username, imageUrl, nop) => {
   const sl = await page.$("#short-link");
   const puzzleUrl = await page.evaluate((sl) => sl.value, sl);
 
-  console.log("intermediate link:", puzzleUrl);
+  console.warn("intermediate link:", puzzleUrl);
   await page.goto(puzzleUrl);
 
   let toReturn = puzzleUrl;
@@ -160,10 +159,11 @@ const makeWholePuzzle = async (username, imageUrl, nop) => {
     const n = await page.$("#jigex-game-link");
     toReturn = await page.evaluate((n) => n.value, n);
     isSuccessful = true;
-    console.log("successful multiplayer link:", toReturn);
+    console.warn("successful multiplayer link:", toReturn);
   } catch (e) {
-    console.error(e);
-    console.log("UNsuccessful multiplayer link:", toReturn);
+    console.error(
+      `Failed to make multiplayer puzzle link: ${e}. Unsuccessful link: ${toReturn}`
+    );
   }
 
   await browser.close();
