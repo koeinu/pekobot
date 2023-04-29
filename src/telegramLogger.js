@@ -32,7 +32,10 @@ export class TelegramBotWrapper {
       this.bot
         .sendMessage(
           this.logsId,
-          args.map((el) => JSON.stringify(el, null, 1)).join(" ")
+          args
+            .map((el) => JSON.stringify(el, null, 1))
+            .join(" ")
+            .replaceAll("\n", "%0A")
         )
         .catch((e) => {
           originalConsoleError(e);
@@ -44,7 +47,10 @@ export class TelegramBotWrapper {
       this.bot
         .sendMessage(
           this.errorsId,
-          args.map((el) => JSON.stringify(el, null, 1)).join(" ")
+          args
+            .map((el) => JSON.stringify(el, null, 1))
+            .join(" ")
+            .replaceAll("\n", "%0A")
         )
         .catch((e) => {
           originalConsoleError(e);
@@ -56,7 +62,10 @@ export class TelegramBotWrapper {
       this.bot
         .sendMessage(
           this.warningsId,
-          args.map((el) => JSON.stringify(el, null, 1)).join(" ")
+          args
+            .map((el) => JSON.stringify(el, null, 1))
+            .join(" ")
+            .replaceAll("\n", "%0A")
         )
         .catch((e) => {
           originalConsoleError(e);
