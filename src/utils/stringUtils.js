@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { botInspiration } from "./openaiUtils.js";
 import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
 import { ApiUtils } from "./apiUtils.js";
+import extractUrls from "extract-urls";
 
 dotenv.config();
 const botName = process.env.BOT_NAME;
@@ -83,12 +84,28 @@ export const extractCommandMessage = (str) => {
   }
   return str.trim();
 };
+function parseDiscordLink(link) {
+  let splitLink = link.split("/");
+  if (splitLink.includes("discord.com") && splitLink.includes("channels")) {
+    let guildId = splitLink[splitLink.length - 3];
+    let messageId = splitLink[splitLink.length - 1];
+    let channelId = splitLink[splitLink.length - 2];
+    return {
+      guildId: guildId,
+      messageId: messageId,
+      channelId: channelId,
+    };
+  } else {
+    return undefined;
+  }
+}
 
 // preferring embed description text
 export const getTextMessageContent = async (
   msg,
   canOCR,
-  silentAttachments = false
+  silentAttachments = false,
+  recursionFlag = false
 ) => {
   const parts = [];
   let countObject = undefined;
@@ -99,6 +116,23 @@ export const getTextMessageContent = async (
     parts.push(
       extractCommandMessage(msg.content !== undefined ? msg.content : msg.text)
     );
+  }
+  if (!recursionFlag) {
+    const urls = extractUrls(messageText);
+    if (urls && urls.length > 0) {
+      const link = parseDiscordLink(urls[0]);
+      if (link) {
+        const channel = await msg.client.channels._cache.get(link.channelId);
+        const message = await channel.messages.fetch(link.messageId);
+        const messageContent = await getTextMessageContent(
+          message,
+          canOCR,
+          silentAttachments,
+          true
+        );
+        parts.push(messageContent.text);
+      }
+    }
   }
 
   if (msg.attachments.size > 0) {
