@@ -100,7 +100,7 @@ export class CommandListener {
   getMsgInfo(msg) {
     return `msg: ${this.getMessage(msg)} in ${msg.channel.name}, ${
       msg.guild.name
-    }`;
+    } (${msg.url})`;
   }
 
   shouldProcessMsg(msg, command) {
