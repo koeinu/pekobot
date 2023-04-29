@@ -11,6 +11,7 @@ import {
   PEKO_STREAM,
   TEST_INA_FEED,
   TEST_PEKORA_FEED,
+  TEST_PEKORA_POEM,
   TEST_POEM_FEED,
   TEST_TEST_FEED,
   TEST_TEST_POEM_FEED,
@@ -31,7 +32,7 @@ const TWITTER_RELAY_DATA = [
   {
     src: "uraakapeko",
     feedIds: [TEST_PEKORA_FEED, PEKO_PEKORA_FEED],
-    poemIds: [PEKO_STREAM],
+    poemIds: [TEST_PEKORA_POEM, PEKO_STREAM],
   },
   {
     src: "koeinu",
