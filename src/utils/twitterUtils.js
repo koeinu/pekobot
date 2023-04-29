@@ -31,7 +31,7 @@ const TWITTER_RELAY_DATA = [
   {
     src: "uraakapeko",
     feedIds: [TEST_PEKORA_FEED, PEKO_PEKORA_FEED],
-    poemIds: [],
+    poemIds: [PEKO_STREAM],
   },
   {
     src: "koeinu",
