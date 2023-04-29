@@ -55,7 +55,7 @@ export class ApiUtils {
   }
 
   // throws
-  static async GetTranslation(text, source, msg, isGpt = false) {
+  static async GetTranslation(text, source, msg = undefined, isGpt = false) {
     if (tlCache[text] && tlCache[text].isGpt === isGpt) {
       return tlCache[text];
     }

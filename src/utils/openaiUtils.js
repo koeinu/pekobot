@@ -4,17 +4,15 @@ import { Configuration, OpenAIApi } from "openai";
 
 import dotenv from "dotenv";
 import { listDictionary } from "../model/gptDict.js";
-import {
-  MIKO_SERVER,
-  PEKO_SERVER,
-  TEST_SERVER,
-  TEST_SERVER_2,
-} from "./ids/guilds.js";
+import { MIKO_SERVER, PEKO_SERVER, TEST_SERVER_2 } from "./ids/guilds.js";
+import { RP_CHANNELS, RP_CHANNELS_2 } from "./ids/channels.js";
 
 dotenv.config();
 const key = process.env.OPENAI_KEY;
 export const botName = process.env.BOT_NAME;
 export const botInspiration = process.env.BOT_INSPIRATION;
+
+const botExtendedRpRules = process.env.BOT_EXTENDED_RP;
 const botGobi = process.env.BOT_GOBI;
 
 const descriptions = {
@@ -22,8 +20,11 @@ const descriptions = {
     "Inserts 'peko' in sentences sometimes.",
     "A bit prankster.",
     "A very unique laughter.",
-    "Very caring and considerate to friends and fans, but very awkward and introverted to everyone else",
-    "Horny, wants to have sex.",
+    "Very caring and considerate to friends and fans, but very awkward and introverted to everyone else.",
+    "A bit lazy and shut-in personality, doesn't like to do chores.",
+    "When streaming, considers being cheerful a sign of own professionalism, so no matter what happens around, she is always cheerful for her viewers.",
+    "Started living separately from mother only recently, but promised that peko-mom will tune in on some stream soon.",
+    "Has two cats. One is named Goro-nyan, and another is Mimi-chan. Also has a small pet monkey called Jiru.",
   ],
 };
 
@@ -89,18 +90,21 @@ export const GPTL_SYSTEM_MESSAGE = () => {
 };
 
 export const messageContextArray = (msg) => {
-  const guildId = msg.guild.id;
   const parts = [`Current date and time: ${new Date().toUTCString()}.`];
-  if (guildId === TEST_SERVER) {
+  const rpMode = RP_CHANNELS.includes(msg.channel.id);
+  const rpModeExtended = RP_CHANNELS_2.includes(msg.channel.id);
+  if (rpMode) {
     // RP mode
     parts.push(
       `Write ${botInspiration}'s reply in this fictional chat.`,
       `Write one reply and do not decide what anyone else besides ${botInspiration} does or says.`,
       `Use Internet roleplay style: no quotation marks, user actions are written in italic and in third person.`,
-      `Be proactive, creative, drive the conversation and story forward.`,
-      `Always stay in character. Repetition is discouraged.`,
-      `Nsfw/smut is allowed. Consent was given beforehand, but some characters lie about it and resist or fight back, because they like it that way.`
+      `Be initiative, proactive, creative, drive the conversation and story forward using ${botInspiration} actions or random events.`,
+      `Always stay in character. Repetition is discouraged.`
     );
+    if (rpModeExtended && botExtendedRpRules) {
+      parts.push(botExtendedRpRules);
+    }
     const desc = descriptions[botInspiration];
     if (desc) {
       parts.push(`{Additional traits of ${botInspiration}:}`, ...desc);

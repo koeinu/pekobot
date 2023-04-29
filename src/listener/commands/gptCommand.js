@@ -16,14 +16,13 @@ import { H_M_S, S_MS } from "../../utils/constants.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_CONSULTING,
+  RP_CHANNELS,
   TEST_ASSISTANT,
-  TEST_RP,
 } from "../../utils/ids/channels.js";
 import {
   DDF_SERVER,
   PEKO_SERVER,
   TEST_SERVER,
-  TEST_SERVER_2,
 } from "../../utils/ids/guilds.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
@@ -48,6 +47,21 @@ const formatMessagesAsChat = async (msgChain, canOCR) => {
   );
 };
 
+const splitMessages = (msgChain) => {
+  const result = [];
+  msgChain.some((msg) => {
+    if (msg.content === "---") {
+      return true;
+    } else {
+      if (msg.content !== "~") {
+        result.push(msg);
+      }
+      return false;
+    }
+  });
+  return result;
+};
+
 export class GptCommand extends AbstractCommand {
   constructor() {
     super();
@@ -61,23 +75,49 @@ export class GptCommand extends AbstractCommand {
     );
     this.guilds = [
       TEST_SERVER,
-      TEST_SERVER_2,
+      // TEST_SERVER_2,
       PEKO_SERVER,
       DDF_SERVER,
       // MIKO_SERVER,
     ];
-    this.consultingChanels = [TEST_RP, TEST_ASSISTANT, DDF_CONSULTING];
+    this.consultingChanels = [...RP_CHANNELS, TEST_ASSISTANT, DDF_CONSULTING];
     this.intercept = true;
   }
   async execute(msg) {
-    if (!(await this.rateLimitPass(msg, "gptSharedHandle"))) {
-      return;
+    const rpMode = RP_CHANNELS.includes(msg.channel.id);
+    if (rpMode) {
+      if (msg.content === "---") {
+        return Promise.resolve();
+      } else if (msg.content === "~") {
+        const lastMessages = await msg.channel.messages.fetch({ limit: 2 });
+        lastMessages
+          .first()
+          .delete()
+          .catch((e) => {
+            console.error(
+              `Couldn't delete ${lastMessages.first().content}, ${e}`
+            );
+          });
+        msg = lastMessages.last();
+      } else if (msg.content === "<") {
+        const lastMessages = await msg.channel.messages.fetch({ limit: 2 });
+        lastMessages.forEach((m) => {
+          m.delete().catch((e) => {
+            console.error(`Couldn't delete ${m.content}, ${e}`);
+          });
+        });
+        return Promise.resolve();
+      }
+      if (!(await this.rateLimitPass(msg, "gptSharedHandle"))) {
+        return Promise.resolve();
+      }
     }
     const canOCR = this.rateLimitCheck(msg);
-    const rpMode = msg.channel.id === TEST_RP;
 
     const replyChain = rpMode
-      ? (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
+      ? splitMessages(
+          (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
+        )
       : await getReplyChain(msg);
     const msgList = await formatMessagesAsChat(replyChain, canOCR);
 
@@ -122,14 +162,11 @@ export class GptCommand extends AbstractCommand {
     if (repliedToMessage && repliedToMessage.author.username === botName) {
       return true;
     }
-    if (
+    return (
       msg.content.indexOf("~gpt") === 0 ||
       this.consultingChanels.some((ch) => {
         return `${msg.channel.id}` === `${ch}`;
       })
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 }
