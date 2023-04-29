@@ -21,7 +21,7 @@ import {
 import {
   DDF_SERVER,
   PEKO_SERVER,
-  TEST_SERVER,
+  TEST_SERVER, TEST_SERVER_2
 } from "../../utils/ids/guilds.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
@@ -60,6 +60,7 @@ export class GptCommand extends AbstractCommand {
     this.guilds = [
       // ts
       TEST_SERVER,
+      TEST_SERVER_2,
       PEKO_SERVER,
       DDF_SERVER,
       // MIKO_SERVER,
