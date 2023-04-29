@@ -1,6 +1,7 @@
 import { AbstractCommand } from "../abstractCommand.js";
 
 import {
+  botName,
   gpt,
   messageContextArray,
   serverRules,
@@ -118,7 +119,7 @@ export class GptCommand extends AbstractCommand {
     const repliedToMessage = msg.reference
       ? await msg.channel.messages.fetch(msg.reference.messageId)
       : undefined;
-    if (repliedToMessage && repliedToMessage.author.username === "peko-bot") {
+    if (repliedToMessage && repliedToMessage.author.username === botName) {
       return true;
     }
     if (

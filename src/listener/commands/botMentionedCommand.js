@@ -7,6 +7,7 @@ import {
 } from "../../utils/ids/channels.js";
 import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
+import { botName } from "../../utils/openaiUtils.js";
 
 export class BotMentionedCommand extends AbstractCommand {
   constructor() {
@@ -41,7 +42,8 @@ export class BotMentionedCommand extends AbstractCommand {
         text.toLowerCase().includes("peko bot") ||
         text.toLowerCase().includes("pekobot") ||
         text.toLowerCase().includes("this bot") ||
-        text.toLowerCase().includes("damn bot"))
+        text.toLowerCase().includes("damn bot") ||
+        text.toLowerCase().includes(botName))
     );
   }
 }

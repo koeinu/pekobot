@@ -5,6 +5,7 @@ import { botInspiration } from "./openaiUtils.js";
 import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
 import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
+import puppeteer from "puppeteer";
 
 dotenv.config();
 const botName = process.env.BOT_NAME;
@@ -99,6 +100,19 @@ function parseDiscordLink(link) {
     return undefined;
   }
 }
+
+const crawlURL = async (url) => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(url, {
+    waitUntil: "domcontentloaded",
+  });
+
+  const data = await page.evaluate(() => document.querySelector("*").outerHTML);
+  await browser.close();
+
+  return data;
+};
 
 // preferring embed description text
 export const getTextMessageContent = async (
