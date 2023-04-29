@@ -1,6 +1,7 @@
 import { Application } from "./application.js";
 import {
   originalConsoleError,
+  originalConsoleLog,
   originalConsoleWarn,
   TelegramBotWrapper,
 } from "./telegramLogger.js";
@@ -8,10 +9,10 @@ import {
 const app = new Application();
 const bot = new TelegramBotWrapper();
 
-// console.log = (...args) => {
-//   bot.sendLog(...args);
-//   originalConsoleLog(...args);
-// };
+console.log = (...args) => {
+  bot.sendLog(...args);
+  originalConsoleLog(args.map((arg) => JSON.stringify(arg, null, 4)));
+};
 console.error = (...args) => {
   bot.sendError(args.map((arg) => JSON.stringify(arg, null, 4)));
   originalConsoleError(args.map((arg) => JSON.stringify(arg, null, 4)));
