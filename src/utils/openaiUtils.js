@@ -4,7 +4,12 @@ import { Configuration, OpenAIApi } from "openai";
 
 import dotenv from "dotenv";
 import { listDictionary } from "../model/gptDict.js";
-import { MIKO_SERVER, PEKO_SERVER, TEST_SERVER } from "./ids/guilds.js";
+import {
+  MIKO_SERVER,
+  PEKO_SERVER,
+  TEST_SERVER,
+  TEST_SERVER_2,
+} from "./ids/guilds.js";
 
 dotenv.config();
 const key = process.env.OPENAI_KEY;
@@ -127,7 +132,8 @@ export const serverRules = (msg) => {
   // static rules
   switch (guildId) {
     case PEKO_SERVER:
-    case MIKO_SERVER: {
+    case MIKO_SERVER:
+    case TEST_SERVER_2: {
       parts.push(
         "3. Don't pretend to be anyone else in any situation.",
         "4. When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.",
