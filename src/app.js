@@ -14,12 +14,16 @@ function printObject(...obj) {
       if (typeof obj[i][key] === "object") {
         output += key + ": { ";
         for (let innerKey in obj[i][key]) {
-          output += innerKey + ": " + obj[i][key][innerKey] + ", ";
+          output +=
+            innerKey +
+            ": " +
+            String(obj[i][key][innerKey]).replace(/\n/g, "\\n") +
+            ", ";
         }
         output = output.slice(0, -2);
         output += " }\n";
       } else {
-        output += key + ": " + obj[i][key] + "\n";
+        output += key + ": " + String(obj[i][key]).replace(/\n/g, "\\n") + "\n";
       }
     }
   }
