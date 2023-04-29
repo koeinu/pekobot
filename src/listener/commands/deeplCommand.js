@@ -59,8 +59,6 @@ export class DeeplCommand extends AbstractCommand {
       });
     }
 
-    console.log(`translating ${data.text || "image"}`);
-
     let tlData = await ApiUtils.GetTranslation(data.text, deeplLanguage);
     return replyCustomEmbed(
       replyMessage,

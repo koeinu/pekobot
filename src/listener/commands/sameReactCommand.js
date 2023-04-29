@@ -20,9 +20,6 @@ export class SameReactCommand extends AbstractCommand {
     this.intercept = true;
   }
   async execute(msg) {
-    console.log(
-      `Same Reacting! ${msg.content} in ${msg.channel.name}, ${msg.guild.name}`
-    );
     return msg.react(msg.content).catch(async (e) => {
       console.error(`Couldn't React: ${e}`);
     });

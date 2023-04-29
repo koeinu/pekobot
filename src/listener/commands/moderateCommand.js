@@ -55,10 +55,6 @@ export class ModerateCommand extends AbstractCommand {
     this.channelsToSend = [TEST_MOD, PEKO_MOD];
   }
   async execute(msg, discordClient) {
-    console.log(
-      `moderating ${msg.content} at ${msg.channel.name}, ${msg.guild.name}`
-    );
-
     return moderateMessage(msg)
       .then((triggerData) => {
         if (triggerData && triggerData.flagged) {

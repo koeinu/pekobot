@@ -97,9 +97,6 @@ export class ReactCommand extends AbstractCommand {
     // this.channels = ["1070086039445717124", "1063492591716405278"];
   }
   async execute(msg, discordClient, reactMood = false) {
-    console.log(
-      `Reacting! ${msg.content} in ${msg.channel.name}, ${msg.guild.name}`
-    );
     const reacts = moodsReacts[msg.guild.id];
     const actions = actionsReacts[msg.guild.id];
     const reactData = Object.entries(reacts || {});

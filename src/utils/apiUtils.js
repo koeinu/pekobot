@@ -57,6 +57,7 @@ export class ApiUtils {
   // throws
   static async GetTranslation(text, source, msg = undefined, isGpt = false) {
     if (tlCache[text] && tlCache[text].isGpt === isGpt) {
+      console.log(`cached translation: ${tlCache[text]}`);
       return tlCache[text];
     }
     const startTime = new Date();
@@ -105,6 +106,8 @@ export class ApiUtils {
       metaData: metadata,
       isGpt: isGptResult,
     };
+
+    console.warn(`final translation: ${toReturn}`);
     tlCache[text] = toReturn;
     return toReturn;
   }

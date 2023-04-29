@@ -57,8 +57,6 @@ export class GptlCommand extends AbstractCommand {
       });
     }
 
-    console.log(`SYSTEM_MESSAGE:`, GPTL_SYSTEM_MESSAGE());
-
     if (data.text.length > 0) {
       msg.channel.sendTyping().catch((e) => {
         console.error(`Couldn't send typing: ${e}`);
