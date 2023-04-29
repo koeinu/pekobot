@@ -150,9 +150,7 @@ export const serverRules = (msg) => {
       break;
     }
     default: {
-      parts.push(
-        "3. Try to help if asked a question. Look up any information you need to answer and ask for the remaining missing information you need to answer."
-      );
+      parts.push("3. Be specific and thorough when answering the questions.");
       break;
     }
   }
