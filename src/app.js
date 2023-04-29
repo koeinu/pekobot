@@ -10,16 +10,15 @@ const app = new Application();
 const bot = new TelegramBotWrapper();
 
 console.log = (...args) => {
-  bot.sendLog(...args);
-  originalConsoleLog(args.map((arg) => JSON.stringify(arg, null, 4)));
+  originalConsoleLog(...args);
 };
 console.error = (...args) => {
-  bot.sendError(args.map((arg) => JSON.stringify(arg, null, 4)));
-  originalConsoleError(args.map((arg) => JSON.stringify(arg, null, 4)));
+  bot.sendError(...args);
+  originalConsoleError(...args);
 };
 console.warn = (...args) => {
-  bot.sendWarning(args.map((arg) => JSON.stringify(arg, null, 4)));
-  originalConsoleWarn(args.map((arg) => JSON.stringify(arg, null, 4)));
+  bot.sendWarning(...args);
+  originalConsoleWarn(...args);
 };
 // const cron = require("./resetCounterCronJob");
 
