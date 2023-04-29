@@ -9,10 +9,10 @@ import {
 const app = new Application();
 const bot = new TelegramBotWrapper();
 
-console.log = (...args) => {
-  bot.sendLog(...args);
-  originalConsoleLog(...args);
-};
+// console.log = (...args) => {
+//   bot.sendLog(...args);
+//   originalConsoleLog(...args);
+// };
 console.error = (...args) => {
   bot.sendError(...args);
   originalConsoleError(...args);
