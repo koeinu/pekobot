@@ -18,6 +18,7 @@ import {
   DDF_CONSULTING,
   RP_CHANNELS,
   TEST_ASSISTANT,
+  TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
 import {
   DDF_SERVER,
@@ -80,7 +81,12 @@ export class GptCommand extends AbstractCommand {
       DDF_SERVER,
       // MIKO_SERVER,
     ];
-    this.consultingChanels = [...RP_CHANNELS, TEST_ASSISTANT, DDF_CONSULTING];
+    this.consultingChanels = [
+      ...RP_CHANNELS,
+      TEST_ASSISTANT,
+      DDF_CONSULTING,
+      TEST_USUAL_PEKO_GPT,
+    ];
     this.intercept = true;
   }
   async execute(msg) {

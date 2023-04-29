@@ -8,7 +8,7 @@ import {
   ASSISTANT_SERVERS,
   MIKO_SERVER,
   PEKO_SERVER,
-  TEST_SERVER_2,
+  TEST_SERVER,
 } from "./ids/guilds.js";
 import {
   ASSISTANT_CHANNELS,
@@ -156,7 +156,7 @@ export const serverRules = (msg) => {
   switch (guildId) {
     case PEKO_SERVER:
     case MIKO_SERVER:
-    case TEST_SERVER_2: {
+    case TEST_SERVER: {
       parts.push(
         "3. Don't pretend to be anyone else in any situation.",
         "4. When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.",
@@ -234,9 +234,6 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
     throw "GPT in progress";
   }
 
-  console.warn(`GPT prompt: ${str}`);
-  console.warn(`GPT sys message: ${systemMessage}`);
-
   isGPTing = true;
   const res = await api
     .sendMessage(str, {
@@ -253,8 +250,15 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
   }
 
   console.warn(
-    `GPT tokens: ${res.detail.usage.prompt_tokens}pt, ${res.detail.usage.completion_tokens}ct; GPT answer: ${result}`
+    [
+      `GPT prompt: ${str}`,
+      `GPT sys message: ${systemMessage}`,
+      `GPT tokens: ${res.detail.usage.prompt_tokens}pt, ${res.detail.usage.completion_tokens}ct;`,
+      `-------------------------------------------------------------------------------------------`,
+      `GPT answer: ${result}`,
+    ].join("\n")
   );
+
   isGPTing = false;
   return {
     text: result,
