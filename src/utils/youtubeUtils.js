@@ -29,7 +29,7 @@ export const getYoutubeChannelId = async (videoIdOrUrl) => {
       const items = data.items;
       const video = items[0];
       const toReturn = video?.snippet?.channelId;
-      console.log("parsed channel: ", toReturn);
+      console.log("parsed channel: ", video?.snippet);
       return toReturn;
     });
 };
