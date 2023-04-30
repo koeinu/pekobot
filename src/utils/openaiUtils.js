@@ -183,9 +183,11 @@ export const gptReaction = async (text, actionsArray, reactMode) => {
   }
   const parts = [];
   parts.push(
-    `Choose a fitting action type, which Usada Pekora would respond to a message.`
+    `Choose a fitting action type, which ${
+      botInspiration || "Usada Pekora"
+    } would respond to the message.`
   );
-  parts.push(`The available actions: ${actionsArray.join(", ")}`);
+  parts.push(`The available action options: ${actionsArray.join(", ")}`);
   parts.push(`The message: "${text}"`);
 
   return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
@@ -193,11 +195,15 @@ export const gptReaction = async (text, actionsArray, reactMode) => {
 export const gptMood = async (text, moodsArray, reactMode) => {
   const parts = [];
   if (reactMode) {
-    parts.push(`Choose one of the the moods she would react with.`);
-    parts.push(`The available moods are: ${moodsArray.join(", ")}`);
+    parts.push(
+      `Choose one of the the moods ${
+        botInspiration || "Usada Pekora"
+      } would react with to the message.`
+    );
+    parts.push(`The available mood options are: ${moodsArray.join(", ")}`);
   } else {
     parts.push("Determine the mood of the message.");
-    parts.push(`The available moods are: ${moodsArray.join(", ")}`);
+    parts.push(`The available mood options are: ${moodsArray.join(", ")}`);
   }
   parts.push(
     `There is also a special option 'other' if you think that there is no good option that you were provided with.`
