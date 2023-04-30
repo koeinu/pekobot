@@ -4,9 +4,8 @@ import { ImageAnnotatorClient } from "@google-cloud/vision";
 
 import dotenv from "dotenv";
 import { SENTENCE_ENDERS } from "./constants.js";
-import { gptl } from "./openaiUtils.js";
+import { gptGetLanguage, gptl } from "./openaiUtils.js";
 import { trimBrackets } from "./stringUtils.js";
-import extractUrls from "extract-urls";
 
 dotenv.config();
 
@@ -67,16 +66,7 @@ export class ApiUtils {
       console.log(`cached translation: ${tlCache[text]}`);
       return tlCache[text];
     }
-    let textToTranslate = text;
-    const urls = extractUrls(textToTranslate);
-    if (urls && urls.length > 0) {
-      urls.forEach((parsedUrl) => {
-        if (parsedUrl.includes("twitter.com")) {
-          textToTranslate = textToTranslate.replace(parsedUrl, "");
-        }
-      });
-    }
-    textToTranslate = textToTranslate.trim();
+    let textToTranslate = text.trim();
     const startTime = new Date();
     let response = undefined;
     let metadata = undefined;
@@ -84,7 +74,20 @@ export class ApiUtils {
     if (isGpt) {
       if (textToTranslate.length > 0) {
         let responseData = { text: undefined };
-        await gptl(msg, textToTranslate)
+        await gptGetLanguage(textToTranslate)
+          .then((response) => {
+            if (response && response.text.toLowerCase().includes("eng")) {
+              console.warn(
+                `Not translating, as the text is already in English: ${textToTranslate}`
+              );
+              return Promise.resolve({
+                text: textToTranslate,
+                data: response.data,
+              });
+            } else {
+              return gptl(msg, textToTranslate);
+            }
+          })
           .then((res) => {
             responseData = res;
           })
@@ -136,6 +139,7 @@ export class ApiUtils {
       text: response,
       metaData: metadata,
       isGpt: isGptResult,
+      translated: response === textToTranslate,
     };
 
     console.warn(`final translation:`, toReturn);

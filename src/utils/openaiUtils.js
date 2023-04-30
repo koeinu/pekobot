@@ -213,6 +213,14 @@ export const gptMood = async (text, moodsArray, reactMode) => {
   return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
 };
 
+export const gptGetLanguage = async (text) => {
+  const parts = [
+    "Determine the language of the text between [START] and [END]. If there are Japanese words writen with English letters, treat them as English words. Ignore hashtags, kaomojis, urls, as their content doesn't affect the language of the text. Respond with the name of the language, one word. The text:",
+  ];
+  parts.push(`[START]${text}[END]`);
+
+  return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE(), GPTL_PARAMS);
+};
 export const gptl = async (msg, text) => {
   const dict = listDictionary(msg ? msg.guild.id : undefined);
   const entries = Object.entries(dict).map((el) => ({

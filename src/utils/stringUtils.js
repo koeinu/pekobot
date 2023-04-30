@@ -6,6 +6,7 @@ import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
 import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
 import puppeteer from "puppeteer";
+import { getTweetById } from "./twitterUtils.js";
 
 dotenv.config();
 const botName = process.env.BOT_NAME;
@@ -132,13 +133,26 @@ export const getTextMessageContent = async (
 ) => {
   const parts = [];
   let countObject = undefined;
-  const messageText = extractCommandMessage(
+  let tweets = [];
+  let messageText = extractCommandMessage(
     msg.content !== undefined ? msg.content : msg.text
   );
   if (messageText && messageText.length > 0) {
-    parts.push(
-      extractCommandMessage(msg.content !== undefined ? msg.content : msg.text)
-    );
+    const urls = extractUrls(messageText);
+    if (urls && urls.length > 0) {
+      for (let parsedUrl of urls) {
+        if (parsedUrl.includes("twitter.com")) {
+          const ids = parsedUrl.match(/\d+/g);
+          const tweetId = ids[0];
+
+          const tweet = await getTweetById(tweetId);
+
+          tweets.push(tweet.data.text);
+          messageText.replace(parsedUrl, "");
+        }
+      }
+    }
+    parts.push(extractCommandMessage(messageText));
   }
   if (!recursionFlag) {
     const urls = extractUrls(messageText);
@@ -194,7 +208,10 @@ export const getTextMessageContent = async (
       }
     }
   }
-  if (msg.embeds.length > 0) {
+
+  parts.push(tweets.join("\n---\n"));
+
+  if (tweets.length === 0) {
     msg.embeds.forEach((embed) => {
       const embedContent = embed.description;
       if (embedContent && embedContent.length > 0) {
@@ -209,10 +226,11 @@ export const getTextMessageContent = async (
   return { countObject, text: parts.join("\n") };
 };
 
-export const formatTLText = (text, isGpt) =>
-  isGpt
-    ? `<:openai:1099665985784520824> **TL:** \`${text}\``
-    : `<:deepl:1070332970424090704> **DeepL:** \`${text}\``;
+export const formatTLText = (text, isGpt) => {
+  return isGpt
+    ? `<:openai:1099665985784520824> **TL:** ${text}`
+    : `<:deepl:1070332970424090704> **DeepL:** ${text}`;
+};
 
 export const parseSingleAttachmentUrl = (option) => {
   return option.attachment.url;

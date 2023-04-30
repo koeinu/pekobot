@@ -75,6 +75,14 @@ const sendTweetToChannels = async (discordClient, finalText, channels) => {
     });
   });
 };
+
+export const getTweetById = async (tweetId) => {
+  const tweet = await client.v2.singleTweet(tweetId, {
+    "tweet.fields": ["referenced_tweets", "text"],
+  });
+
+  return tweet;
+};
 const onStreamTweet = async (tweet, discordClient) => {
   const userData = await client.v2.user(tweet.data.author_id);
   const userName = userData.data.username;
