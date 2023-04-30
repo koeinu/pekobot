@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { SENTENCE_ENDERS } from "./constants.js";
 import { gptl } from "./openaiUtils.js";
 import { trimBrackets } from "./stringUtils.js";
+import extractUrls from "extract-urls";
 
 dotenv.config();
 
@@ -55,19 +56,35 @@ export class ApiUtils {
   }
 
   // throws
-  static async GetTranslation(text, source, msg = undefined, isGpt = false) {
+  static async GetTranslation(
+    text,
+    source,
+    msg = undefined,
+    isGpt = false,
+    isFallback = false
+  ) {
     if (tlCache[text] && tlCache[text].isGpt === isGpt) {
       console.log(`cached translation: ${tlCache[text]}`);
       return tlCache[text];
     }
+    let textToTranslate = text;
+    const urls = extractUrls(textToTranslate);
+    if (urls && urls.length > 0) {
+      urls.forEach((parsedUrl) => {
+        if (parsedUrl.includes("twitter.com")) {
+          textToTranslate = textToTranslate.replace(parsedUrl, "");
+        }
+      });
+    }
+    textToTranslate = textToTranslate.trim();
     const startTime = new Date();
     let response = undefined;
     let metadata = undefined;
     let isGptResult = isGpt;
     if (isGpt) {
-      if (text.length > 0) {
+      if (textToTranslate.length > 0) {
         let responseData = { text: undefined };
-        await gptl(msg, text)
+        await gptl(msg, textToTranslate)
           .then((res) => {
             responseData = res;
           })
@@ -76,30 +93,44 @@ export class ApiUtils {
           });
 
         if (!responseData.text) {
-          response = undefined;
+          response = "";
         } else {
           response = trimBrackets(responseData.text);
-          if (response.includes("initmsg")) {
-            response = text;
-          }
         }
 
         metadata = responseData.data;
       } else {
         response = "";
       }
+
+      if (!response || response.length === 0) {
+        if (!isFallback) {
+          return ApiUtils.GetTranslation(text, source, msg, false, true);
+        } else {
+          throw `Both deepl and gptl failed miserably.`;
+        }
+      }
     }
+
     if (!isGpt || !response) {
       isGptResult = false;
       const t = await translate({
         free_api: true,
-        text: text,
+        text: textToTranslate,
         source_lang: source,
         target_lang: "EN",
         auth_key: "7b78071d-54ca-2f9c-2e1a-909f69927efd:fx",
       });
       response = t.data.translations[0].text;
+      if (response.length === 0) {
+        if (!isFallback) {
+          return ApiUtils.GetTranslation(text, source, msg, true, true);
+        } else {
+          throw `Both deepl and gptl failed miserably.`;
+        }
+      }
     }
+
     const toReturn = {
       time: new Date().getTime() - startTime.getTime(),
       text: response,

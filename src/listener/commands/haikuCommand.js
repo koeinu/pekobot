@@ -43,14 +43,27 @@ export class HaikuCommand extends AbstractCommand {
     const text = msg.content;
     const haiku = await detectHaiku(text);
     if (haiku) {
-      console.warn(`Detected haiku: ${haiku}`);
+      console.warn(`Detected haiku:`, haiku);
 
       if (!(await this.rateLimitPass(msg, "haikuSharedHandle"))) {
         return;
       }
-      const haikuText = `*${haiku.l1.join(" ")}*\n*${haiku.l2.join(
+      let haikuText = `*${haiku.l1.join(" ")}*\n*${haiku.l2.join(
         " "
       )}*\n*${haiku.l3.join(" ")}*`;
+
+      const emojiCodes = haikuText.match(/<(\d+)>/g); // <123>
+      const initialEmojis = text.match(/<([^\s]*):(\d+)>/g); // <emojiname:123>
+
+      if (emojiCodes && initialEmojis) {
+        emojiCodes.forEach((code) => {
+          const digits = code.match(/\d+/g);
+          const initialEmoji = initialEmojis.find((el) =>
+            el.includes(digits[0])
+          );
+          haikuText = haikuText.replaceAll(code, initialEmoji);
+        });
+      }
 
       return sendCustomEmbed(
         msg.channel,

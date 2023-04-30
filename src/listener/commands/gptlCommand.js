@@ -62,8 +62,8 @@ export class GptlCommand extends AbstractCommand {
         console.error(`Couldn't send typing: ${e}`);
       });
 
-      return ApiUtils.GetTranslation(data.text, undefined, msg, true)
-        .then((tlData) => {
+      return ApiUtils.GetTranslation(data.text, undefined, msg, true).then(
+        (tlData) => {
           if (tlData.text) {
             const toSend = formatTLText(tlData.text, tlData.isGpt);
             // return reply(msg, toSend, undefined, false, false);
@@ -85,10 +85,8 @@ export class GptlCommand extends AbstractCommand {
               printTLInfo(data.countObject, tlData.time, tlData.metaData)
             );
           }
-        })
-        .catch((e) => {
-          console.error(`Couldn't GPTL ${msg.content} in ${msg.channel}: ${e}`);
-        });
+        }
+      );
     }
   }
   async commandMatch(msg) {

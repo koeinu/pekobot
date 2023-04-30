@@ -44,6 +44,9 @@ export class CommandListener {
         if (processData.result) {
           commandIntercepted = commandIntercepted || command.intercept;
           await command.execute(msg, this.client).catch((e) => {
+            msg.react("<:PekoDerp:709152458978492477>").catch((e) => {
+              console.error(`Couldn't error-react: ${e}`);
+            });
             console.error(
               `Couldn't execute command ${command.name} (${this.getMsgInfo(
                 msg

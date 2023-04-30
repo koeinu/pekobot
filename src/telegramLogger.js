@@ -25,7 +25,7 @@ export class TelegramBotWrapper {
       // });
     }
     this.logsId = -1001906303858;
-    this.errorsId = -1001906303858;
+    this.errorsId = -1001920972703;
     this.warningsId = -1001838776203;
   }
 

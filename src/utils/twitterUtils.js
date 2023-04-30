@@ -174,7 +174,7 @@ export const connectToStream = async (discordClient) => {
 
   stream.on(ETwitterStreamEvent.Data, (tweet) =>
     onStreamTweet(tweet, discordClient).catch((e) => {
-      console.error(e);
+      console.error(`Tweet relay failed: ${e}`);
     })
   );
 };
@@ -186,10 +186,11 @@ const formatTweet = async (tweet, username, refTweet, refUsername) => {
       ? getUserTweetLink(refTweet, refUsername)
       : undefined;
 
-  const targetText =
+  let targetText =
     refTweet && tweet.data.text.indexOf("RT") === 0
       ? refTweet.data.text
       : tweet.data.text;
+
   let tlData = await ApiUtils.GetTranslation(
     targetText,
     undefined,
@@ -200,13 +201,7 @@ const formatTweet = async (tweet, username, refTweet, refUsername) => {
   const targetUrl =
     refUrl && tweet.data.text.indexOf("RT") === 0 ? refUrl : url;
   let fmtText;
-  if (tlData.text) {
-    fmtText = formatNewline(targetUrl, formatTLText(tlData.text, tlData.isGpt));
-  } else {
-    // fallback to deepl
-    tlData = await ApiUtils.GetTranslation(tweet.data.text);
-    fmtText = formatNewline(targetUrl, formatTLText(tlData.text));
-  }
+  fmtText = formatNewline(targetUrl, formatTLText(tlData.text, tlData.isGpt));
 
   return {
     poemText: `${username} wrote a poem, peko!\n${fmtText}`,
