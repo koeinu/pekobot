@@ -185,7 +185,7 @@ export const gptReaction = async (text, actionsArray, reactMode) => {
   parts.push(
     `Choose a fitting action type, which ${
       botInspiration || "Usada Pekora"
-    } would respond to the message.`
+    } would respond to the message. For example, wishing good night may be responded with 'sleep', and a request or order may be responded with 'agree' or 'deny', just choose randomly. But if asked very politely (words like 'please' used), always agree. If the message doesn't imply any of offered actions in response, return 'other' as response.`
   );
   parts.push(`The available action options: ${actionsArray.join(", ")}`);
   parts.push(`The message: "${text}"`);

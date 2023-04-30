@@ -57,7 +57,7 @@ const moodsReacts = {
 };
 const actionsReacts = {
   "1061909810943115337": {
-    awake: [
+    "wake up": [
       "<:PekoTiredSleepy:790657629902209076>",
       "<:PekoAwake:730919165740974141>",
       "<:PekoAwakeDokiDoki:922668515390025798>",
@@ -66,22 +66,28 @@ const actionsReacts = {
       "<:PekoSleepZzz1:899468713508610098>",
       "<:PekoSleepZzz2:899468728666845214>",
     ],
-    greeting: [
+    greet: [
       "<:PekoGreetKonichiwa:826481264466329630>",
       "<:PekoGreetKonichiwaScared:826481314727198782>",
     ],
+    agree: ["<:PekoCoolOkay:717826022808092874>"],
+    deny: ["<:PekoNo:1084473460572561418>"],
   },
   "683140640166510717": {
-    awake: [
+    "wake up": [
       "<:PekoTiredSleepy:790657629902209076>",
       "<:PekoAwake:730919165740974141>",
       "<:PekoAwakeDokiDoki:922668515390025798>",
     ],
-    greeting: [
+    sleep: [
+      "<:PekoSleepZzz1:899468713508610098>",
+      "<:PekoSleepZzz2:899468728666845214>",
+    ],
+    greet: [
       "<:PekoGreetKonichiwa:826481264466329630>",
       "<:PekoGreetKonichiwaScared:826481314727198782>",
     ],
-    confirm: ["<:PekoCoolOkay:717826022808092874>"],
+    agree: ["<:PekoCoolOkay:717826022808092874>"],
     deny: ["<:PekoNo:1084473460572561418>"],
   },
 };
@@ -91,7 +97,7 @@ export class ReactCommand extends AbstractCommand {
     super();
     this.name = "react";
     this.guilds = [TEST_SERVER, PEKO_SERVER];
-    this.probability = 0.01;
+    this.probability = 0.005;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     // this.channels = ["1070086039445717124", "1063492591716405278"];
@@ -109,7 +115,7 @@ export class ReactCommand extends AbstractCommand {
     )
       .then((result) => {
         console.log(`Action result: ${result?.text}`);
-        if (result?.text) {
+        if (result?.text && !result.text.toLowerCase().includes("other")) {
           actionsData.some(([mood, emotes]) => {
             if (result.text && result?.text.toLowerCase().includes(mood)) {
               const randomEmote =
