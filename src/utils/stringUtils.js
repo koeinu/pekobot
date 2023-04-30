@@ -137,13 +137,39 @@ export const getTextMessageContent = async (
   let messageText = extractCommandMessage(
     msg.content !== undefined ? msg.content : msg.text
   );
+
+  if (!recursionFlag) {
+    const urls = extractUrls(messageText);
+    if (urls && urls.length > 0) {
+      for (let url of urls) {
+        const link = parseDiscordLink(url);
+        if (link) {
+          if (link.guildId === msg.guild.id) {
+            const channel = await msg.client.channels._cache.get(
+              link.channelId
+            );
+            const message = await channel.messages.fetch(link.messageId);
+            const messageContent = await getTextMessageContent(
+              message,
+              canOCR,
+              silentAttachments,
+              true
+            );
+            parts.push(messageContent.text);
+          } else {
+            messageText = messageText.replace(url, "");
+          }
+        }
+      }
+    }
+  }
+
   if (messageText && messageText.length > 0) {
     const urls = extractUrls(messageText);
     if (urls && urls.length > 0) {
       for (let parsedUrl of urls) {
         if (parsedUrl.includes("twitter.com")) {
-          const ids = parsedUrl.match(/\d+/g);
-          const tweetId = ids[0];
+          const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
           const tweet = await getTweetById(tweetId);
 
@@ -153,23 +179,6 @@ export const getTextMessageContent = async (
       }
     }
     parts.push(extractCommandMessage(messageText));
-  }
-  if (!recursionFlag) {
-    const urls = extractUrls(messageText);
-    if (urls && urls.length > 0) {
-      const link = parseDiscordLink(urls[0]);
-      if (link && link.guildId === msg.guild.id) {
-        const channel = await msg.client.channels._cache.get(link.channelId);
-        const message = await channel.messages.fetch(link.messageId);
-        const messageContent = await getTextMessageContent(
-          message,
-          canOCR,
-          silentAttachments,
-          true
-        );
-        parts.push(messageContent.text);
-      }
-    }
   }
 
   if (msg.attachments.size > 0) {
