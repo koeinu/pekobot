@@ -25,6 +25,7 @@ const moodsReacts = {
     sad: ["<:PekoSad:745275854304837632>", "<:PekoDerp:709152458978492477>"],
     disappointed: ["<:PekoDerp:709152458978492477>"],
     scared: ["<:PekoScaryStare:683467489925267472>"],
+    blush: ["<:PekoKyaaa:749644030962565171>"],
     irony: [
       "<:PekomonNousagiDoya:890383978828271648>",
       "<:PekoPrankStare:892820347232067615>",
@@ -49,6 +50,7 @@ const moodsReacts = {
     sad: ["<:PekoSad:745275854304837632>", "<:PekoDerp:709152458978492477>"],
     disappointed: ["<:PekoDerp:709152458978492477>"],
     scared: ["<:PekoScaryStare:683467489925267472>"],
+    blush: ["<:PekoKyaaa:749644030962565171>"],
     irony: [
       "<:PekomonNousagiDoya:890383978828271648>",
       "<:PekoPrankStare:892820347232067615>",

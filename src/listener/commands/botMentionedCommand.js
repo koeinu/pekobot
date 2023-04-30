@@ -42,7 +42,9 @@ export class BotMentionedCommand extends AbstractCommand {
         text.toLowerCase().includes("peko bot") ||
         text.toLowerCase().includes("pekobot") ||
         text.toLowerCase().includes("this bot") ||
+        text.toLowerCase().includes("that bot") ||
         text.toLowerCase().includes("good bot") ||
+        text.toLowerCase().includes("goodest of bots") ||
         text.toLowerCase().includes(botName))
     );
   }
