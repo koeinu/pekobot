@@ -11,6 +11,7 @@ import { GptlCommand } from "./commands/gptlCommand.js";
 import { SameReactCommand } from "./commands/sameReactCommand.js";
 import { BotMentionedCommand } from "./commands/botMentionedCommand.js";
 import { ModerateCommand } from "./commands/moderateCommand.js";
+import { BANNED_USERS } from "../utils/ids/users.js";
 
 export class CommandListener {
   constructor(client) {
@@ -44,9 +45,11 @@ export class CommandListener {
         if (processData.result) {
           commandIntercepted = commandIntercepted || command.intercept;
           await command.execute(msg, this.client).catch((e) => {
-            msg.react("<:PekoDerp:709152458978492477>").catch((e) => {
-              console.error(`Couldn't error-react: ${e}`);
-            });
+            if (!BANNED_USERS.includes(msg.author.id)) {
+              msg.react("<:PekoDerp:709152458978492477>").catch((e) => {
+                console.error(`Couldn't error-react: ${e}`);
+              });
+            }
             console.error(
               `Couldn't execute command ${command.name} (${this.getMsgInfo(
                 msg
