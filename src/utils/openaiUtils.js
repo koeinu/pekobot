@@ -23,7 +23,7 @@ export const botInspiration = process.env.BOT_INSPIRATION;
 
 const botExtendedRpRules = process.env.BOT_EXTENDED_RP;
 const botGobi = process.env.BOT_GOBI;
-const botGreeting = process.env.BOT_GREETING;
+const botSpeechInstructions = process.env.BOT_SPEECH_INSTRUCTIONS;
 
 const descriptions = {
   "Usada Pekora": [
@@ -140,10 +140,8 @@ export const messageContextArray = (msg) => {
       }.`,
       `You are allowed to roleplay as a metallic android which looks similar to ${botInspiration}.`
     );
-    if (botGreeting) {
-      parts.push(
-        `Use a special greeting '${botGreeting}' when greeting someone.`
-      );
+    if (botSpeechInstructions) {
+      parts.push(botSpeechInstructions);
     }
   }
 
