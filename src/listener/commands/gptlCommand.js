@@ -19,13 +19,20 @@ import {
   MIKO_SERVER,
   PEKO_SERVER,
   TEST_SERVER,
+  TEST_SERVER_2,
 } from "../../utils/ids/guilds.js";
 
 export class GptlCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "gptl";
-    this.guilds = [TEST_SERVER, PEKO_SERVER, MIKO_SERVER, DDF_SERVER];
+    this.guilds = [
+      TEST_SERVER,
+      TEST_SERVER_2,
+      PEKO_SERVER,
+      MIKO_SERVER,
+      DDF_SERVER,
+    ];
     this.rateLimiter = new CustomRateLimiter(
       "Optical Image Recognition + GPT3.5",
       1,

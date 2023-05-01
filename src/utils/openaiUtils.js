@@ -183,9 +183,7 @@ export const gptReaction = async (text, actionsArray, reactMode) => {
   }
   const parts = [];
   parts.push(
-    `Choose an action, which ${
-      botInspiration || "Usada Pekora"
-    } would respond to the message. Pick one of offered options, don't write anything else. {Examples:}`
+    `Choose an action, which ${botInspiration} would respond to the message. Pick one of offered options, don't write anything else. {Examples:}`
   );
   parts.push(`Wishing good night -> 'sleep'.`);
   parts.push(
@@ -203,9 +201,7 @@ export const gptMood = async (text, moodsArray, reactMode) => {
   const parts = [];
   if (reactMode) {
     parts.push(
-      `Choose one of the the moods ${
-        botInspiration || "Usada Pekora"
-      } would react with to the message, choose one among the options.`
+      `Choose one of the the moods ${botInspiration} would react with to the message, choose one among the options.`
     );
     parts.push(
       `{Conditions:} If there is no good option, respond with 'other'.`
