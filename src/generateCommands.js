@@ -12,13 +12,9 @@ const guildIds = process.env.GUILD_ID;
 console.log(token, clientId, guildIds);
 
 export const disabledCommands = {
-  '584977240358518784': [
-    'gptDict', 'youtube', 'relay'
-  ],
-  '999666683176308807': [
-    'jigsaw', 'betedit', 'gptDict', 'youtube'
-  ]
-}
+  "584977240358518784": ["youtube", "relay"],
+  "999666683176308807": ["jigsaw", "betedit", "gptDict", "youtube"],
+};
 
 const rest = new REST({ version: "10" }).setToken(token);
 

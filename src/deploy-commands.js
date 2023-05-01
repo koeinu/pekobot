@@ -14,9 +14,9 @@ dotenv.config();
 export const makeCmds = async (guildIdsString) => {
   const parsedGuildIds = guildIdsString.split(",").map((el) => el.trim());
   const disabledGuildCommands = {};
-  parsedGuildIds.forEach(id => {
+  parsedGuildIds.forEach((id) => {
     disabledGuildCommands[id] = disabledCommands[id] || [];
-  })
+  });
   const finalGuildCommands = {};
 
   const commandFiles = fs
@@ -29,11 +29,15 @@ export const makeCmds = async (guildIdsString) => {
       if (!finalGuildCommands[id]) {
         finalGuildCommands[id] = [];
       }
-      if (!disabledGuildCommands[id] || !disabledGuildCommands[id].find(dc => dc.toLowerCase().includes(file.toLowerCase().split('.')[0]))) {
-
+      if (
+        !disabledGuildCommands[id] ||
+        !disabledGuildCommands[id].find((dc) =>
+          dc.toLowerCase().includes(file.toLowerCase().split(".")[0])
+        )
+      ) {
         finalGuildCommands[id].push(command.default.data.toJSON());
       }
-    })
+    });
   }
 
   return finalGuildCommands;
@@ -56,7 +60,7 @@ makeCmds(process.env.GUILD_ID)
             break;
         }
       }
-      returnPromises.push(generateCommands(cmds, [guildId])) ;
+      returnPromises.push(generateCommands(cmds, [guildId]));
     });
     return Promise.all(returnPromises);
   })
