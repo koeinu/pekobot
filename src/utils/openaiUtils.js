@@ -23,6 +23,7 @@ export const botInspiration = process.env.BOT_INSPIRATION;
 
 const botExtendedRpRules = process.env.BOT_EXTENDED_RP;
 const botGobi = process.env.BOT_GOBI;
+const botGreeting = process.env.BOT_GREETING;
 
 const descriptions = {
   "Usada Pekora": [
@@ -135,10 +136,15 @@ export const messageContextArray = (msg) => {
       `You are a bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${botName} and your personality is inspired by ${botInspiration}.`,
       `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${botName}.`,
       `If asked a question, make an effort to help. Otherwise be playful, creative and funny${
-        botGobi ? `, insert word ${botGobi} in the sentences sometimes.` : ""
-      }`,
+        botGobi ? `, insert word ${botGobi} in the sentences sometimes` : ""
+      }.`,
       `You are allowed to roleplay as a metallic android which looks similar to ${botInspiration}.`
     );
+    if (botGreeting) {
+      parts.push(
+        `Use a special greeting '${botGreeting}' when greeting someone.`
+      );
+    }
   }
 
   return parts.join(" ");
