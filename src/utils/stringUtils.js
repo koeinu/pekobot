@@ -11,6 +11,8 @@ import { getYoutubeVideoInfo } from "./youtubeUtils.js";
 
 dotenv.config();
 const botName = process.env.BOT_NAME;
+const isSimplifed = process.env.SIMPLIFED_FUNCTIONS;
+
 export const MAX_BET_LENGTH = 20;
 export const MAX_CATEGORY_LENGTH = 40;
 export const GPT_TOKENS_LIMIT_TOKEN = 4096;
@@ -167,7 +169,7 @@ export const getTextMessageContent = async (
     const urls = extractUrls(messageText);
     if (urls && urls.length > 0) {
       for (let parsedUrl of urls) {
-        if (parsedUrl.includes("twitter.com")) {
+        if (parsedUrl.includes("twitter.com") && !isSimplifed) {
           const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
           const tweet = await getTweetById(tweetId);
