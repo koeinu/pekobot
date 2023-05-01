@@ -134,9 +134,7 @@ export const getTextMessageContent = async (
   const parts = [];
   let countObject = undefined;
   let tweets = [];
-  let messageText = extractCommandMessage(
-    msg.content !== undefined ? msg.content : msg.text
-  );
+  let messageText = extractCommandMessage(msg.content);
 
   if (!recursionFlag) {
     const urls = extractUrls(messageText);

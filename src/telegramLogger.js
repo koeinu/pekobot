@@ -1,13 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
+import { gpt } from "./utils/openaiUtils.js";
 dotenv.config();
 const token = process.env.TG_BOT_TOKEN;
 
 export const originalConsoleLog = console.log;
 export const originalConsoleError = console.error;
 export const originalConsoleWarn = console.warn;
-
-const MESSAGE_MAX_LENGTH = 4000;
 
 export class TelegramBotWrapper {
   constructor() {
@@ -17,12 +16,22 @@ export class TelegramBotWrapper {
       } catch (e) {
         console.error(e);
       }
-      // this.bot.on("channel_post", (msg) => {
-      //   const chatId = msg.chat.id;
-      //
-      //   // send a message to the chat acknowledging receipt of their message
-      //   this.bot.sendMessage(chatId, "Received your message");
-      // });
+      this.bot.on("message", (msg) => {
+        const chatId = msg.chat.id;
+        const text = msg.text;
+        gpt(text, "")
+          .then((result) => {
+            if (result.text) {
+              this.sendMessage(chatId, result.text);
+            }
+          })
+          .catch((e) => {
+            console.log(`Couldn't telegram gpt: ${e}`);
+          });
+      });
+      this.bot.on("command", (command) => {
+        console.log(command);
+      });
     }
     this.logsId = -1001906303858;
     this.errorsId = -1001920972703;
@@ -30,11 +39,13 @@ export class TelegramBotWrapper {
   }
 
   async sendMessage(id, str) {
-    const parts = str.match(/.{1,4000}/g);
-    for (let part of parts) {
-      await this.bot.sendMessage(id, part).catch((e) => {
-        originalConsoleError(e);
-      });
+    if (this.bot) {
+      const parts = str.match(/.{1,4000}/g);
+      for (let part of parts) {
+        await this.bot.sendMessage(id, part).catch((e) => {
+          originalConsoleError(e);
+        });
+      }
     }
   }
 

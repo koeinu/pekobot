@@ -19,17 +19,17 @@ import {
 } from "./commands/commandGenerators/bet.js";
 import { connectToStream } from "./utils/twitterUtils.js";
 import { loadRelays } from "./model/relay.js";
-
-dotenv.config();
-const token = process.env.DISCORD_TOKEN;
 import _path from "path";
 import { fileURLToPath } from "url";
 import { JSON_FILE_NAME, convertJsonToParsed } from "./model/bets.js";
 import { loadFile } from "./utils/fileUtils.js";
 import { H_M_S, S_MS } from "./utils/constants.js";
 
-const __filename = fileURLToPath(import.meta.url);
+dotenv.config();
+const token = process.env.DISCORD_TOKEN;
+const isSimplifed = process.env.SIMPLIFED_FUNCTIONS;
 
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = _path.dirname(__filename);
 
 export class Application {
@@ -52,10 +52,17 @@ export class Application {
       .filter((file) => file.endsWith(".js"));
 
     for (const file of commandFiles) {
-      const filePath = path.join(commandsPath, file);
-      import(filePath).then((command) => {
-        this.client.commands.set(command.default.data.name, command);
-      });
+      if (process.platform === "win32") {
+        const filePath = "file:///" + path.join(commandsPath, file);
+        import(filePath).then((command) => {
+          this.client.commands.set(command.default.data.name, command);
+        });
+      } else {
+        const filePath = path.join(commandsPath, file);
+        import(filePath).then((command) => {
+          this.client.commands.set(command.default.data.name, command);
+        });
+      }
     }
 
     const betsStorage = loadFile(JSON_FILE_NAME);
@@ -195,13 +202,14 @@ export class Application {
     }, []);
 
     this.ready = true;
-    this.keepConnectingToStreamFeed().catch((e) => {
-      console.error(`Critical error when connecting to twitter feed!: ${e}`);
-    });
+    if (!isSimplifed) {
+      this.keepConnectingToStreamFeed().catch((e) => {
+        console.error(`Critical error when connecting to twitter feed!: ${e}`);
+      });
 
-    for (let i = 0; i < uniqueRelays.length; i++) {
-      await fetchMessage(this.client, uniqueRelays[i].source);
-      // console.log("fetched", msg.content);
+      for (let i = 0; i < uniqueRelays.length; i++) {
+        await fetchMessage(this.client, uniqueRelays[i].source);
+      }
     }
   }
 

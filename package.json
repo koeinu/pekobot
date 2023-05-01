@@ -6,9 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
-    "testOpenAi": "node src/utils/openaiUtils.js",
-    "testNlp": "node src/utils/nlpUtils.js",
-    "testGpt4": "node src/test.js",
+    "test": "node src/test.js",
     "commands": "node src/deploy-commands.js"
   },
   "dependencies": {

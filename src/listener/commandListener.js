@@ -55,17 +55,18 @@ export class CommandListener {
     }
   }
   async processMessageUpdate(oldMsg, newMsg) {
+    const msg = oldMsg;
     for (let command of this.commands) {
-      const match = await command.commandMatch(oldMsg);
+      const match = await command.commandMatch(msg);
       if (match) {
-        const processData = this.shouldProcessMsg(oldMsg, command);
+        const processData = this.shouldProcessMsg(msg, command);
         if (processData.result && command.executeUpdate) {
           console.log(`updating ${processData.reason}`);
           command.executeUpdate(oldMsg, newMsg, this.client).catch((e) => {
             console.error(
               `Couldn't execute update command ${
                 command.name
-              } (${this.getMsgInfo(oldMsg)}): ${e}`
+              } (${this.getMsgInfo(msg)}): ${e}`
             );
           });
         }

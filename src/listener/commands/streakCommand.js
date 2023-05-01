@@ -36,7 +36,7 @@ export class StreakCommand extends AbstractCommand {
     );
     if (trigger) {
       if (!(await this.rateLimitPass(msg, "streakSharedHandle"))) {
-        return;
+        return Promise.resolve();
       }
       this.resetTrigger(msg, text);
 

@@ -1,9 +1,9 @@
-import fs from 'fs';
+import fs from "fs";
 
 export const JSON_DIR_NAME = "data/json";
 
 export const formFilePath = (fileName) => {
-  return `${JSON_DIR_NAME}/${fileName}`;
+  return `./${JSON_DIR_NAME}/${fileName}`;
 };
 
 // throws IO error
@@ -19,7 +19,7 @@ export const loadFile = (fileName) => {
 
 // throws IO error
 export const saveFile = (fileName, jsonContents) => {
-  fs.mkdirSync(JSON_DIR_NAME, { recursive: true });
+  fs.mkdirSync("./" + JSON_DIR_NAME, { recursive: true });
   fs.writeFileSync(formFilePath(fileName), JSON.stringify(jsonContents));
 };
 

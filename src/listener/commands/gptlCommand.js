@@ -1,6 +1,5 @@
 import { AbstractCommand } from "../abstractCommand.js";
 
-import { GPTL_SYSTEM_MESSAGE } from "../../utils/openaiUtils.js";
 import {
   replyCustomEmbed,
   replyEmbedMessage,
