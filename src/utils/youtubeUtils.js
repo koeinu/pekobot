@@ -9,7 +9,34 @@ export const parseVideoId = (url) => {
   let match = url.match(regExp);
   return match && match.length >= 3 ? match[2] : false;
 };
-
+export const getYoutubeVideoInfo = async (videoIdOrUrl) => {
+  console.log("parsing video url:", videoIdOrUrl);
+  const videoId = parseVideoId(videoIdOrUrl);
+  console.log("video id:", videoId);
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  return await axios
+    .get(
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${API_KEY}`,
+      config
+    )
+    .then((resp) => resp.data)
+    .then((data) => {
+      const items = data.items;
+      const video = items[0];
+      const snippet = video?.snippet;
+      if (snippet) {
+        return [
+          `${snippet.title}`,
+          `${snippet.description.split("\n\n")[0]}`,
+        ].join("\n---\n");
+      }
+      return undefined;
+    });
+};
 export const getYoutubeChannelId = async (videoIdOrUrl) => {
   console.log("parsing video url:", videoIdOrUrl);
   const videoId = parseVideoId(videoIdOrUrl);

@@ -183,12 +183,19 @@ export const gptReaction = async (text, actionsArray, reactMode) => {
   }
   const parts = [];
   parts.push(
-    `Choose a fitting action type, which ${
+    `Choose an action, which ${
       botInspiration || "Usada Pekora"
-    } would respond to the message. For example, wishing good night may be responded with 'sleep', and a request or order may be responded with 'agree' or 'deny', just choose randomly. But if asked very politely (words like 'please' used), always agree. If the message doesn't imply any of offered actions in response, return 'other' as response.`
+    } would respond to the message. Pick one of offered options, don't write anything else. {Examples:}`
   );
-  parts.push(`The available action options: ${actionsArray.join(", ")}`);
-  parts.push(`The message: "${text}"`);
+  parts.push(`Wishing good night -> 'sleep'.`);
+  parts.push(
+    `Requests or orders -> 'ok' or 'no' (tend to pick 'no', but if asked politely, tend to pick 'ok').`
+  );
+  parts.push(
+    `{Conditions:} Any lewd proposals also should be answered with 'other'.`
+  );
+  parts.push(`{Options:} ${actionsArray.join(", ")}, other.`);
+  parts.push(`{Message:} "${text}."`);
 
   return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
 };
@@ -198,17 +205,25 @@ export const gptMood = async (text, moodsArray, reactMode) => {
     parts.push(
       `Choose one of the the moods ${
         botInspiration || "Usada Pekora"
-      } would react with to the message.`
+      } would react with to the message, choose one among the options.`
     );
-    parts.push(`The available mood options are: ${moodsArray.join(", ")}`);
+    parts.push(
+      `{Conditions:} If there is no good option, respond with 'other'.`
+    );
+    parts.push(
+      `Any message about love, marriage or lewd things should be responded with 'blush'.`
+    );
+    parts.push(`{Options:} ${moodsArray.join(", ")}, other.`);
   } else {
-    parts.push("Determine the mood of the message.");
-    parts.push(`The available mood options are: ${moodsArray.join(", ")}`);
+    parts.push(
+      `{Conditions:} If there is no good option, respond with 'other'.`
+    );
+    parts.push(
+      "Determine the mood of the message, choose one among the options."
+    );
+    parts.push(`{Options:} ${moodsArray.join(", ")}, other.`);
   }
-  parts.push(
-    `There is also a special option 'other' if you think that there is no good option that you were provided with.`
-  );
-  parts.push(`The message: "${text}"`);
+  parts.push(`The message: "${text}."`);
 
   return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
 };

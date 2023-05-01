@@ -25,9 +25,9 @@ export class CommandListener {
       new StreakCommand(), // doesn't intercept
       new BotMentionedCommand(), // 35%, intercepts
       new PekCommand(), // 30% intercepts
-      new SameReactCommand(), // 2.5% intercepts
+      new SameReactCommand(), // 1% intercepts
       new ReactCommand(), // 0.5% intercepts
-      new HaikuCommand(), // 3%
+      new HaikuCommand(), // 2%
     ];
     this.client = client;
   }

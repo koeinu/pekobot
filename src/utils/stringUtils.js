@@ -7,6 +7,7 @@ import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
 import puppeteer from "puppeteer";
 import { getTweetById } from "./twitterUtils.js";
+import { getYoutubeVideoInfo } from "./youtubeUtils.js";
 
 dotenv.config();
 const botName = process.env.BOT_NAME;
@@ -133,7 +134,7 @@ export const getTextMessageContent = async (
 ) => {
   const parts = [];
   let countObject = undefined;
-  let tweets = [];
+  let parsedLinks = false;
   let messageText = extractCommandMessage(msg.content);
 
   if (!recursionFlag) {
@@ -171,8 +172,17 @@ export const getTextMessageContent = async (
 
           const tweet = await getTweetById(tweetId);
 
-          tweets.push(tweet.data.text);
-          messageText.replace(parsedUrl, "");
+          messageText = messageText.replace(parsedUrl, tweet.data.text);
+          parsedLinks = true;
+        } else if (
+          parsedUrl.includes("youtube") ||
+          parsedUrl.includes("youtu.be")
+        ) {
+          const info = await getYoutubeVideoInfo(parsedUrl);
+          if (info) {
+            parsedLinks = true;
+            messageText = messageText.replace(parsedUrl, info);
+          }
         }
       }
     }
@@ -216,9 +226,7 @@ export const getTextMessageContent = async (
     }
   }
 
-  parts.push(tweets.join("\n---\n"));
-
-  if (tweets.length === 0) {
+  if (!parsedLinks) {
     msg.embeds.forEach((embed) => {
       const embedContent = embed.description;
       if (embedContent && embedContent.length > 0) {

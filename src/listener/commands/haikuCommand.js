@@ -35,7 +35,7 @@ export class HaikuCommand extends AbstractCommand {
       // peko
       PEKO_SERVER,
     ];
-    this.probability = 0.03;
+    this.probability = 0.02;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
   }

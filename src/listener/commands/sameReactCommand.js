@@ -13,7 +13,7 @@ export class SameReactCommand extends AbstractCommand {
       // peko
       PEKO_SERVER,
     ];
-    this.probability = 0.025;
+    this.probability = 0.01;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.intercept = true;

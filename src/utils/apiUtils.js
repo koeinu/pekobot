@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { SENTENCE_ENDERS } from "./constants.js";
 import { gptGetLanguage, gptl } from "./openaiUtils.js";
 import { trimBrackets } from "./stringUtils.js";
+import extractUrls from "extract-urls";
 
 dotenv.config();
 
@@ -132,6 +133,15 @@ export class ApiUtils {
           throw `Both deepl and gptl failed miserably.`;
         }
       }
+    }
+
+    const urls = extractUrls(response);
+    if (urls) {
+      urls.forEach((escapeUrl) => {
+        if (escapeUrl.includes("t.co")) {
+          response = response.replaceAll(escapeUrl, `<${escapeUrl}>`);
+        }
+      });
     }
 
     const toReturn = {
