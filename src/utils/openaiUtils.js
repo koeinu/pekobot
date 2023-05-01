@@ -175,7 +175,7 @@ export const serverRules = (msg) => {
     }
   }
 
-  return parts.join("\n");
+  return parts.join(" ");
 };
 
 export const GPTL_PARAMS = {
