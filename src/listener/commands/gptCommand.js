@@ -10,15 +10,14 @@ import { MessageType } from "discord.js";
 import {
   getTextMessageContent,
   formChainGPTPrompt,
+  isFormattedTl,
 } from "../../utils/stringUtils.js";
 import { fetchMessages, reply } from "../../utils/discordUtils.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import { CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_CONSULTING,
-  PEKO_STREAM,
   RP_CHANNELS,
-  TEST_ANOTHER_TEST_CHANNEL,
   TEST_ASSISTANT,
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
@@ -91,7 +90,6 @@ export class GptCommand extends AbstractCommand {
       DDF_CONSULTING,
       TEST_USUAL_PEKO_GPT,
     ];
-    this.prohibitedChannels = [PEKO_STREAM, TEST_ANOTHER_TEST_CHANNEL];
     this.intercept = true;
   }
   async execute(msg) {
@@ -171,7 +169,7 @@ export class GptCommand extends AbstractCommand {
       ? await msg.channel.messages.fetch(msg.reference.messageId)
       : undefined;
     if (repliedToMessage && repliedToMessage.author.username === botName) {
-      return true;
+      return !isFormattedTl(repliedToMessage.content);
     }
     return (
       msg.content.indexOf("~gpt") === 0 ||

@@ -1,5 +1,5 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { formatTL } from "../../utils/stringUtils.js";
+import { formatTL, textIsRelayTL } from "../../utils/stringUtils.js";
 
 import { fetchMessage } from "../../utils/discordUtils.js";
 
@@ -128,28 +128,6 @@ export class RelayMessageCommand extends AbstractCommand {
       return false;
     }
     const trimmedText = text.trim();
-    if (
-      trimmedText.indexOf("chat:") === 0 ||
-      trimmedText.indexOf("chat;") === 0
-    ) {
-      return true;
-    }
-    const firstWord = trimmedText.match(/[a-zA-Z]+/i);
-    // console.log("first word:", firstWord);
-    if (
-      firstWord &&
-      (trimmedText.indexOf(":") === firstWord[0].length ||
-        trimmedText.indexOf(";") === firstWord[0].length) &&
-      firstWord[0].length <= 3 &&
-      !firstWord[0].includes("http")
-    ) {
-      console.log("relaying translation:", text);
-      return true;
-    } else if (trimmedText.indexOf(">") === 0) {
-      console.log("relaying summary:", text);
-      return true;
-    } else {
-      return false;
-    }
+    return textIsRelayTL(trimmedText);
   }
 }

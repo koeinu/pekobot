@@ -342,3 +342,35 @@ export function formatTL(text) {
       return "[TL] " + trimmedText;
   }
 }
+
+export const isFormattedTl = (text) => {
+  return (
+    text.indexOf("[Summary]") === 0 ||
+    text.indexOf("[Chat]") === 0 ||
+    text.indexOf("[TL]") === 0
+  );
+};
+
+export const textIsRelayTL = (trimmedText) => {
+  if (
+    trimmedText.indexOf("chat:") === 0 ||
+    trimmedText.indexOf("chat;") === 0
+  ) {
+    return true;
+  }
+  const firstWord = trimmedText.match(/[a-zA-Z]+/i);
+  // console.log("first word:", firstWord);
+  if (
+    firstWord &&
+    (trimmedText.indexOf(":") === firstWord[0].length ||
+      trimmedText.indexOf(";") === firstWord[0].length) &&
+    firstWord[0].length <= 3 &&
+    !firstWord[0].includes("http")
+  ) {
+    return true;
+  } else if (trimmedText.indexOf(">") === 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
