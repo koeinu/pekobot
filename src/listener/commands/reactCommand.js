@@ -83,7 +83,7 @@ export class ReactCommand extends AbstractCommand {
 
     return gptReaction(
       msg.content,
-      (reactMood ? reactData : moodsData).map((el) => el[0]),
+      (reactMood ? moodsData : reactData).map((el) => el[0]),
       reactMood
     )
       .then((result) => {
