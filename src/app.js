@@ -32,4 +32,6 @@ if (!inactive) {
   };
   console.log("Logging override complete");
   // const testInterval = require("./testLimiterCronJob");
+} else {
+  console.log("Inactive mode.");
 }
