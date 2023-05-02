@@ -5,7 +5,7 @@ import {
   originalConsoleWarn,
   TelegramBotWrapper,
 } from "./telegramLogger.js";
-import cronTask from "./resetCounterCronJob.js";
+import { cronTask } from "./resetCounterCronJob.js";
 
 import dotenv from "dotenv";
 dotenv.config();
