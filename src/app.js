@@ -6,10 +6,13 @@ import {
   TelegramBotWrapper,
 } from "./telegramLogger.js";
 
-import cron from "./resetCounterCronJob";
+import cronTask from "./resetCounterCronJob.js";
+console.log("Cron task started:", cronTask);
 
 const app = new Application();
+console.log("Application started:", app);
 const bot = new TelegramBotWrapper();
+console.log("Bot started:", bot);
 
 console.log = (...args) => {
   originalConsoleLog(...args);
@@ -22,4 +25,5 @@ console.warn = (...args) => {
   bot.sendWarning(...args);
   originalConsoleWarn(...args);
 };
+console.log("Logging override complete");
 // const testInterval = require("./testLimiterCronJob");
