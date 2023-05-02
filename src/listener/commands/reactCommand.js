@@ -83,7 +83,7 @@ export class ReactCommand extends AbstractCommand {
 
     return gptReaction(
       msg.content,
-      (reactMood ? moodsData : reactData).map((el) => el[0]),
+      actionsData.map((el) => el[0]),
       reactMood
     )
       .then((result) => {
@@ -107,7 +107,7 @@ export class ReactCommand extends AbstractCommand {
         } else {
           return gptMood(
             msg.content,
-            reactData.map((el) => el[0]),
+            (reactMood ? reactData : moodsData).map((el) => el[0]),
             reactMood
           ).then((result) => {
             console.log(`Mood result: ${result?.text}`);
