@@ -33,7 +33,7 @@ export class DeeplCommand extends AbstractCommand {
 
   async execute(msg) {
     const canOCR = this.rateLimitCheck(msg);
-    let data = await getTextMessageContent(msg, canOCR, true);
+    let data = await getTextMessageContent(msg, canOCR, true, true, false);
     const parsed = data.text.split(" ");
     const sourceLanguage = LANGUAGES.find((el) =>
       parsed.map((el) => el.toUpperCase()).includes(el)
@@ -49,7 +49,7 @@ export class DeeplCommand extends AbstractCommand {
         msg.reference.messageId
       );
       replyMessage = repliedTo;
-      data = await getTextMessageContent(repliedTo, canOCR, true);
+      data = await getTextMessageContent(repliedTo, canOCR, true, true, false);
     }
 
     if (isCount) {

@@ -131,8 +131,9 @@ const crawlURL = async (url) => {
 export const getTextMessageContent = async (
   msg,
   canOCR,
-  silentAttachments = false,
-  recursionFlag = false
+  isTranslating,
+  silentAttachments,
+  recursionFlag
 ) => {
   const parts = [];
   let countObject = undefined;
@@ -153,6 +154,7 @@ export const getTextMessageContent = async (
             const messageContent = await getTextMessageContent(
               message,
               canOCR,
+              isTranslating,
               silentAttachments,
               true
             );
@@ -169,7 +171,11 @@ export const getTextMessageContent = async (
     const urls = extractUrls(messageText);
     if (urls && urls.length > 0) {
       for (let parsedUrl of urls) {
-        if (parsedUrl.includes("twitter.com") && !isSimplifed) {
+        if (
+          parsedUrl.includes("twitter.com") &&
+          !isSimplifed &&
+          isTranslating
+        ) {
           const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
           const tweet = await getTweetById(tweetId);

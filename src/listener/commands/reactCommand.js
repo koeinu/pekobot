@@ -133,11 +133,6 @@ export class ReactCommand extends AbstractCommand {
       });
   }
   async commandMatch(msg) {
-    const reacts = moodsReacts[msg.guild.id];
-    const actions = actionsReacts[msg.guild.id];
-    if (!reacts && !actions) {
-      return false;
-    }
     const text = msg.content;
     const urls = extractUrls(text);
     return (!urls || urls.length === 0) && text.indexOf("~") !== 0;

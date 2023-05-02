@@ -43,7 +43,7 @@ const formatMessagesAsChat = async (msgChain, canOCR) => {
   const list = msgChain.reverse();
   return Promise.all(
     list.map(async (el) => ({
-      msg: (await getTextMessageContent(el, canOCR)).text,
+      msg: (await getTextMessageContent(el, canOCR, false, false, false)).text,
       username: el.author.username,
     }))
   );

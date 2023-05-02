@@ -88,6 +88,14 @@ export class Application {
     this.client.once(Events.ClientReady, (c) => {
       console.log(`Logged in as ${c.user.tag}`);
     });
+    this.client.on(Events.InteractionCreate, async (interaction) => {
+      if (!interaction.isModalSubmit()) {
+        return;
+      }
+      const messageId = interaction.fields.getTextInputValue("messageText");
+      const editedText = interaction.fields.getTextInputValue("messageText");
+      console.log(interaction);
+    });
 
     this.client.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.isChatInputCommand()) {
