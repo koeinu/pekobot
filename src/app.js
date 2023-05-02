@@ -6,6 +6,8 @@ import {
   TelegramBotWrapper,
 } from "./telegramLogger.js";
 
+import cron from "./resetCounterCronJob";
+
 const app = new Application();
 const bot = new TelegramBotWrapper();
 
@@ -20,6 +22,4 @@ console.warn = (...args) => {
   bot.sendWarning(...args);
   originalConsoleWarn(...args);
 };
-// const cron = require("./resetCounterCronJob");
-
 // const testInterval = require("./testLimiterCronJob");

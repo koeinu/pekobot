@@ -1,5 +1,6 @@
-const cron = require("node-cron");
-const { resetCounters } = require("./model/counter");
+import cron from "node-cron";
+
+import { resetCounters } from "./model/counter";
 
 cron.schedule("0 0 1 * *", () => {
   resetCounters();
