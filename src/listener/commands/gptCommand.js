@@ -14,9 +14,10 @@ import {
 } from "../../utils/stringUtils.js";
 import { fetchMessages, reply } from "../../utils/discordUtils.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
-import { CustomRateLimiter } from "../../utils/rateLimiter.js";
+import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_CONSULTING,
+  PEKO_GPT,
   RP_CHANNELS,
   TEST_ASSISTANT,
   TEST_USUAL_PEKO_GPT,
@@ -39,11 +40,11 @@ const getReplyChain = async (msg, msgChain = [msg]) => {
   return msgChain;
 };
 
-const formatMessagesAsChat = async (msgChain, canOCR) => {
+const formatMessagesAsChat = async (msgChain) => {
   const list = msgChain.reverse();
   return Promise.all(
     list.map(async (el) => ({
-      msg: (await getTextMessageContent(el, canOCR, false, false, false)).text,
+      msg: (await getTextMessageContent(el, false, false, false)).text,
       username: el.author.username,
     }))
   );
@@ -71,22 +72,17 @@ export class GptCommand extends AbstractCommand {
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
       1,
-      S_MS * H_M_S * 4,
+      S_MS * H_M_S * 1,
       ["Mod"],
-      false
+      AlertUserMode.Emote
     );
-    this.guilds = [
-      TEST_SERVER,
-      // TEST_SERVER_2,
-      PEKO_SERVER,
-      DDF_SERVER,
-      // MIKO_SERVER,
-    ];
+    this.guilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
     this.consultingChanels = [
       ...RP_CHANNELS,
       TEST_ASSISTANT,
       DDF_CONSULTING,
       TEST_USUAL_PEKO_GPT,
+      PEKO_GPT,
     ];
     this.intercept = true;
   }
@@ -115,18 +111,17 @@ export class GptCommand extends AbstractCommand {
         });
         return Promise.resolve();
       }
-      if (!(await this.rateLimitPass(msg, "gptSharedHandle"))) {
-        return Promise.resolve();
-      }
     }
-    const canOCR = this.rateLimitCheck(msg);
+    if (!(await this.rateLimitPass(msg))) {
+      return Promise.resolve();
+    }
 
     const replyChain = rpMode
       ? splitMessages(
           (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
         )
       : await getReplyChain(msg);
-    const msgList = await formatMessagesAsChat(replyChain, canOCR);
+    const msgList = await formatMessagesAsChat(replyChain);
 
     const gptPrompt = await formChainGPTPrompt(msgList, rpMode);
 

@@ -130,7 +130,6 @@ const crawlURL = async (url) => {
 // preferring embed description text
 export const getTextMessageContent = async (
   msg,
-  canOCR,
   isTranslating,
   silentAttachments,
   recursionFlag
@@ -153,7 +152,6 @@ export const getTextMessageContent = async (
             const message = await channel.messages.fetch(link.messageId);
             const messageContent = await getTextMessageContent(
               message,
-              canOCR,
               isTranslating,
               silentAttachments,
               true
@@ -207,7 +205,7 @@ export const getTextMessageContent = async (
         parts.push("Text attachment:");
       }
       parts.push(text);
-    } else if (canOCR) {
+    } else {
       const imageUrl = parseAttachmentUrl(msg);
 
       console.log(`translating image`);

@@ -13,7 +13,7 @@ import { H_M_S, S_MS } from "../../utils/constants.js";
 import { MessageType } from "discord.js";
 import { getCounter } from "../../model/counter.js";
 import { ApiUtils } from "../../utils/apiUtils.js";
-import { CustomRateLimiter } from "../../utils/rateLimiter.js";
+import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_SERVER,
   MIKO_SERVER,
@@ -27,16 +27,19 @@ export class GptlCommand extends AbstractCommand {
     this.name = "gptl";
     this.guilds = [TEST_SERVER, PEKO_SERVER, MIKO_SERVER, DDF_SERVER];
     this.rateLimiter = new CustomRateLimiter(
-      "Optical Image Recognition + GPT3.5",
+      "GPT translations",
       1,
-      S_MS * H_M_S * 5,
-      ["Mod"]
+      S_MS * H_M_S * 2,
+      ["Mod"],
+      AlertUserMode.Normal
     );
     this.intercept = true;
   }
   async execute(msg) {
-    const canOCR = this.rateLimitCheck(msg);
-    let data = await getTextMessageContent(msg, canOCR, true, true, false);
+    if (!(await this.rateLimitPass(msg))) {
+      return Promise.resolve();
+    }
+    let data = await getTextMessageContent(msg, true, true, false);
     const parsed = data.text.split(" ");
     const isCount = parsed.includes("count");
 
@@ -46,7 +49,7 @@ export class GptlCommand extends AbstractCommand {
         msg.reference.messageId
       );
       replyMessage = repliedTo;
-      data = await getTextMessageContent(repliedTo, canOCR, true, true, false);
+      data = await getTextMessageContent(repliedTo, true, true, false);
     }
 
     if (isCount) {

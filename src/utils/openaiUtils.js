@@ -59,13 +59,13 @@ import PQueue from "p-queue";
 const queue = new PQueue({ concurrency: 1 });
 
 export const MOD_THRESHOLDS = {
-  sexual: 0.4,
+  sexual: 0.8,
   hate: 0.92,
   violence: 0.92,
-  "self-harm": 0.6,
-  "sexual/minors": 0.4,
-  "hate/threatening": 0.5,
-  "violence/graphic": 0.5,
+  "self-harm": 0.75,
+  "sexual/minors": 0.5,
+  "hate/threatening": 0.6,
+  "violence/graphic": 0.6,
 };
 
 const fixModData = (data) => {

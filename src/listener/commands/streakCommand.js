@@ -1,6 +1,6 @@
 import { AbstractCommand } from "../abstractCommand.js";
 
-import { CustomRateLimiter } from "../../utils/rateLimiter.js";
+import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
@@ -20,7 +20,7 @@ export class StreakCommand extends AbstractCommand {
       1,
       S_MS * H_M_S * 15,
       [],
-      false
+      AlertUserMode.Silent
     );
     this.guilds = [TEST_SERVER, PEKO_SERVER];
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;

@@ -1,6 +1,6 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import { detectHaiku } from "../../utils/haikuUtils.js";
-import { CustomRateLimiter } from "../../utils/rateLimiter.js";
+import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 
 import { sendCustomEmbed } from "../../utils/discordUtils.js";
@@ -21,7 +21,7 @@ export class HaikuCommand extends AbstractCommand {
       1,
       S_MS * H_M_S * 5,
       [],
-      false
+      AlertUserMode.Silent
     );
     this.channels = [
       // ts

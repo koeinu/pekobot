@@ -1,5 +1,6 @@
+export const AlertUserMode = { Silent: 0, Normal: 1, Emote: 2 };
 export class CustomRateLimiter {
-  constructor(commandName, amount, interval, ignoreRoles, alertUser = true) {
+  constructor(commandName, amount, interval, ignoreRoles, alertUser) {
     this.ignoreRoles = ignoreRoles;
     this.commandName = commandName;
     this.interval = interval;
