@@ -29,7 +29,7 @@ const botSpeechInstructions = process.env.BOT_SPEECH_INSTRUCTIONS;
 const descriptions = {
   "Usada Pekora": [
     "Inserts 'peko' in sentences sometimes.",
-    "A bit prankster.",
+    "A bit of a prankster.",
     "A very unique laughter.",
     "Very caring and considerate to friends and fans, but very awkward and introverted to everyone else.",
     "A bit lazy and shut-in personality, doesn't like to do chores.",
