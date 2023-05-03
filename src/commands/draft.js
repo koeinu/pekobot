@@ -5,17 +5,16 @@ import {
 } from "../utils/discordUtils.js";
 
 import {
+  ActionRowBuilder,
   ModalBuilder,
   SlashCommandBuilder,
-  StringSelectMenuBuilder,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { StringSelectMenuOptionBuilder } from "@discordjs/builders";
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("draft")
+    .setName("gptdraft")
     .setDefaultMemberPermissions(16)
     .setDescription("Revise and send messages on behalf of peko-bot")
     .addSubcommand((sc) =>
@@ -28,16 +27,8 @@ export default {
             .setDescription("Message ID to edit")
             .setRequired(true)
         )
-    )
-    .addSubcommand((sc) =>
-      sc
-        .setName("send")
-        .setDescription("Sends bot's message to a channel provides")
         .addChannelOption((option) =>
-          option
-            .setName("channel")
-            .setDescription("Channel to send message to")
-            .setRequired(true)
+          option.setName("channel_to_send").setDescription("Channel to send")
         )
     ),
   async execute(interaction) {
@@ -48,9 +39,12 @@ export default {
       case "revise": {
         const options = getOptions(interaction);
         const id = options[0].value;
-        const ch = await interaction.client.channels.cache.get(
-          interaction.channelId
-        );
+        const ch = interaction.client.channels.cache.get(interaction.channelId);
+        const channelId = options.length > 1 ? options[1].value : undefined;
+        const sendCh =
+          channelId !== undefined
+            ? interaction.client.channels.cache.get(channelId)
+            : undefined;
         const msg = await ch.messages.cache.get(id);
         if (!msg) {
           return await replyEmbedMessage(
@@ -59,29 +53,36 @@ export default {
           );
         }
 
+        const modalId = sendCh ? `editModal-${sendCh.id}` : "editModal";
+        const modalTitle = sendCh
+          ? `Edit message and send it to #${sendCh.name}`
+          : `Edit message`;
         const modal = new ModalBuilder()
-          .setCustomId("editModal")
-          .setTitle("Edit Bot Message");
-
-        const stringOptions = new StringSelectMenuOptionBuilder()
-          .setLabel("Message id")
-          .setValue(id)
-          .setDefault(true);
-        const messageId = new StringSelectMenuBuilder()
-          .setCustomId("messageId")
-          .setOptions(stringOptions)
-          .setDisabled();
+          .setCustomId(modalId)
+          .setTitle(modalTitle);
 
         const messageInput = new TextInputBuilder()
-          .setCustomId("messageText")
-          .setLabel("What's some of your favorite hobbies?")
+          .setCustomId(msg.id)
+          .setLabel("Message to edit")
           .setStyle(TextInputStyle.Paragraph)
-          .setValue(msg.content);
-        modal.addComponents(messageId, messageInput);
+          .setValue(msg.content)
+          .setRequired(true);
 
-        return interaction.showModal(modal);
+        try {
+          const secondActionRow = new ActionRowBuilder().addComponents(
+            messageInput
+          );
+          modal.addComponents(secondActionRow);
+
+          await interaction.showModal(modal);
+        } catch (e) {
+          console.log(e);
+        }
+        break;
       }
       case "send": {
+        const options = getOptions(interaction);
+        const id = options[0].value;
         return await replyEmbedMessage(interaction, `test!`);
       }
       default: {

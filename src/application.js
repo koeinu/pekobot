@@ -92,9 +92,39 @@ export class Application {
       if (!interaction.isModalSubmit()) {
         return;
       }
-      const messageId = interaction.fields.getTextInputValue("messageText");
-      const editedText = interaction.fields.getTextInputValue("messageText");
-      console.log(interaction);
+      try {
+        const customId = interaction.customId;
+        const channelToSendId = customId.split("-")[1];
+        const channelToSend = channelToSendId
+          ? interaction.client.channels.cache.get(channelToSendId)
+          : undefined;
+        const data = interaction.fields.fields.first();
+        const editedMessage = data.value;
+        const msgId = data.customId;
+        const ch = interaction.client.channels.cache.get(interaction.channelId);
+        const msg = ch.messages.cache.get(msgId);
+        msg
+          .edit(editedMessage)
+          .then(() => {
+            if (channelToSend) {
+              channelToSend.send(editedMessage);
+            }
+          })
+          .then(() => {
+            return replyEmbedMessage(
+              interaction,
+              channelToSend
+                ? `Successfully edited and sent.`
+                : `Successfully edited.`
+            );
+          })
+          .catch((e) => {
+            console.error(e);
+            return replyEmbedMessage(interaction, `Error when editing: ` + e);
+          });
+      } catch (e) {
+        console.error("Critical modal error:", e);
+      }
     });
 
     this.client.on(Events.InteractionCreate, async (interaction) => {

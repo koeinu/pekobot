@@ -1,6 +1,5 @@
 import { REST, Routes } from "discord.js";
 
-import fs from "node:fs";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -12,8 +11,11 @@ const guildIds = process.env.GUILD_ID;
 console.log(token, clientId, guildIds);
 
 export const disabledCommands = {
-  "584977240358518784": ["youtube", "relay"],
-  "999666683176308807": ["jigsaw", "betedit", "gptDict", "youtube"],
+  "584977240358518784": ["youtube", "relay", "gptdraft"], // miko
+  "999666683176308807": ["jigsaw", "betedit", "gptDict", "youtube", "gptdraft"], // snaxxx
+  "1061909810943115337": [], // ts
+  "683140640166510717": [], // peko
+  "1088005181171580949": [], // ts2
 };
 
 const rest = new REST({ version: "10" }).setToken(token);
@@ -36,10 +38,13 @@ export const generateCommands = async (
       console.log(JSON.stringify(commands));
       console.log("---------------------------------------------");
 
-      const data = await rest.put(
-        Routes.applicationGuildCommands(clientId, guildId),
-        { body: commands }
-      );
+      const data = await rest
+        .put(Routes.applicationGuildCommands(clientId, guildId), {
+          body: commands,
+        })
+        .catch((e) => {
+          console.error(`Guild id: ${guildId}:`, e);
+        });
 
       console.log(
         `Successfully reloaded ${data.length} application (/) commands.`
