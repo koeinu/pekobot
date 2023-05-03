@@ -52,6 +52,9 @@ export class StreakCommand extends AbstractCommand {
               : text.includes("おつぺこ") ||
                 text.toLowerCase().includes("otsupeko")
               ? "おつぺこ〜"
+              : text.includes("こんぺこ") ||
+                text.toLowerCase().includes("konpeko")
+              ? "こんぺこ〜"
               : text;
             return msg.channel.send(toSend).catch((e) => {
               console.error(
@@ -69,6 +72,8 @@ export class StreakCommand extends AbstractCommand {
       emojiPattern.test(text) ||
       text.includes("にーん") ||
       text.includes("おつぺこ") ||
+      text.includes("こんぺこ") ||
+      text.toLowerCase().includes("konpeko") ||
       text.toLowerCase().includes("otsupeko")
     );
   }
