@@ -54,8 +54,9 @@ const configuration = new Configuration({
   apiKey: key,
 });
 const openai = new OpenAIApi(configuration);
+import PQueue from "p-queue";
 
-let isGPTing = false;
+const queue = new PQueue({ concurrency: 1 });
 
 export const MOD_THRESHOLDS = {
   sexual: 0.4,
@@ -257,18 +258,14 @@ export const gptl = async (msg, text) => {
 };
 // throws
 export const gpt = async (str, systemMessage, completionParams = {}) => {
-  if (isGPTing) {
-    throw "GPT in progress";
-  }
-
-  isGPTing = true;
-  const res = await api
-    .sendMessage(str, {
-      systemMessage,
-      ...completionParams,
+  const res = await queue
+    .add(() => {
+      return api.sendMessage(str, {
+        systemMessage,
+        ...completionParams,
+      });
     })
     .catch((e) => {
-      isGPTing = false;
       throw e;
     });
   let result = res.text;
@@ -286,7 +283,6 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
     ].join("\n")
   );
 
-  isGPTing = false;
   return {
     text: result,
     data: {
