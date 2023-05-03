@@ -12,10 +12,7 @@ dotenv.config();
 const inactive = process.env.INACTIVE;
 
 if (!inactive) {
-  console.log("Cron task started:", cronTask);
-
-  const app = new Application();
-  console.log("Application started:", app);
+  console.log("Cron tasks started:", cronTask.getTasks().entries());
   const bot = new TelegramBotWrapper();
   console.log("Bot started:", bot);
 
@@ -31,6 +28,8 @@ if (!inactive) {
     originalConsoleWarn(...args);
   };
   console.log("Logging override complete");
+
+  const app = new Application();
   // const testInterval = require("./testLimiterCronJob");
 } else {
   console.log("Inactive mode.");

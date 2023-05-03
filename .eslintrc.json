@@ -35,6 +35,7 @@
     "no-magic-numbers": ["warn", { "ignore": [0, 1, 2, -1] }],
     "curly": "error",
     "max-classes-per-file": ["error", 1],
-    "no-constant-condition": "off"
+    "no-constant-condition": "off",
+    "no-unused-vars": "warn"
   }
 }
