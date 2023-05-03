@@ -30,7 +30,7 @@ export class GptlCommand extends AbstractCommand {
       "GPT translations",
       1,
       S_MS * H_M_S * 2,
-      ["Mod"],
+      ["Mod", "peko-bot"],
       AlertUserMode.Normal
     );
     this.intercept = true;
