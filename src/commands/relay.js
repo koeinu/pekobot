@@ -129,7 +129,14 @@ export default {
           ? await channel.messages.fetch(options[1].value)
           : undefined;
 
-        console.log("start message:", startMessage.content);
+        console.warn(
+          `relay salvage at `,
+          interaction.guild.name,
+          ":",
+          endMessage.id,
+          ",",
+          endMessage?.id
+        );
 
         let messages = [
           startMessage,
@@ -206,6 +213,8 @@ export default {
         //   ? await getYoutubeStartTimestamp(streamUrl)
         //   : undefined;
 
+        console.warn(`relay dump at `, interaction.guild.name, ":", streamUrl);
+
         const dumpingStartTime = new Date();
         const relayTexts = [];
         let firstTs = undefined;
@@ -277,10 +286,12 @@ export default {
         break;
       }
       case "clear": {
+        console.warn(`relay clear at `, interaction.guild.name);
         updateRelays([]);
         return await replyEmbedMessage(interaction, `Relay cleared.`);
       }
       case "info": {
+        console.warn(`relay info at `, interaction.guild.name);
         return await replyEmbedMessage(
           interaction,
           `Transcripts count: ${uniqueRelays.length}`
@@ -288,10 +299,12 @@ export default {
       }
       case "toggle": {
         const options = getOptions(interaction);
-        toggleRelays(options[0].value);
+        const value = options[0].value;
+        toggleRelays(value);
+        console.warn(`relay toggle at `, interaction.guild.name, ":", value);
         return await replyEmbedMessage(
           interaction,
-          `Relaying is now ${options[0].value ? "enabled" : "disabled"}`
+          `Relaying is now ${value ? "enabled" : "disabled"}`
         );
       }
       default: {

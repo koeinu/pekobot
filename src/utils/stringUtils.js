@@ -136,6 +136,22 @@ export const parseHashtags = (text) => {
   return text.match(matcher);
 };
 
+export const getMessage = (msg) => {
+  if (msg.content && msg.content.length > 0) {
+    return msg.content;
+  }
+  if (msg.embeds.length > 0) {
+    return msg.embeds[0].data.description;
+  }
+  return "<empty>";
+};
+
+export const getMsgInfo = (msg) => {
+  return `msg: ${getMessage(msg)} in ${msg.channel.name}, ${msg.guild.name} (${
+    msg.url
+  })`;
+};
+
 // preferring embed description text
 export const getTextMessageContent = async (
   msg,

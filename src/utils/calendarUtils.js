@@ -40,7 +40,9 @@ export const getYoutubeChannelId = async (vtuberHandle, channelId) => {
 };
 
 export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
-  console.warn(`Calendar requested! ${feedUrl}, ${vtuberHandle}, ${channelId}`);
+  console.debug(
+    `Calendar requested! ${feedUrl}, ${vtuberHandle}, ${channelId}`
+  );
   let data = await getYoutubeChannelId(vtuberHandle, channelId);
   return generateIcs(vtuberHandle, data, feedUrl);
 };

@@ -41,6 +41,14 @@ export default {
         const id = options[0].value;
         const ch = interaction.client.channels.cache.get(interaction.channelId);
         const channelId = options.length > 1 ? options[1].value : undefined;
+        console.warn(
+          `gptdraft at `,
+          interaction.guild.name,
+          ":",
+          id,
+          ", send to ",
+          ch?.name
+        );
         const sendCh =
           channelId !== undefined
             ? interaction.client.channels.cache.get(channelId)
@@ -79,11 +87,6 @@ export default {
           console.log(e);
         }
         break;
-      }
-      case "send": {
-        const options = getOptions(interaction);
-        const id = options[0].value;
-        return await replyEmbedMessage(interaction, `test!`);
       }
       default: {
         await replyEmbedMessage(interaction, `Unknown command: ${subCommand}`);

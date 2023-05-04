@@ -56,6 +56,7 @@ export default {
 
     switch (subCommand) {
       case "list_banned": {
+        console.warn(`youtube listbans at `, interaction.guild.name);
         const bans = listBans();
         const msg = Object.entries(bans)
           .map((kvp) => {
@@ -68,18 +69,28 @@ export default {
         const options = getOptions(interaction);
         const id = options[0].value;
         const reason = options[1].value;
+        console.warn(
+          `youtube ban at `,
+          interaction.guild.name,
+          ":",
+          id,
+          ",",
+          reason
+        );
         addBan(id, reason);
         return await replyEmbedMessage(interaction, `Channel banned.`);
       }
       case "unban_channel": {
         const options = getOptions(interaction);
         const id = options[0].value;
+        console.warn(`youtube unban at `, interaction.guild.name, ":", id);
         removeBan(id);
         return await replyEmbedMessage(interaction, "Channel unbanned.");
       }
       case "get_id": {
         const options = getOptions(interaction);
         const videoLink = options[0].value;
+        console.warn(`youtube id at `, interaction.guild.name, ":", videoLink);
         const id = await getYoutubeChannelId(videoLink);
         return await replyEmbedMessage(interaction, id);
       }

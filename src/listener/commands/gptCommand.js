@@ -11,6 +11,7 @@ import {
   getTextMessageContent,
   formChainGPTPrompt,
   isFormattedTl,
+  getMsgInfo,
 } from "../../utils/stringUtils.js";
 import { fetchMessages, reply } from "../../utils/discordUtils.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
@@ -117,6 +118,7 @@ export class GptCommand extends AbstractCommand {
     if (!(await this.rateLimitPass(msg))) {
       return Promise.resolve();
     }
+    console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
     const replyChain = rpMode
       ? splitMessages(

@@ -11,10 +11,13 @@ import { GptlCommand } from "./commands/gptlCommand.js";
 import { SameReactCommand } from "./commands/sameReactCommand.js";
 import { BotMentionedCommand } from "./commands/botMentionedCommand.js";
 import { ModerateCommand } from "./commands/moderateCommand.js";
+import { getMessage, getMsgInfo } from "../utils/stringUtils.js";
+import { CreatorMentionedCommand } from "./commands/creatorMentionedCommand.js";
 
 export class CommandListener {
   constructor(client) {
     this.commands = [
+      new CreatorMentionedCommand(), // ...
       new LinkFilterCommand(), // top priority, intercepts
       new RelayMessageCommand(), // high priority, intercepts
       new GptlCommand(), // intercepts
@@ -49,7 +52,7 @@ export class CommandListener {
           commandIntercepted = commandIntercepted || command.intercept;
           await command.execute(msg, this.client).catch((e) => {
             console.error(
-              `Couldn't execute command ${command.name} (${this.getMsgInfo(
+              `Couldn't execute command ${command.name} (${getMsgInfo(
                 msg
               )}): ${e}`
             );
@@ -72,9 +75,9 @@ export class CommandListener {
           console.log(`updating ${processData.reason}`);
           command.executeUpdate(oldMsg, newMsg, this.client).catch((e) => {
             console.error(
-              `Couldn't execute update command ${
-                command.name
-              } (${this.getMsgInfo(msg)}): ${e}`
+              `Couldn't execute update command ${command.name} (${getMsgInfo(
+                msg
+              )}): ${e}`
             );
           });
         }
@@ -94,11 +97,9 @@ export class CommandListener {
           console.log(`deleting ${processData.reason}`);
           command.executeDelete(msg, this.client).catch((e) => {
             console.error(
-              `Couldn't execute delete command ${
-                command.name
-              } for ${this.getMessage(msg)} in ${msg.channel.name}, ${
-                msg.guild.name
-              }: ${e}`
+              `Couldn't execute delete command ${command.name} for ${getMessage(
+                msg
+              )} in ${msg.channel.name}, ${msg.guild.name}: ${e}`
             );
           });
         }
@@ -106,30 +107,12 @@ export class CommandListener {
     }
   }
 
-  getMessage(msg) {
-    if (msg.content && msg.content.length > 0) {
-      return msg.content;
-    }
-    if (msg.embeds.length > 0) {
-      return msg.embeds[0].data.description;
-    }
-    return "<empty>";
-  }
-
-  getMsgInfo(msg) {
-    return `msg: ${this.getMessage(msg)} in ${msg.channel.name}, ${
-      msg.guild.name
-    } (${msg.url})`;
-  }
-
   shouldProcessMsg(msg, command) {
     // do not respond to system messages and to other bots
     if (msg.system || msg.author.bot) {
       return {
         result: false,
-        reason: `${command.name}, ignoring bot/system msg (${this.getMsgInfo(
-          msg
-        )})`,
+        reason: `${command.name}, ignoring bot/system msg (${getMsgInfo(msg)})`,
       };
     }
 
@@ -139,7 +122,7 @@ export class CommandListener {
           result: true,
           reason: `${command.name}, triggered by user ${
             msg.author.username
-          } (${this.getMsgInfo(msg)})`,
+          } (${getMsgInfo(msg)})`,
         };
       }
     }
@@ -151,7 +134,7 @@ export class CommandListener {
           result: false,
           reason: `${command.name}, ignoring prohibited user ${
             msg.author.username
-          } (${this.getMsgInfo(msg)})`,
+          } (${getMsgInfo(msg)})`,
         };
       }
     }
@@ -161,7 +144,7 @@ export class CommandListener {
           result: false,
           reason: `${command.name}, ignoring banned user ${
             msg.author.username
-          } (${this.getMsgInfo(msg)})`,
+          } (${getMsgInfo(msg)})`,
         };
       }
     }
@@ -175,7 +158,7 @@ export class CommandListener {
           result: false,
           reason: `${command.name}, guild filtered: ${
             command.guilds
-          } (${this.getMsgInfo(msg)})`,
+          } (${getMsgInfo(msg)})`,
         };
       }
     }
@@ -189,7 +172,7 @@ export class CommandListener {
           result: false,
           reason: `${command.name} -> prohibited channel filtered: ${
             command.prohibitedChannels
-          } (${this.getMsgInfo(msg)})`,
+          } (${getMsgInfo(msg)})`,
         };
       }
     }
@@ -203,7 +186,7 @@ export class CommandListener {
           result: false,
           reason: `${command.name}, channel filtered: ${
             command.allowedChannels
-          } (${this.getMsgInfo(msg)})`,
+          } (${getMsgInfo(msg)})`,
         };
       }
     }
@@ -218,7 +201,7 @@ export class CommandListener {
           result: true,
           reason: `${command.name}, channel OK: ${
             command.channels
-          } (${this.getMsgInfo(msg)})`,
+          } (${getMsgInfo(msg)})`,
         };
       }
     }
@@ -230,16 +213,16 @@ export class CommandListener {
 
       return {
         result,
-        reason: `${command.name}, ${value}/${
-          command.probability
-        } (${this.getMsgInfo(msg)})`,
+        reason: `${command.name}, ${value}/${command.probability} (${getMsgInfo(
+          msg
+        )})`,
       };
     }
 
     // if no guilds, channels or probability is set, the command is allowed to be executed by default
     return {
       result: true,
-      reason: `${command.name}, default (${this.getMsgInfo(msg)})`,
+      reason: `${command.name}, default (${getMsgInfo(msg)})`,
     };
   }
 }

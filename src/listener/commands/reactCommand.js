@@ -4,6 +4,7 @@ import extractUrls from "extract-urls";
 import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
 import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
+import { getMsgInfo } from "../../utils/stringUtils.js";
 
 export const messageMoods = {
   joke: [
@@ -72,7 +73,6 @@ export class ReactCommand extends AbstractCommand {
     this.probability = 0.005;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
-    // this.channels = ["1070086039445717124", "1063492591716405278"];
   }
   async execute(msg, discordClient, reactMood = false) {
     const reacts = moodsReacts;
@@ -90,8 +90,11 @@ export class ReactCommand extends AbstractCommand {
         const text = result?.text;
         console.log(`Action result: ${text}`);
         if (text && !text.toLowerCase().includes("other")) {
-          actionsData.some(([mood, emotes]) => {
-            if (text && text.toLowerCase().includes(mood)) {
+          actionsData.some(([action, emotes]) => {
+            if (text && text.toLowerCase().includes(action)) {
+              console.warn(
+                `${this.name} triggered, ${getMsgInfo(msg)}, action: ${action}`
+              );
               const randomEmote =
                 emotes[Math.floor(Math.random() * emotes.length)];
               if (randomEmote) {
@@ -113,6 +116,9 @@ export class ReactCommand extends AbstractCommand {
             console.log(`Mood result: ${result?.text}`);
             reactData.some(([mood, emotes]) => {
               if (result?.text && result?.text.toLowerCase().includes(mood)) {
+                console.warn(
+                  `${this.name} triggered, ${getMsgInfo(msg)}, mood: ${mood}`
+                );
                 const randomEmote =
                   emotes[Math.floor(Math.random() * emotes.length)];
                 if (randomEmote) {

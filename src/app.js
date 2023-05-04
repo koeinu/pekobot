@@ -1,5 +1,6 @@
 import { Application } from "./application.js";
 import {
+  originalConsoleDebug,
   originalConsoleError,
   originalConsoleLog,
   originalConsoleWarn,
@@ -31,7 +32,10 @@ if (!inactive) {
     bot.sendWarning(...args);
     originalConsoleWarn(...args);
   };
-  // console.debug();
+  console.debug = (...args) => {
+    bot.sendDebug(...args);
+    originalConsoleDebug(...args);
+  };
   console.error("Logging override complete (a restart happened?)");
 
   const app = new Application();

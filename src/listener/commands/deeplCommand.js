@@ -3,7 +3,11 @@ import { MessageType } from "discord.js";
 import { AbstractCommand } from "../abstractCommand.js";
 import { ApiUtils } from "../../utils/apiUtils.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
-import { formatTLText, printTLInfo } from "../../utils/stringUtils.js";
+import {
+  formatTLText,
+  getMsgInfo,
+  printTLInfo,
+} from "../../utils/stringUtils.js";
 
 import { getCounter } from "../../model/counter.js";
 
@@ -36,6 +40,7 @@ export class DeeplCommand extends AbstractCommand {
     if (!(await this.rateLimitPass(msg))) {
       return Promise.resolve();
     }
+    console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
     let data = await getTextMessageContent(msg, true, true, false);
     const parsed = data.text.split(" ");
     const sourceLanguage = LANGUAGES.find((el) =>

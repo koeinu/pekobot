@@ -6,6 +6,7 @@ import {
 } from "../../utils/discordUtils.js";
 import {
   formatTLText,
+  getMsgInfo,
   getTextMessageContent,
   printTLInfo,
 } from "../../utils/stringUtils.js";
@@ -39,6 +40,7 @@ export class GptlCommand extends AbstractCommand {
     if (!(await this.rateLimitPass(msg))) {
       return Promise.resolve();
     }
+    console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
     let data = await getTextMessageContent(msg, true, true, false);
     const parsed = data.text.split(" ");
     const isCount = parsed.includes("count");

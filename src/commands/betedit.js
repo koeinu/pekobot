@@ -100,6 +100,12 @@ const processChangeDesc = async (interaction) => {
   const guildId = interaction.guild.id;
   const options = getOptions(interaction);
   const betDescription = options[0].value;
+  console.warn(
+    `betedit description at`,
+    interaction.guild.name,
+    ":",
+    betDescription
+  );
   changeBetDescription(JSON_FILE_NAME, guildId, betDescription);
   await replyEmbedMessage(interaction, "Description changed.");
 
@@ -112,6 +118,12 @@ const processRemoveUser = async (interaction) => {
   // it's validated on the bot client side, made sure the <@userIdNumber> format is used
   const options = getOptions(interaction);
   const idToRemove = options[0].value.match(/\d+/g)[0];
+  console.warn(
+    `betedit removeUser at`,
+    interaction.guild.name,
+    ":",
+    idToRemove
+  );
   clearBet(JSON_FILE_NAME, guildId, idToRemove);
   await replyEmbedMessage(interaction, printUnbet(idToRemove));
 
@@ -123,6 +135,12 @@ const processCreateBetSimple = async (interaction) => {
   const guildId = interaction.guild.id;
   const options = getOptions(interaction);
   const betDescription = options[0].value;
+  console.warn(
+    `betedit create at`,
+    interaction.guild.name,
+    ":",
+    betDescription
+  );
 
   createSimpleBet(JSON_FILE_NAME, guildId, betDescription);
 
@@ -137,7 +155,14 @@ const processCreateBetChoices = async (interaction) => {
   const options = getOptions(interaction);
   const betCategories = options[0].value;
   const betContents = options[1].value;
-  console.log(betCategories, betContents);
+  console.warn(
+    `betedit create at`,
+    interaction.guild.name,
+    ":",
+    betCategories,
+    "///",
+    betContents
+  );
   const parsedBetChoices = parseBetChoices(betCategories, betContents);
 
   createChoiceBet(
@@ -157,6 +182,7 @@ const processToggleBet = async (interaction) => {
   const guildId = interaction.guild.id;
   const options = getOptions(interaction);
   const value = options[0].value === true;
+  console.warn(`betedit toggle at`, interaction.guild.name, ":", value);
   toggleBets(JSON_FILE_NAME, guildId, value);
   await replyEmbedMessage(
     interaction,
@@ -168,6 +194,7 @@ const processToggleBet = async (interaction) => {
 
 const processDeleteBet = async (interaction) => {
   const guildId = interaction.guild.id;
+  console.warn(`betedit delete at `, interaction.guild.name);
   saveBets(JSON_FILE_NAME, guildId, INITIAL_BET);
   await replyEmbedMessage(interaction, "Bets are cleared.");
 

@@ -1,12 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
-import { gpt } from "./utils/openaiUtils.js";
 dotenv.config();
 const token = process.env.TG_BOT_TOKEN;
 
 export const originalConsoleLog = console.log;
 export const originalConsoleError = console.error;
 export const originalConsoleWarn = console.warn;
+export const originalConsoleDebug = console.debug;
 
 export class TelegramBotWrapper {
   constructor() {
@@ -41,6 +41,7 @@ export class TelegramBotWrapper {
     this.logsId = -1001906303858;
     this.errorsId = -1001920972703;
     this.warningsId = -1001838776203;
+    this.debugId = -1001928890609;
   }
 
   async sendMessage(id, str) {
@@ -81,7 +82,7 @@ export class TelegramBotWrapper {
     });
   }
   sendDebug(...args) {
-    this.sendMessage(this.warningsId, this.makeString(...args)).catch((e) => {
+    this.sendMessage(this.debugId, this.makeString(...args)).catch((e) => {
       originalConsoleError(e);
     });
   }

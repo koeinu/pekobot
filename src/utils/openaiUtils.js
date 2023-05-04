@@ -286,7 +286,7 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
     result = result.slice(9).trim();
   }
 
-  console.warn(
+  console.debug(
     [
       `GPT prompt: ${str}`,
       `GPT sys message: ${systemMessage}`,

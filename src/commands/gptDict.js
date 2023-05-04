@@ -13,6 +13,7 @@ const processAdd = async (interaction) => {
   const src = options[0].value;
   const tgt = options[1].value;
   addEntry(guildId, src, tgt);
+  console.warn(`gpt dict add at `, interaction.guild.name, ":", src, "->", tgt);
   await replyEmbedMessage(
     interaction,
     `Added an entry ${src} -> ${tgt} to the server GPT dictionary.`,
@@ -26,6 +27,7 @@ const processDelete = async (interaction) => {
   const guildId = interaction.guild.id;
   const options = getOptions(interaction);
   const src = options[0].value;
+  console.warn(`gpt dict del at `, interaction.guild.name, ":", src);
   deleteEntry(guildId, src);
   await replyEmbedMessage(
     interaction,
