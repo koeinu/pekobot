@@ -32,6 +32,10 @@ export class CommandListener {
     this.client = client;
   }
   async processMessage(msg) {
+    if (msg.system || msg.author.bot) {
+      return Promise.resolve();
+    }
+
     let commandIntercepted = false;
     for (let command of this.commands) {
       if (commandIntercepted) {
@@ -55,6 +59,10 @@ export class CommandListener {
     }
   }
   async processMessageUpdate(oldMsg, newMsg) {
+    if (msg.system || msg.author.bot) {
+      return Promise.resolve();
+    }
+
     const msg = oldMsg;
     for (let command of this.commands) {
       const match = await command.commandMatch(msg);
@@ -74,6 +82,10 @@ export class CommandListener {
     }
   }
   async processMessageDelete(msg) {
+    if (msg.system || msg.author.bot) {
+      return Promise.resolve();
+    }
+
     for (let command of this.commands) {
       const match = await command.commandMatch(msg);
       if (match) {
