@@ -42,20 +42,24 @@ if (!inactive) {
 
   const expressApp = express();
   const init = async () => {
-    for (let meta of CALENDAR_METADATA) {
-      expressApp.use(
-        "/ics/" + meta.handle + "/feed",
-        feedRoute(async (feedUrl) => {
-          return getCalendar(feedUrl, meta.handle, meta.id);
-        })
-      );
-      expressApp.use(
-        "/ics/" + meta.handle,
-        aboutRoute(meta.handle, "/ics/" + meta.handle + "/feed")
-      );
-    }
+    try {
+      for (let meta of CALENDAR_METADATA) {
+        expressApp.use(
+          "/ics/" + meta.handle + "/feed",
+          feedRoute(async (feedUrl) => {
+            return getCalendar(feedUrl, meta.handle, meta.id);
+          })
+        );
+        expressApp.use(
+          "/ics/" + meta.handle,
+          aboutRoute(meta.handle, "/ics/" + meta.handle + "/feed")
+        );
+      }
 
-    expressApp.listen(3000);
+      expressApp.listen(3000);
+    } catch (e) {
+      console.error(`Did it even go up here..?`);
+    }
   };
 
   init().catch((e) => {

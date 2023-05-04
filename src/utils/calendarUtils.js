@@ -4,8 +4,6 @@ import generateIcs from "ics-service/generate-ics.js";
 import { getYoutubeLiveDetails } from "./youtubeUtils.js";
 import { H_M_S, S_MS } from "./constants.js";
 
-export const CALENDAR_TITLE = "Custom Hololive Feed";
-
 dotenv.config();
 const API_KEY = process.env.API_KEY;
 const ICS_DATA = process.env.ICS_DATA;
@@ -79,5 +77,8 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
     `Calendar requested! ${feedUrl}, ${vtuberHandle}, ${channelId}`
   );
   let data = await prepareCalendarDataFromChannelId(vtuberHandle, channelId);
+  if (!data) {
+    throw `Calendar can't be formed`;
+  }
   return generateIcs(vtuberHandle, data, feedUrl);
 };
