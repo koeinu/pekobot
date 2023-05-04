@@ -10,7 +10,7 @@ import { cronTask } from "./resetCounterCronJob.js";
 import dotenv from "dotenv";
 import express from "express";
 import aboutRoute from "ics-service/about.js";
-import feedRoute from "ics-service/feed";
+import feedRoute from "ics-service/feed.js";
 import { CALENDAR_METADATA, getCalendar } from "./utils/calendarUtils.js";
 
 dotenv.config();
