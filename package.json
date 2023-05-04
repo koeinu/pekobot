@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/app.js",
     "test": "node src/test.js",
-    "commands": "node src/deploy-commands.js"
+    "commands": "node --trace-warnings src/deploy-commands.js"
   },
   "dependencies": {
     "@google-cloud/translate": "^7.1.0",
