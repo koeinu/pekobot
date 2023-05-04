@@ -39,7 +39,7 @@ if (!inactive) {
     for (let meta of CALENDAR_METADATA) {
       expressApp.use(
         "/ics/" + meta.handle,
-        aboutRoute("/ics/" + meta.handle + "/feed")
+        aboutRoute(meta.handle, "/ics/" + meta.handle + "/feed")
       );
       expressApp.use("/ics/" + meta.handle + "/feed", async (feedUrl) => {
         return getCalendar(feedUrl, meta.handle, meta.id);
