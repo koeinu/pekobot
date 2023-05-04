@@ -46,7 +46,9 @@ if (!inactive) {
       expressApp.use(
         "/ics/" + meta.handle + "/feed",
         feedRoute(async (feedUrl) => {
-          return getCalendar(feedUrl, meta.handle, meta.id);
+          return getCalendar(feedUrl, meta.handle, meta.id).catch((e) => {
+            console.error(`Couldn't get calendar: `, e);
+          });
         })
       );
       expressApp.use(
