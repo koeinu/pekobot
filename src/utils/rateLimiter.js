@@ -18,11 +18,13 @@ export class CustomRateLimiter {
       }, this.interval);
       return { result: false };
     } else {
-      console.log(
-        `rate++ ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
-      );
+      if (this.entities[entityId].count > 0) {
+        console.log(
+          `rate++ ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
+        );
+      }
       if (this.entities[entityId].count === this.amount) {
-        console.warn(`rate hit!`);
+        console.warn(`rate hit! ${entityId}`);
         return {
           result: true,
           ts: this.entities[entityId].ts + this.interval - new Date().getTime(),
