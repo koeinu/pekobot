@@ -59,11 +59,11 @@ export class CommandListener {
     }
   }
   async processMessageUpdate(oldMsg, newMsg) {
+    const msg = oldMsg;
     if (msg.system || msg.author.bot) {
       return Promise.resolve();
     }
 
-    const msg = oldMsg;
     for (let command of this.commands) {
       const match = await command.commandMatch(msg);
       if (match) {
