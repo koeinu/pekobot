@@ -47,7 +47,7 @@ if (!inactive) {
         "/ics/" + meta.handle + "/feed",
         feedRoute(async (feedUrl) => {
           return getCalendar(feedUrl, meta.handle, meta.id).catch((e) => {
-            console.error(`Couldn't get calendar: `, e);
+            console.debug(`Couldn't get calendar: `, e);
           });
         })
       );

@@ -44,7 +44,7 @@ export const getYoutubeChannelId = async (vtuberHandle, channelId) => {
         getYoutubeLiveDetails(vtuberHandle, el.id.videoId)
       );
       channelCache[channelId] = Promise.all(promises);
-      console.debug(
+      console.error(
         `Obtaining and caching channel info: ${vtuberHandle}, ${channelId}`
       );
       setTimeout(() => {
