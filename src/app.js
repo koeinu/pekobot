@@ -15,7 +15,7 @@ dotenv.config();
 const inactive = process.env.INACTIVE;
 
 if (!inactive) {
-  console.log("Cron tasks started:", cronTask.getTasks().entries());
+  console.log("Cron tasks started");
   const bot = new TelegramBotWrapper();
   console.log("Bot started:", bot);
 
@@ -37,13 +37,13 @@ if (!inactive) {
   const expressApp = express();
   const init = async () => {
     for (let meta of CALENDAR_METADATA) {
+      expressApp.use("/ics/" + meta.handle + "/feed", async (feedUrl) => {
+        return getCalendar(feedUrl, meta.handle, meta.id);
+      });
       expressApp.use(
         "/ics/" + meta.handle,
         aboutRoute(meta.handle, "/ics/" + meta.handle + "/feed")
       );
-      expressApp.use("/ics/" + meta.handle + "/feed", async (feedUrl) => {
-        return getCalendar(feedUrl, meta.handle, meta.id);
-      });
     }
 
     expressApp.listen(3000);
