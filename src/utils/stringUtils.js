@@ -132,7 +132,7 @@ export const parseHashtags = (text) => {
     throw new TypeError("Expected a text");
   }
 
-  let matcher = /#([^\s]+)/g;
+  let matcher = /[#＃][\S]+[\s|\n]*/g;
   return text.match(matcher);
 };
 
