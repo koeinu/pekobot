@@ -1,7 +1,7 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { getYoutubeLiveDetails } from "./utils/youtubeUtils.js";
 import generateIcs from "ics-service/generate-ics.js";
+import { getYoutubeLiveDetails } from "./youtubeUtils.js";
 
 export const CALENDAR_TITLE = "Custom Hololive Feed";
 
