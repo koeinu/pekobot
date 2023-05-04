@@ -31,7 +31,7 @@ if (!inactive) {
     bot.sendWarning(...args);
     originalConsoleWarn(...args);
   };
-  console.warn("Logging override complete (a restart happened?)");
+  console.error("Logging override complete (a restart happened?)");
 
   const app = new Application();
 
