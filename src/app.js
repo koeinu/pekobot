@@ -12,7 +12,12 @@ import dotenv from "dotenv";
 import express from "express";
 import aboutRoute from "ics-service/about.js";
 import feedRoute from "ics-service/feed.js";
-import { CALENDAR_METADATA, getCalendar } from "./utils/calendarUtils.js";
+import {
+  CALENDAR_METADATA,
+  getCalendar,
+  rateLimited,
+  setRateLimited,
+} from "./utils/calendarUtils.js";
 
 dotenv.config();
 const inactive = process.env.INACTIVE;
@@ -46,9 +51,7 @@ if (!inactive) {
       expressApp.use(
         "/ics/" + meta.handle + "/feed",
         feedRoute(async (feedUrl) => {
-          return getCalendar(feedUrl, meta.handle, meta.id).catch((e) => {
-            console.debug(`Couldn't get calendar: `, e);
-          });
+          return getCalendar(feedUrl, meta.handle, meta.id);
         })
       );
       expressApp.use(

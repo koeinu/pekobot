@@ -22,10 +22,22 @@ export const CALENDAR_METADATA = ICS_DATA
 
 const CACHE_TIMEOUT = H_M_S * H_M_S * S_MS;
 const channelCache = {};
+let rateLimited = false;
 
-export const getYoutubeChannelId = async (vtuberHandle, channelId) => {
+export const setRateLimited = (value) => {
+  rateLimited = value;
+};
+
+export const logFunction = () => (rateLimited ? console.error : console.debug);
+export const errorFunction = () =>
+  rateLimited ? console.debug : console.error;
+
+export const prepareCalendarDataFromChannelId = async (
+  vtuberHandle,
+  channelId
+) => {
   if (channelCache[channelId]) {
-    console.debug(`Cached channel info: ${vtuberHandle}, ${channelId}`);
+    logFunction(`Cached channel info: ${vtuberHandle}, ${channelId}`);
     return channelCache[channelId];
   }
   const config = {
@@ -38,22 +50,27 @@ export const getYoutubeChannelId = async (vtuberHandle, channelId) => {
       `https://www.googleapis.com/youtube/v3/search?part=id,snippet&channelId=${channelId}&eventType=upcoming&type=video&key=${API_KEY}`,
       config
     )
-    .then((resp) => resp.data)
-    .then((data) => {
-      const promises = data.items.map((el) =>
+    .then((resp) => {
+      setRateLimited(false);
+      const promises = resp.data.items.map((el) =>
         getYoutubeLiveDetails(vtuberHandle, el.id.videoId)
       );
       channelCache[channelId] = Promise.all(promises);
-      console.error(
+      logFunction(
         `Obtaining and caching channel info: ${vtuberHandle}, ${channelId}`
       );
       setTimeout(() => {
-        console.debug(
+        logFunction(
           `Cleaning cache channel info: ${vtuberHandle}, ${channelId}`
         );
         channelCache[channelId] = undefined;
       }, CACHE_TIMEOUT);
       return channelCache[channelId];
+    })
+    .catch((e) => {
+      console.log("status is 403:", e?.status === 403);
+      setRateLimited(true);
+      errorFunction(`Couldn't get calendar: `, e);
     });
 };
 
@@ -61,6 +78,6 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
   console.debug(
     `Calendar requested! ${feedUrl}, ${vtuberHandle}, ${channelId}`
   );
-  let data = await getYoutubeChannelId(vtuberHandle, channelId);
+  let data = await prepareCalendarDataFromChannelId(vtuberHandle, channelId);
   return generateIcs(vtuberHandle, data, feedUrl);
 };
