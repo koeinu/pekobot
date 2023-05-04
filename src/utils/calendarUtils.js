@@ -37,7 +37,7 @@ export const prepareCalendarDataFromChannelId = async (
   channelId
 ) => {
   if (channelCache[channelId]) {
-    logFunction(`Cached channel info: ${vtuberHandle}, ${channelId}`);
+    logFunction()(`Cached channel info: ${vtuberHandle}, ${channelId}`);
     return channelCache[channelId];
   }
   const config = {
@@ -56,11 +56,11 @@ export const prepareCalendarDataFromChannelId = async (
         getYoutubeLiveDetails(vtuberHandle, el.id.videoId)
       );
       channelCache[channelId] = Promise.all(promises);
-      logFunction(
+      logFunction()(
         `Obtaining and caching channel info: ${vtuberHandle}, ${channelId}`
       );
       setTimeout(() => {
-        logFunction(
+        logFunction()(
           `Cleaning cache channel info: ${vtuberHandle}, ${channelId}`
         );
         channelCache[channelId] = undefined;
@@ -70,7 +70,7 @@ export const prepareCalendarDataFromChannelId = async (
     .catch((e) => {
       console.log("status is 403:", e?.status === 403);
       setRateLimited(true);
-      errorFunction(`Couldn't get calendar: `, e);
+      errorFunction()(`Couldn't get calendar: `, e);
     });
 };
 
