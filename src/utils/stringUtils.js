@@ -127,6 +127,15 @@ const crawlURL = async (url) => {
   return data;
 };
 
+export const parseHashtags = (text) => {
+  if (typeof text !== "string") {
+    throw new TypeError("Expected a text");
+  }
+
+  let matcher = /#([^\s]+)/g;
+  return text.match(matcher);
+};
+
 // preferring embed description text
 export const getTextMessageContent = async (
   msg,
