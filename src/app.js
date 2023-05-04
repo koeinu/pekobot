@@ -8,6 +8,10 @@ import {
 import { cronTask } from "./resetCounterCronJob.js";
 
 import dotenv from "dotenv";
+import express from "express";
+import feedRoute from "ics-service/feed.js";
+import aboutRoute from "ics-service/about.js";
+import { CALENDAR_TITLE, getCalendar } from "./utils/calendarUtils.js";
 dotenv.config();
 const inactive = process.env.INACTIVE;
 
@@ -30,6 +34,18 @@ if (!inactive) {
   console.log("Logging override complete");
 
   const app = new Application();
+
+  const expressApp = express();
+  const init = async () => {
+    expressApp.use("/feed", feedRoute(getCalendar));
+    expressApp.use("/", aboutRoute(CALENDAR_TITLE));
+    expressApp.listen(80);
+  };
+
+  init().catch((e) => {
+    console.error(`Couldn't create calendar:`, e);
+  });
+
   // const testInterval = require("./testLimiterCronJob");
 } else {
   console.log("Inactive mode.");
