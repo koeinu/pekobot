@@ -18,6 +18,7 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_CONSULTING,
   PEKO_GPT,
+  PROHIBITED_GPT_CHANNELS,
   RP_CHANNELS,
   TEST_ASSISTANT,
   TEST_USUAL_PEKO_GPT,
@@ -84,6 +85,7 @@ export class GptCommand extends AbstractCommand {
       TEST_USUAL_PEKO_GPT,
       PEKO_GPT,
     ];
+    this.prohibitedChannels = PROHIBITED_GPT_CHANNELS;
     this.intercept = true;
   }
   async execute(msg) {

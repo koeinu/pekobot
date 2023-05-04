@@ -7,10 +7,19 @@ export const CALENDAR_TITLE = "Custom Hololive Feed";
 
 dotenv.config();
 const API_KEY = process.env.API_KEY;
+const ICS_DATA = process.env.ICS_DATA;
 
-export const channelId = "UC6eWCld0KwmyHFbAqK3V-Rw";
+export const CALENDAR_METADATA = ICS_DATA
+  ? ICS_DATA.split(";").map((el) => {
+      const data = el.split(":");
+      return {
+        handle: data[0],
+        id: data[1],
+      };
+    })
+  : [];
 
-export const getYoutubeChannelId = async (channelId) => {
+export const getYoutubeChannelId = async (vtuberHandle, channelId) => {
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -24,13 +33,13 @@ export const getYoutubeChannelId = async (channelId) => {
     .then((resp) => resp.data)
     .then((data) => {
       const promises = data.items.map((el) =>
-        getYoutubeLiveDetails("Koyo", el.id.videoId)
+        getYoutubeLiveDetails(vtuberHandle, el.id.videoId)
       );
       return Promise.all(promises);
     });
 };
 
-export const getCalendar = async (feedUrl) => {
-  let data = await getYoutubeChannelId(channelId);
-  return generateIcs(CALENDAR_TITLE, data, feedUrl);
+export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
+  let data = await getYoutubeChannelId(vtuberHandle, channelId);
+  return generateIcs(vtuberHandle, data, feedUrl);
 };

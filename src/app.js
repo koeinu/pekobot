@@ -9,9 +9,8 @@ import { cronTask } from "./resetCounterCronJob.js";
 
 import dotenv from "dotenv";
 import express from "express";
-import feedRoute from "ics-service/feed.js";
 import aboutRoute from "ics-service/about.js";
-import { CALENDAR_TITLE, getCalendar } from "./utils/calendarUtils.js";
+import { CALENDAR_METADATA, getCalendar } from "./utils/calendarUtils.js";
 dotenv.config();
 const inactive = process.env.INACTIVE;
 
@@ -37,8 +36,13 @@ if (!inactive) {
 
   const expressApp = express();
   const init = async () => {
-    expressApp.use("/feed", feedRoute(getCalendar));
-    expressApp.use("/", aboutRoute(CALENDAR_TITLE));
+    for (let meta of CALENDAR_METADATA) {
+      expressApp.use("/ics/" + meta.handle, aboutRoute(meta.handle));
+      expressApp.use("/ics/" + meta.handle + "/feed", async (feedUrl) => {
+        return getCalendar(feedUrl, meta.handle, meta.id);
+      });
+    }
+
     expressApp.listen(3000);
   };
 

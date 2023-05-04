@@ -31,7 +31,7 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIdOrUrl) => {
         start: video.liveStreamingDetails.scheduledStartTime
           .match(/\d+/g)
           .map((el) => Number.parseInt(el)),
-        summary: `${vtuberName}: ${video.snippet.title}`,
+        title: `${vtuberName}: ${video.snippet.title}`,
         url: `https://www.youtube.com/watch?v=${video.id}`,
         uid: video.id,
       };
