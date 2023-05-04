@@ -16,6 +16,10 @@ export class TelegramBotWrapper {
       } catch (e) {
         console.error(e);
       }
+      this.bot.on("channel_post", (msg) => {
+        const chatId = msg.chat.id;
+        console.log("got channel message, channel id:", chatId);
+      });
       this.bot.on("message", (msg) => {
         const chatId = msg.chat.id;
         console.log("got message, channel id:", chatId);
