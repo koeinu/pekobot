@@ -45,15 +45,21 @@ export const prepareCalendarDataFromChannelId = async (
   };
   return await axios
     .get(
-      `https://www.googleapis.com/youtube/v3/search?part=id,snippet&channelId=${channelId}&eventType=upcoming&type=video&key=${API_KEY}`,
+      `https://www.googleapis.com/youtube/v3/search?part=id,snippet&channelId=${channelId}&type=video&key=${API_KEY}&order=date`,
       config
     )
     .then((resp) => {
       setRateLimited(false);
-      const promises = resp.data.items.map((el) =>
-        getYoutubeLiveDetails(vtuberHandle, el.id.videoId)
-      );
-      channelCache[channelId] = Promise.all(promises);
+      const items = resp.data.items;
+      if (items.length > 0) {
+        const data = getYoutubeLiveDetails(
+          vtuberHandle,
+          resp.data.items.map((el) => el.id.videoId).join(",")
+        );
+        channelCache[channelId] = Promise.resolve(data);
+      } else {
+        channelCache[channelId] = Promise.resolve([]);
+      }
       logFunction()(
         `Obtaining and caching channel info: ${vtuberHandle}, ${channelId}`
       );
@@ -66,7 +72,7 @@ export const prepareCalendarDataFromChannelId = async (
       return channelCache[channelId];
     })
     .catch((e) => {
-      console.log("status is 403:", e?.status === 403);
+      console.log(e);
       setRateLimited(true);
       errorFunction()(`Couldn't get calendar: `, e);
     });

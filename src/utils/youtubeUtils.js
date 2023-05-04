@@ -9,8 +9,7 @@ export const parseVideoId = (url) => {
   let match = url.match(regExp);
   return match && match.length >= 3 ? match[2] : false;
 };
-export const getYoutubeLiveDetails = async (vtuberName, videoIdOrUrl) => {
-  const videoId = parseVideoId(videoIdOrUrl) || videoIdOrUrl;
+export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -18,23 +17,37 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIdOrUrl) => {
   };
   return await axios
     .get(
-      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${videoId}&key=${API_KEY}`,
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${videoIds}&key=${API_KEY}`,
       config
     )
-    .then((resp) => resp.data)
-    .then((data) => {
-      const items = data.items;
-      const video = items[0];
-      return {
-        description: `${video.snippet.title}\nhttps://www.youtube.com/watch?v=${video.id}`,
-        duration: { hours: 2 },
-        start: video.liveStreamingDetails.scheduledStartTime
-          .match(/\d+/g)
-          .map((el) => Number.parseInt(el)),
-        title: `${vtuberName}: ${video.snippet.title}`,
-        url: `https://www.youtube.com/watch?v=${video.id}`,
-        uid: video.id,
-      };
+    .then((resp) => {
+      const items = resp.data.items;
+      return items.map((video) => {
+        const lsd = video.liveStreamingDetails;
+        const startTime = lsd.actualStartTime || lsd.scheduledStartTime;
+        const endTime =
+          lsd.actualEndTime ||
+          (lsd.actualStartTime ? new Date().getTime() : undefined);
+        const durationDate =
+          startTime && endTime
+            ? new Date(new Date(endTime) - new Date(startTime))
+            : undefined;
+        const duration = durationDate
+          ? {
+              hours: durationDate.getUTCHours(),
+              minutes: durationDate.getUTCMinutes(),
+              seconds: durationDate.getUTCSeconds(),
+            }
+          : { hours: 2 };
+        return {
+          description: `${video.snippet.title}\nhttps://www.youtube.com/watch?v=${video.id}`,
+          duration,
+          start: startTime.match(/\d+/g).map((el) => Number.parseInt(el)),
+          title: `${vtuberName}: ${video.snippet.title}`,
+          url: `https://www.youtube.com/watch?v=${video.id}`,
+          uid: video.id,
+        };
+      });
     });
 };
 export const getYoutubeVideoInfo = async (videoIdOrUrl) => {
