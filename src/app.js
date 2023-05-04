@@ -39,7 +39,7 @@ if (!inactive) {
   const init = async () => {
     expressApp.use("/feed", feedRoute(getCalendar));
     expressApp.use("/", aboutRoute(CALENDAR_TITLE));
-    expressApp.listen(80);
+    expressApp.listen(3000);
   };
 
   init().catch((e) => {
