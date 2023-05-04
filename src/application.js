@@ -294,12 +294,27 @@ export class Application {
       return;
     }
 
+    oldMessage = await fillMessage(oldMessage);
+    if (!oldMessage) {
+      return;
+    }
+
+    newMessage = await fillMessage(newMessage);
+    if (!newMessage) {
+      return;
+    }
+
     this.listener.processMessageUpdate(oldMessage, newMessage).catch((e) => {
       console.error(`onUpdateMessage error: ${oldMessage.content}, ${e}`);
     });
   }
   async onMessageDelete(msg) {
     if (!this.ready) {
+      return;
+    }
+
+    msg = await fillMessage(msg);
+    if (!msg) {
       return;
     }
 
