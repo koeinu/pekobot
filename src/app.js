@@ -17,9 +17,8 @@ dotenv.config();
 const inactive = process.env.INACTIVE;
 
 if (!inactive) {
-  console.log("Cron tasks started");
   const bot = new TelegramBotWrapper();
-  console.log("Bot started:", bot);
+  console.log("Telegram bot started");
 
   console.log = (...args) => {
     originalConsoleLog(...args);
