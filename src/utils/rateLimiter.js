@@ -24,7 +24,9 @@ export class CustomRateLimiter {
         );
       }
       if (this.entities[entityId].count === this.amount) {
-        console.warn(`rate hit! ${entityId}: ${this.entities[entityId].count} / ${this.amount}`);
+        console.warn(
+          `rate hit! ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
+        );
         return {
           result: true,
           ts: this.entities[entityId].ts + this.interval - new Date().getTime(),
