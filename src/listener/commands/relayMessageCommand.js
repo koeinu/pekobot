@@ -26,7 +26,7 @@ export class RelayMessageCommand extends AbstractCommand {
     if (relaysFile.enabled === false) {
       return;
     }
-    console.warn(
+    console.debug(
       `${this.name} triggered, ${getMsgInfo(msg)}, sending to: ${
         this.targetChannels
       }`

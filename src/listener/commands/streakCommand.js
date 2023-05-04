@@ -5,6 +5,7 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
 import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
+import { getMsgInfo } from "../../utils/stringUtils.js";
 
 const STREAK_TIMEOUT = 2000; //ms
 
@@ -39,6 +40,8 @@ export class StreakCommand extends AbstractCommand {
         return Promise.resolve();
       }
       this.resetTrigger(msg, text);
+
+      console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
       return msg.channel
         .sendTyping()
