@@ -32,5 +32,5 @@ export const getYoutubeChannelId = async (channelId) => {
 
 export const getCalendar = async (feedUrl) => {
   let data = await getYoutubeChannelId(channelId);
-  return generateIcs(TITLE, data, feedUrl);
+  return generateIcs(CALENDAR_TITLE, data, feedUrl);
 };
