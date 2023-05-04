@@ -24,7 +24,7 @@ export class BotMentionedCommand extends AbstractCommand {
     ];
   }
   async execute(msg) {
-    console.debug(
+    console.error(
       `Bot mentioned! ${msg.content} at ${msg.channel.name}, ${msg.guild.name}`
     );
 
