@@ -55,6 +55,15 @@ const processGeneratePuzzle = async (interaction) => {
     const numberOfPieces = interaction.options._hoistedOptions[1].value;
     const pingTheRole = interaction.options._hoistedOptions[2]?.value || false;
 
+    console.warn(
+      `jigsaw at `,
+      interaction.guild.name,
+      ":",
+      url,
+      numberOfPieces,
+      pingTheRole
+    );
+
     await replyCustomEmbed(
       interaction,
       "Puzzle is being generated",
