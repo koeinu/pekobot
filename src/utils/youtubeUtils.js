@@ -12,7 +12,7 @@ export const parseVideoId = (url) => {
   let match = url.match(regExp);
   return match && match.length >= 3 ? match[2] : false;
 };
-export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
+export const getYoutubeLiveDetails = async (vtuberName, channelId) => {
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -20,9 +20,17 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
   };
   return await axios
     .get(
-      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,contentDetails&id=${videoIds}&key=${API_KEY}`,
+      `https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`,
       config
     )
+    .then((resp) => {
+      return resp.data.items["0"].contentDetails.relatedPlaylists.uploads;
+    })
+    .then((uploadsId) => {
+      return axios.get(
+        `https://youtube.googleapis.com/youtube/v3/playlistItems?part=id,contentDetails,snippet&playlistId=${uploadsId}&key=${API_KEY}`
+      );
+    })
     .then((resp) => {
       const items = resp.data.items;
       return items

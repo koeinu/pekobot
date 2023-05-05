@@ -1,11 +1,9 @@
-import axios from "axios";
 import dotenv from "dotenv";
 import generateIcs from "ics-service/generate-ics.js";
 import { getYoutubeLiveDetails } from "./youtubeUtils.js";
 import { H_M_S, S_MS } from "./constants.js";
 
 dotenv.config();
-const API_KEY = process.env.API_KEY;
 const ICS_DATA = process.env.ICS_DATA;
 
 export const CALENDAR_METADATA = ICS_DATA
@@ -35,38 +33,18 @@ export const prepareCalendarDataFromChannelId = async (
   channelId
 ) => {
   if (channelCache[channelId]) {
-    logFunction()(`Cached channel info: ${vtuberHandle}, ${channelId}`);
+    logFunction()(`Serving cached data for ${vtuberHandle}_${channelId}`);
     return channelCache[channelId];
   }
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  return await axios
-    .get(
-      `https://www.googleapis.com/youtube/v3/search?part=id,snippet&channelId=${channelId}&type=video&key=${API_KEY}&order=date`,
-      config
-    )
+  return getYoutubeLiveDetails(channelId)
     .then((resp) => {
       setRateLimited(false);
-      const items = resp.data.items;
-      if (items.length > 0) {
-        const data = getYoutubeLiveDetails(
-          vtuberHandle,
-          resp.data.items.map((el) => el.id.videoId).join(",")
-        );
-        channelCache[channelId] = Promise.resolve(data);
-      } else {
-        channelCache[channelId] = Promise.resolve([]);
-      }
+      channelCache[channelId] = resp.data.items;
       logFunction()(
-        `Obtaining and caching channel info: ${vtuberHandle}, ${channelId}`
+        `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
       );
       setTimeout(() => {
-        logFunction()(
-          `Cleaning cache channel info: ${vtuberHandle}, ${channelId}`
-        );
+        logFunction()(`Cleaning cache for ${vtuberHandle}_${channelId}`);
         channelCache[channelId] = undefined;
       }, CACHE_TIMEOUT);
       return channelCache[channelId];
@@ -74,7 +52,7 @@ export const prepareCalendarDataFromChannelId = async (
     .catch((e) => {
       console.log(e);
       setRateLimited(true);
-      errorFunction()(`Couldn't get calendar: `, e);
+      errorFunction()(`Couldn't get calendar,`, e);
     });
 };
 
