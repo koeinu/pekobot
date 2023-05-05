@@ -1,5 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import { H_M_S, S_MS } from "./constants.js";
 
 dotenv.config();
 const API_KEY = process.env.API_KEY;
@@ -31,7 +32,9 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
           const startTime = lsd.actualStartTime || lsd.scheduledStartTime;
           const endTime =
             lsd.actualEndTime ||
-            (lsd.actualStartTime ? new Date().getTime() : undefined);
+            (lsd.actualStartTime
+              ? new Date().getTime() + H_M_S * H_M_S * S_MS
+              : undefined);
           const durationDate =
             startTime && endTime
               ? new Date(new Date(endTime) - new Date(startTime))
