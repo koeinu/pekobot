@@ -145,7 +145,6 @@ export class Application {
 
       if (!command) {
         console.error(`No command matching ${command} was found.`);
-        console.error(`${interaction.client.commands.array()}`);
         return;
       }
 
@@ -156,12 +155,6 @@ export class Application {
         ).execute(interaction, this.client);
         if (result) {
           const data = result.data;
-          const commandsToGenerate = Array.from(this.client.commands)
-            .filter(
-              (el) =>
-                !el[0].includes("__bet") || el[0].includes(interaction.guild.id)
-            )
-            .map((el) => el[1]);
           if (result.create === true) {
             if (data.length > 0) {
               const commands = makeCompoundBetCommands(data);
@@ -169,6 +162,8 @@ export class Application {
                 `${interaction.guild.id}__${commands.data.name}`,
                 commands
               );
+              const commandsToGenerate =
+                this.getCommandsToGenerate(interaction);
               await generateCommands(
                 commandsToGenerate.map((el) =>
                   el.default ? el.default.data.toJSON() : el.data.toJSON()
@@ -181,6 +176,8 @@ export class Application {
                 `${interaction.guild.id}__${commands.data.name}`,
                 commands
               );
+              const commandsToGenerate =
+                this.getCommandsToGenerate(interaction);
               await generateCommands(
                 commandsToGenerate.map((el) =>
                   el.default ? el.default.data.toJSON() : el.data.toJSON()
@@ -193,6 +190,7 @@ export class Application {
             this.client.commands.delete(
               `${interaction.guild.id}__${commands.data.name}`
             );
+            const commandsToGenerate = this.getCommandsToGenerate(interaction);
             await generateCommands(
               commandsToGenerate.map((el) =>
                 el.default ? el.default.data.toJSON() : el.data.toJSON()
@@ -227,6 +225,14 @@ export class Application {
     this.client.on(Events.ClientReady, () => this.onReady());
 
     this.client.login(token);
+  }
+
+  getCommandsToGenerate(interaction) {
+    return Array.from(this.client.commands)
+      .filter(
+        (el) => !el[0].includes("__bet") || el[0].includes(interaction.guild.id)
+      )
+      .map((el) => el[1]);
   }
 
   async onReady() {
