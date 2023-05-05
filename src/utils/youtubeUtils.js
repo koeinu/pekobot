@@ -33,37 +33,37 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
             lsd?.actualStartTime ||
             lsd?.scheduledStartTime ||
             video.snippet.publishedAt;
+          if (!startTime) {
+            return undefined;
+          }
           if (video.contentDetails.duration) {
             duration = parseDurationStringAsObject(
               video.contentDetails.duration
             );
-          } else {
-            if (lsd) {
-              const endTime =
-                lsd.actualEndTime ||
-                (lsd.actualStartTime
-                  ? new Date().getTime() + H_M_S * H_M_S * S_MS
-                  : undefined);
-              const durationDate =
-                startTime && endTime
-                  ? new Date(new Date(endTime) - new Date(startTime))
-                  : undefined;
-              duration = durationDate
-                ? {
-                    hours: durationDate.getUTCHours(),
-                    minutes: durationDate.getUTCMinutes(),
-                    seconds: durationDate.getUTCSeconds(),
-                  }
-                : PREDICTED_DURATION;
-            } else {
-              duration = PREDICTED_DURATION;
+          } else if (lsd) {
+            const endTime =
+              lsd.actualEndTime ||
+              (lsd.actualStartTime
+                ? new Date().getTime() + H_M_S * H_M_S * S_MS
+                : undefined);
+            const durationDate =
+              startTime && endTime
+                ? new Date(new Date(endTime) - new Date(startTime))
+                : undefined;
+            if (durationDate) {
+              duration = {
+                hours: durationDate.getUTCHours(),
+                minutes: durationDate.getUTCMinutes(),
+                seconds: durationDate.getUTCSeconds(),
+              };
             }
           }
+
           return {
-            description: `${video.snippet.title}\nhttps://www.youtube.com/watch?v=${video.id}`,
-            duration,
+            description: `${video.snippet.description}`,
+            duration: duration || PREDICTED_DURATION,
             start: startTime.match(/\d+/g).map((el) => Number.parseInt(el)),
-            title: `${vtuberName}: ${video.snippet.title}`,
+            title: `${video.snippet.title}`,
             url: `https://www.youtube.com/watch?v=${video.id}`,
             uid: video.id,
           };
