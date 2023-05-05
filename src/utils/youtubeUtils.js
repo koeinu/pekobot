@@ -24,6 +24,7 @@ export const getYoutubeLiveDetails = async (vtuberName, channelId) => {
       config
     )
     .then((resp) => {
+      console.log("data:", resp.data);
       return resp.data.items["0"].contentDetails.relatedPlaylists.uploads;
     })
     .then((uploadsId) => {
@@ -73,9 +74,9 @@ export const getYoutubeLiveDetails = async (vtuberName, channelId) => {
             duration: duration || PREDICTED_DURATION,
             start: startTime.match(/\d+/g).map((el) => Number.parseInt(el)),
             title: `${video.snippet.title}`,
-            url: `https://www.youtube.com/watch?v=${video.id}`,
-            uid: video.id,
-            htmlContent: `<!DOCTYPE html><html><body><img src=${video.snippet.thumbnails.standard}/></body></html>`,
+            url: `https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`,
+            uid: video.snippet.resourceId.videoId,
+            htmlContent: `<!DOCTYPE html><html><body><img src=${video.snippet.thumbnails.standard.url}></body></html>`,
           };
         })
         .filter((el) => el !== undefined);
