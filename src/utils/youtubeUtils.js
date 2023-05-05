@@ -67,6 +67,7 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
             title: `${video.snippet.title}`,
             url: `https://www.youtube.com/watch?v=${video.id}`,
             uid: video.id,
+            htmlContent: `<!DOCTYPE html><html><body><img src=${video.snippet.thumbnails.standard}/></body></html>`,
           };
         })
         .filter((el) => el !== undefined);
