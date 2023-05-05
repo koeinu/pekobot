@@ -5,6 +5,7 @@ import { H_M_S, S_MS } from "./constants.js";
 
 dotenv.config();
 const ICS_DATA = process.env.ICS_DATA;
+const ICS_CACHE = process.env.ICS_CACHE;
 
 export const CALENDAR_METADATA = ICS_DATA
   ? ICS_DATA.split(";").map((el) => {
@@ -18,41 +19,35 @@ export const CALENDAR_METADATA = ICS_DATA
 
 const CACHE_TIMEOUT = H_M_S * H_M_S * S_MS;
 const channelCache = {};
-let rateLimited = false;
-
-export const setRateLimited = (value) => {
-  rateLimited = value;
-};
-
-export const logFunction = () => (rateLimited ? console.error : console.debug);
-export const errorFunction = () =>
-  rateLimited ? console.debug : console.error;
 
 export const prepareCalendarDataFromChannelId = async (
   vtuberHandle,
   channelId
 ) => {
-  if (channelCache[channelId]) {
-    logFunction()(`Serving cached data for ${vtuberHandle}_${channelId}`);
+  if (ICS_CACHE && channelCache[channelId]) {
+    console.debug(`Serving cached data for ${vtuberHandle}_${channelId}`);
     return channelCache[channelId];
   }
   return getYoutubeLiveDetails(channelId)
     .then((items) => {
-      setRateLimited(false);
-      channelCache[channelId] = items;
-      logFunction()(
-        `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
-      );
-      setTimeout(() => {
-        logFunction()(`Cleaning cache for ${vtuberHandle}_${channelId}`);
-        channelCache[channelId] = undefined;
-      }, CACHE_TIMEOUT);
-      return channelCache[channelId];
+      if (ICS_CACHE) {
+        console.debug(
+          `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
+        );
+        channelCache[channelId] = items;
+        setTimeout(() => {
+          console.debug(`Cleaning cache for ${vtuberHandle}_${channelId}`);
+          channelCache[channelId] = undefined;
+        }, CACHE_TIMEOUT);
+      } else {
+        console.debug(
+          `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
+        );
+      }
+      return items;
     })
     .catch((e) => {
-      console.log(e);
-      setRateLimited(true);
-      errorFunction()(`Couldn't get calendar,`, e);
+      console.error(`Couldn't get calendar,`, e);
     });
 };
 
