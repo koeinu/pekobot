@@ -37,9 +37,9 @@ export const prepareCalendarDataFromChannelId = async (
     return channelCache[channelId];
   }
   return getYoutubeLiveDetails(channelId)
-    .then((resp) => {
+    .then((items) => {
       setRateLimited(false);
-      channelCache[channelId] = resp.data.items;
+      channelCache[channelId] = items;
       logFunction()(
         `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
       );
