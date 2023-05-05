@@ -30,19 +30,17 @@ export const prepareCalendarDataFromChannelId = async (
   }
   return getYoutubeLiveDetails(channelId)
     .then((items) => {
+      console.debug(
+        `Successfully updated ${
+          ICS_CACHE ? "and cached " : ""
+        }stream data for ${vtuberHandle}_${channelId}`
+      );
       if (ICS_CACHE) {
-        console.debug(
-          `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
-        );
         channelCache[channelId] = items;
         setTimeout(() => {
           console.debug(`Cleaning cache for ${vtuberHandle}_${channelId}`);
           channelCache[channelId] = undefined;
         }, CACHE_TIMEOUT);
-      } else {
-        console.debug(
-          `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
-        );
       }
       return items;
     })
