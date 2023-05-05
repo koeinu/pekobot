@@ -29,9 +29,22 @@ export const getYoutubeLiveDetails = async (channelId) => {
     })
     .then((uploadsId) => {
       return axios.get(
-        `https://youtube.googleapis.com/youtube/v3/playlistItems?part=id,contentDetails,snippet&playlistId=${uploadsId}&key=${API_KEY}`
+        `https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&key=${API_KEY}`
       );
     })
+    .then((resp) => {
+      // form ids here
+      const toReturn = resp.data.items
+        .map((el) => el.snippet.resourceId.videoId)
+        .join(",");
+      return toReturn;
+    })
+    .then((videoIds) =>
+      axios.get(
+        `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,contentDetails&id=${videoIds}&key=${API_KEY}`,
+        config
+      )
+    )
     .then((resp) => {
       const items = resp.data.items;
       return items
@@ -74,8 +87,8 @@ export const getYoutubeLiveDetails = async (channelId) => {
             duration: duration || PREDICTED_DURATION,
             start: startTime.match(/\d+/g).map((el) => Number.parseInt(el)),
             title: `${video.snippet.title}`,
-            url: `https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`,
-            uid: video.snippet.resourceId.videoId,
+            url: `https://www.youtube.com/watch?v=${video.id}`,
+            uid: video.id,
             htmlContent: `<!DOCTYPE html><html><body><img src=${video.snippet.thumbnails.standard.url}></body></html>`,
           };
         })
