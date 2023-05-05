@@ -40,7 +40,8 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
             duration = parseDurationStringAsObject(
               video.contentDetails.duration
             );
-          } else if (lsd) {
+          }
+          if (lsd) {
             const endTime =
               lsd.actualEndTime ||
               (lsd.actualStartTime
@@ -138,6 +139,9 @@ const parseDurationStringAsObject = (durationString) => {
     seconds = 0;
   const formatRegex = /^PT((\d+)H)?((\d+)M)?((\d+)S)?$/;
   const matches = durationString.match(formatRegex);
+  if (!matches) {
+    return undefined;
+  }
 
   if (matches[2]) {
     hours = parseInt(matches[2], 10);
