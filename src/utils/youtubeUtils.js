@@ -82,7 +82,7 @@ export const getYoutubeLiveDetails = async (channelId) => {
           }
 
           return {
-            // description: `${video.snippet.description}`,
+            description: `${video.snippet.thumbnails.standard.url}\nhttps://www.youtube.com/watch?v=${video.id}\n${video.snippet.description}`,
             duration: duration || PREDICTED_DURATION,
             start: startTime.match(/\d+/g).map((el) => Number.parseInt(el)),
             title: `${video.snippet.title}`,
