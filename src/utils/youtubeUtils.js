@@ -41,7 +41,7 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
               video.contentDetails.duration
             );
           }
-          if (lsd) {
+          if (!duration && lsd) {
             const endTime =
               lsd.actualEndTime ||
               (lsd.actualStartTime
