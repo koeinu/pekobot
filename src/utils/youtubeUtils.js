@@ -5,6 +5,8 @@ import { H_M_S, S_MS } from "./constants.js";
 dotenv.config();
 const API_KEY = process.env.API_KEY;
 
+const PREDICTED_DURATION = { hours: 2 };
+
 export const parseVideoId = (url) => {
   let regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
   let match = url.match(regExp);
@@ -18,34 +20,45 @@ export const getYoutubeLiveDetails = async (vtuberName, videoIds) => {
   };
   return await axios
     .get(
-      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${videoIds}&key=${API_KEY}`,
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,contentDetails&id=${videoIds}&key=${API_KEY}`,
       config
     )
     .then((resp) => {
       const items = resp.data.items;
       return items
         .map((video) => {
+          let duration = undefined;
           const lsd = video.liveStreamingDetails;
-          if (!lsd) {
-            return undefined;
+          const startTime =
+            lsd?.actualStartTime ||
+            lsd?.scheduledStartTime ||
+            video.snippet.publishedAt;
+          if (video.contentDetails.duration) {
+            duration = parseDurationStringAsObject(
+              video.contentDetails.duration
+            );
+          } else {
+            if (lsd) {
+              const endTime =
+                lsd.actualEndTime ||
+                (lsd.actualStartTime
+                  ? new Date().getTime() + H_M_S * H_M_S * S_MS
+                  : undefined);
+              const durationDate =
+                startTime && endTime
+                  ? new Date(new Date(endTime) - new Date(startTime))
+                  : undefined;
+              duration = durationDate
+                ? {
+                    hours: durationDate.getUTCHours(),
+                    minutes: durationDate.getUTCMinutes(),
+                    seconds: durationDate.getUTCSeconds(),
+                  }
+                : PREDICTED_DURATION;
+            } else {
+              duration = PREDICTED_DURATION;
+            }
           }
-          const startTime = lsd.actualStartTime || lsd.scheduledStartTime;
-          const endTime =
-            lsd.actualEndTime ||
-            (lsd.actualStartTime
-              ? new Date().getTime() + H_M_S * H_M_S * S_MS
-              : undefined);
-          const durationDate =
-            startTime && endTime
-              ? new Date(new Date(endTime) - new Date(startTime))
-              : undefined;
-          const duration = durationDate
-            ? {
-                hours: durationDate.getUTCHours(),
-                minutes: durationDate.getUTCMinutes(),
-                seconds: durationDate.getUTCSeconds(),
-              }
-            : { hours: 2 };
           return {
             description: `${video.snippet.title}\nhttps://www.youtube.com/watch?v=${video.id}`,
             duration,
@@ -115,6 +128,11 @@ export const getYoutubeChannelId = async (videoIdOrUrl) => {
     });
 };
 const parseDurationString = (durationString) => {
+  const { hours, minutes, seconds } =
+    parseDurationStringAsObject(durationString);
+  return ((hours * 60 + minutes) * 60 + seconds) * 1000;
+};
+const parseDurationStringAsObject = (durationString) => {
   let hours = 0,
     minutes = 0,
     seconds = 0;
@@ -131,7 +149,7 @@ const parseDurationString = (durationString) => {
     seconds = parseInt(matches[6], 10);
   }
 
-  return ((hours * 60 + minutes) * 60 + seconds) * 1000;
+  return { hours, minutes, seconds };
 };
 export const getYoutubeStartTimestamp = async (videoIdOrUrl) => {
   console.log("parsing video url:", videoIdOrUrl);
