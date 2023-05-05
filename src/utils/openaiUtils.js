@@ -70,10 +70,11 @@ export const MOD_THRESHOLDS = {
 };
 
 const fixModData = (data) => {
+  data.flagged = false;
   Object.entries(data.category_scores).forEach(([category, value]) => {
     const decision = value > MOD_THRESHOLDS[category];
+    data.categories[category] = decision;
     if (decision) {
-      data.categories[category] = true;
       data.flagged = true;
     }
   });
