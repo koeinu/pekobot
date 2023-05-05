@@ -72,7 +72,7 @@ export const makeCompoundBetCommands = (parsedBetChoices) => {
       parsedBetChoices.forEach((category) => {
         toReturn = toReturn.addStringOption((option) => {
           return option
-            .setName(category.name.replace(" ", "_").toLowerCase())
+            .setName(category.name.replaceAll(" ", "_").toLowerCase())
             .setRequired(true)
             .setDescription(category.name)
             .addChoices(
