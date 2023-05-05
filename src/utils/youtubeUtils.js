@@ -88,7 +88,14 @@ export const getYoutubeLiveDetails = async (channelId) => {
             title: `${video.snippet.title}`,
             url: `https://www.youtube.com/watch?v=${video.id}`,
             uid: video.id,
-            htmlContent: `<!DOCTYPE html><html><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><body><img src=${video.snippet.thumbnails.standard.url}><br>https://www.youtube.com/watch?v=${video.id}<br><span style="white-space: pre-line" id="content">${video.snippet.description}</span></body>`,
+            htmlContent: `<!DOCTYPE html><html><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><body><img src=${
+              video.snippet.thumbnails.standard.url
+            }><br>https://www.youtube.com/watch?v=${
+              video.id
+            }<br><span style="white-space: pre-line" id="content">${video.snippet.description.replaceAll(
+              "\n",
+              "<br>"
+            )}</span></body>`,
           };
         })
         .filter((el) => el !== undefined);
