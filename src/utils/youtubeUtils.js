@@ -12,7 +12,7 @@ export const parseVideoId = (url) => {
   let match = url.match(regExp);
   return match && match.length >= 3 ? match[2] : false;
 };
-export const getYoutubeLiveDetails = async (vtuberName, channelId) => {
+export const getYoutubeLiveDetails = async (channelId) => {
   const config = {
     headers: {
       "Content-Type": "application/json",
