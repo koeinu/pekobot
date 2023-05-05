@@ -34,10 +34,9 @@ export const getYoutubeLiveDetails = async (channelId) => {
     })
     .then((resp) => {
       // form ids here
-      const toReturn = resp.data.items
+      return resp.data.items
         .map((el) => el.snippet.resourceId.videoId)
         .join(",");
-      return toReturn;
     })
     .then((videoIds) =>
       axios.get(
