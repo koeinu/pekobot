@@ -81,21 +81,22 @@ export const getYoutubeLiveDetails = async (channelId) => {
             }
           }
 
+          duration = duration || PREDICTED_DURATION;
+
+          const uid = video.id;
+          const url = `https://www.youtube.com/watch?v=${uid}`;
+          const title = video.snippet.title;
+          const description = `${url}\n\n---Description---\n\n${video.snippet.description}`;
+          const start = startTime
+            .match(/\d+/g)
+            .map((el) => Number.parseInt(el));
           return {
-            // description: `${video.snippet.thumbnails.standard.url}\nhttps://www.youtube.com/watch?v=${video.id}\n${video.snippet.description}`,
-            duration: duration || PREDICTED_DURATION,
-            start: startTime.match(/\d+/g).map((el) => Number.parseInt(el)),
-            title: `${video.snippet.title}`,
-            url: `https://www.youtube.com/watch?v=${video.id}`,
-            uid: video.id,
-            description: `<!DOCTYPE html><html><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><body><img src=${
-              video.snippet.thumbnails.standard.url
-            }><br>https://www.youtube.com/watch?v=${
-              video.id
-            }<br><span style="white-space: pre-line" id="content">${video.snippet.description.replaceAll(
-              "\n",
-              "<br>"
-            )}</span></body>`,
+            description,
+            duration,
+            start,
+            title,
+            url,
+            uid,
           };
         })
         .filter((el) => el !== undefined);
