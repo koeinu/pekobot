@@ -39,9 +39,7 @@ export const prepareCalendarDataFromChannelId = async (
 
     const currentTs = new Date().getTime();
     const timedOutIds = cachedCalendarData
-      .filter(
-        (el) => el.ts + cacheTimeout < currentTs && channelId !== "custom"
-      )
+      .filter((el) => el.ts + cacheTimeout < currentTs)
       .map((el) => el.data.uid);
     if (timedOutIds.length > 0) {
       console.debug(
