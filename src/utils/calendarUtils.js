@@ -84,5 +84,5 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
   if (!data) {
     throw `Calendar can't be formed`;
   }
-  return generateIcs(vtuberHandle, data, feedUrl);
+  return generateIcs(vtuberHandle, data.data, feedUrl);
 };
