@@ -11,11 +11,18 @@ const guildIds = process.env.GUILD_ID;
 console.log(token, clientId, guildIds);
 
 export const disabledCommands = {
-  "584977240358518784": ["youtube", "relay", "gptdraft"], // miko
-  "999666683176308807": ["jigsaw", "betedit", "gptDict", "youtube", "gptdraft"], // snaxxx
+  "584977240358518784": ["calendar", "youtube", "relay", "gptdraft"], // miko
+  "999666683176308807": [
+    "calendar",
+    "jigsaw",
+    "betedit",
+    "gptDict",
+    "youtube",
+    "gptdraft",
+  ], // snaxxx
   "1061909810943115337": [], // ts
-  "683140640166510717": [], // peko
-  "1088005181171580949": [], // ts2
+  "683140640166510717": ["calendar"], // peko
+  "1088005181171580949": ["calendar"], // ts2
 };
 
 const rest = new REST({ version: "10" }).setToken(token);

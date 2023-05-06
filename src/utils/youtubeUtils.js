@@ -12,12 +12,14 @@ export const parseVideoId = (url) => {
   let match = url.match(regExp);
   return match && match.length >= 3 ? match[2] : false;
 };
+
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+
 export const getYoutubeLiveDetails = async (channelId) => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
   return await axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`,
@@ -33,16 +35,17 @@ export const getYoutubeLiveDetails = async (channelId) => {
       );
     })
     .then((resp) => {
-      // form ids here
-      return resp.data.items
-        .map((el) => el.snippet.resourceId.videoId)
-        .join(",");
+      return resp.data.items.map((el) => el.snippet.resourceId.videoId);
     })
-    .then((videoIds) =>
-      axios.get(
-        `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,contentDetails&id=${videoIds}&key=${API_KEY}`,
-        config
-      )
+    .then((ids) => getYoutubeLiveDetailsByVideoIds(ids));
+};
+
+export const getYoutubeLiveDetailsByVideoIds = (ids) => {
+  const idString = ids.join(",");
+  return axios
+    .get(
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails,contentDetails&id=${idString}&key=${API_KEY}`,
+      config
     )
     .then((resp) => {
       const items = resp.data.items;
@@ -102,15 +105,11 @@ export const getYoutubeLiveDetails = async (channelId) => {
         .filter((el) => el !== undefined);
     });
 };
+
 export const getYoutubeVideoInfo = async (videoIdOrUrl) => {
   console.log("parsing video url:", videoIdOrUrl);
   const videoId = parseVideoId(videoIdOrUrl) || videoIdOrUrl;
   console.log("video id:", videoId);
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
   return await axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics,liveStreamingDetails&id=${videoId}&key=${API_KEY}`,
@@ -134,11 +133,6 @@ export const getYoutubeChannelId = async (videoIdOrUrl) => {
   console.log("parsing video url:", videoIdOrUrl);
   const videoId = parseVideoId(videoIdOrUrl);
   console.log("video id:", videoId);
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
   return await axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${API_KEY}`,
@@ -189,11 +183,6 @@ export const getYoutubeStartTimestamp = async (videoIdOrUrl) => {
   console.log("parsing video url:", videoIdOrUrl);
   const videoId = parseVideoId(videoIdOrUrl);
   console.log("video id:", videoId);
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
   return await axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${API_KEY}`,

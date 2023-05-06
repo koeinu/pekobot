@@ -1,11 +1,18 @@
 import dotenv from "dotenv";
 import generateIcs from "ics-service/generate-ics.js";
-import { getYoutubeLiveDetails } from "./youtubeUtils.js";
-import { H_M_S, S_MS } from "./constants.js";
+import {
+  getYoutubeLiveDetails,
+  getYoutubeLiveDetailsByVideoIds,
+} from "./youtubeUtils.js";
+import {
+  getCalendarData,
+  saveCalendarData,
+  updateCalendarData,
+} from "../model/calendars.js";
 
 dotenv.config();
 const ICS_DATA = process.env.ICS_DATA;
-const ICS_CACHE = process.env.ICS_CACHE;
+const ICS_TIMEOUT = process.env.ICS_TIMEOUT;
 
 export const CALENDAR_METADATA = ICS_DATA
   ? ICS_DATA.split(";").map((el) => {
@@ -17,31 +24,47 @@ export const CALENDAR_METADATA = ICS_DATA
     })
   : [];
 
-const CACHE_TIMEOUT = H_M_S * H_M_S * S_MS;
-const channelCache = {};
-
 export const prepareCalendarDataFromChannelId = async (
   vtuberHandle,
-  channelId
+  channelId,
+  cacheTimeout
 ) => {
-  if (ICS_CACHE && channelCache[channelId]) {
-    console.debug(`Serving cached data for ${vtuberHandle}_${channelId}`);
-    return channelCache[channelId];
+  const cachedCalendarData = getCalendarData(channelId);
+  if (cachedCalendarData) {
+    console.debug(`Cached calendar found for ${vtuberHandle}_${channelId}`);
+
+    if (cacheTimeout === undefined) {
+      return cachedCalendarData;
+    }
+
+    const currentTs = new Date().getTime();
+    const timedOutIds = cachedCalendarData
+      .filter(
+        (el) => el.ts + cacheTimeout < currentTs && channelId !== "custom"
+      )
+      .map((el) => el.data.uid);
+    if (timedOutIds.length > 0) {
+      console.debug(
+        `Outdated ids for ${vtuberHandle}_${channelId}:`,
+        timedOutIds.join(", ")
+      );
+      const updatedData = await getYoutubeLiveDetailsByVideoIds(timedOutIds);
+      return updateCalendarData(channelId, updatedData);
+    }
+
+    return cachedCalendarData;
   }
+
+  if (channelId === "custom") {
+    return [];
+  }
+
   return getYoutubeLiveDetails(channelId)
     .then((items) => {
+      saveCalendarData(channelId, items);
       console.debug(
-        `Successfully updated ${
-          ICS_CACHE ? "and cached " : ""
-        }stream data for ${vtuberHandle}_${channelId}`
+        `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
       );
-      if (ICS_CACHE) {
-        channelCache[channelId] = items;
-        setTimeout(() => {
-          console.debug(`Cleaning cache for ${vtuberHandle}_${channelId}`);
-          channelCache[channelId] = undefined;
-        }, CACHE_TIMEOUT);
-      }
       return items;
     })
     .catch((e) => {
@@ -53,7 +76,11 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
   console.debug(
     `Calendar requested! ${feedUrl}, ${vtuberHandle}, ${channelId}`
   );
-  let data = await prepareCalendarDataFromChannelId(vtuberHandle, channelId);
+  let data = await prepareCalendarDataFromChannelId(
+    vtuberHandle,
+    channelId,
+    ICS_TIMEOUT
+  );
   if (!data) {
     throw `Calendar can't be formed`;
   }
