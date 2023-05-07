@@ -48,7 +48,11 @@ export const updateCalendarData = (channelId, updatedEntries) => {
         toUpdateEntry.ts = new Date().getTime();
         toUpdateEntry.data = entry;
       } else {
-        calendars[channelId].push(entry);
+        calendars[channelId].push({
+          ts: new Date().getTime(),
+          channelId,
+          data: entry,
+        });
       }
     }
   }
