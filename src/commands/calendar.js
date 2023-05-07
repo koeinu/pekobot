@@ -52,8 +52,8 @@ export default {
         const channel = options[1]?.value;
 
         const channelHandle = CALENDAR_METADATA.find(
-          (el) => el[0] === channel
-        )?.[1];
+          (el) => el.handle === channel
+        )?.id;
 
         const videoId = parseVideoId(url) || url;
         console.warn(
