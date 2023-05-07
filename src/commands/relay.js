@@ -133,7 +133,7 @@ export default {
           `relay salvage at `,
           interaction.guild.name,
           ":",
-          endMessage.id,
+          endMessage?.id,
           ",",
           endMessage?.id
         );
