@@ -38,10 +38,6 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
-  if (channelId === "custom" && idsToUpdate.length === 0) {
-    return [];
-  }
-
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
       const toReturn = updateCalendarData(channelId, items);

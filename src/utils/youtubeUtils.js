@@ -20,6 +20,9 @@ const config = {
 };
 
 export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
+  if (channelId === "custom") {
+    return getYoutubeLiveDetailsByVideoIds(additionalIds);
+  }
   return await axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`,
