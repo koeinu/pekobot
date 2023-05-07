@@ -61,6 +61,26 @@ export const updateCalendarData = (channelId, updatedEntries) => {
   return calendars[channelId];
 };
 
+export const deleteCalendarData = (channelId, idsToDelete) => {
+  const calendars = loadCalendarData(JSON_FILE_NAME);
+  let result = false;
+  if (!Object.keys(calendars).includes(channelId)) {
+    return result;
+  } else {
+    const entries = calendars[channelId];
+    for (let id of idsToDelete) {
+      const foundEntry = entries.find((el) => el.data.uid === id);
+      if (foundEntry) {
+        const entryIndex = entries.indexOf(foundEntry);
+        entries.splice(entryIndex, 1);
+        result = true;
+      }
+    }
+  }
+  saveFile(JSON_FILE_NAME, calendars);
+  return result;
+};
+
 export const getCalendarData = (channelId) => {
   const calendars = loadCalendarData(JSON_FILE_NAME);
   return calendars[channelId];

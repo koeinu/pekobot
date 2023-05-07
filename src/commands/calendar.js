@@ -9,19 +9,35 @@ import {
   getYoutubeLiveDetailsByVideoIds,
   parseVideoId,
 } from "../utils/youtubeUtils.js";
-import { updateCalendarData } from "../model/calendars.js";
+import { deleteCalendarData, updateCalendarData } from "../model/calendars.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("calendar")
     .setDefaultMemberPermissions(16)
-    .setDescription("Add videos to a custom calendar")
+    .setDescription("Manages custom calendars")
     .addSubcommand((sc) =>
       sc
         .setName("add")
-        .setDescription("Provides a window to edit bot's message")
+        .setDescription("Adds a video to a custom calendar")
         .addStringOption((option) =>
           option.setName("url").setDescription("Video URL").setRequired(true)
+        )
+        .addStringOption((option) =>
+          option.setName("channel").setDescription("Channel handle to add to")
+        )
+    )
+    .addSubcommand((sc) =>
+      sc
+        .setName("delete")
+        .setDescription("Removes a video from a custom calendar")
+        .addStringOption((option) =>
+          option.setName("url").setDescription("Video URL").setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("channel")
+            .setDescription("Channel handle to remove from")
         )
     ),
   async execute(interaction) {
@@ -32,6 +48,7 @@ export default {
       case "add": {
         const options = getOptions(interaction);
         const url = options[0].value;
+        const channel = options[1]?.value;
 
         const videoId = parseVideoId(url) || url;
         console.warn(
@@ -40,9 +57,24 @@ export default {
         );
         const data = await getYoutubeLiveDetailsByVideoIds([videoId]);
 
-        updateCalendarData("custom", [...data]);
+        updateCalendarData(channel || "custom", [...data]);
 
         return await replyEmbedMessage(interaction, `Added.`);
+      }
+      case "remove": {
+        const options = getOptions(interaction);
+        const url = options[0].value;
+        const channel = options[1]?.value;
+
+        const videoId = parseVideoId(url) || url;
+        console.warn(
+          `deleting calendar url ${videoId} at `,
+          interaction.guild.name
+        );
+
+        const result = deleteCalendarData(channel || "custom", [videoId]);
+
+        return await replyEmbedMessage(interaction, `Deleted: `, result);
       }
       default: {
         await replyEmbedMessage(interaction, `Unknown command: ${subCommand}`);
