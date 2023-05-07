@@ -10,6 +10,7 @@ import {
   parseVideoId,
 } from "../utils/youtubeUtils.js";
 import { deleteCalendarData, updateCalendarData } from "../model/calendars.js";
+import { CALENDAR_METADATA } from "../utils/calendarUtils.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -50,6 +51,10 @@ export default {
         const url = options[0].value;
         const channel = options[1]?.value;
 
+        const channelHandle = CALENDAR_METADATA.find(
+          (el) => el[0] === channel
+        )?.[1];
+
         const videoId = parseVideoId(url) || url;
         console.warn(
           `adding calendar url ${videoId} at `,
@@ -57,7 +62,7 @@ export default {
         );
         const data = await getYoutubeLiveDetailsByVideoIds([videoId]);
 
-        updateCalendarData(channel || "custom", [...data]);
+        updateCalendarData(channelHandle || "custom", [...data]);
 
         return await replyEmbedMessage(interaction, `Added.`);
       }
