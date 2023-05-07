@@ -71,13 +71,17 @@ export default {
         const url = options[0].value;
         const channel = options[1]?.value;
 
+        const channelHandle = CALENDAR_METADATA.find(
+          (el) => el.handle === channel
+        )?.id;
+
         const videoId = parseVideoId(url) || url;
         console.warn(
           `deleting calendar url ${videoId} at `,
           interaction.guild.name
         );
 
-        const result = deleteCalendarData(channel || "custom", [videoId]);
+        const result = deleteCalendarData(channelHandle || "custom", [videoId]);
 
         return await replyEmbedMessage(interaction, `Deleted: `, result);
       }
