@@ -97,12 +97,15 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
             .match(/\d+/g)
             .map((el) => Number.parseInt(el));
           return {
-            description,
-            duration,
-            start,
-            title,
-            url,
-            uid,
+            actualEndTime: lsd?.actualEndTime,
+            calendarData: {
+              description,
+              duration,
+              start,
+              title,
+              url,
+              uid,
+            },
           };
         })
         .filter((el) => el !== undefined);

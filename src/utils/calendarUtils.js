@@ -6,7 +6,6 @@ import { getCalendarData, updateCalendarData } from "../model/calendars.js";
 dotenv.config();
 const ICS_DATA = process.env.ICS_DATA;
 const ICS_TIMEOUT = process.env.ICS_TIMEOUT;
-const ICS_TIMEOUT_2 = process.env.ICS_TIMEOUT_2;
 
 export const CALENDAR_METADATA = ICS_DATA
   ? ICS_DATA.split(";").map((el) => {
@@ -21,8 +20,7 @@ export const CALENDAR_METADATA = ICS_DATA
 export const prepareCalendarDataFromChannelId = async (
   vtuberHandle,
   channelId,
-  cacheTimeout,
-  cacheAbsoluteTimeout
+  cacheTimeout
 ) => {
   const cachedCalendarData = getCalendarData(channelId);
   const idsToUpdate = [];
@@ -36,10 +34,7 @@ export const prepareCalendarDataFromChannelId = async (
           (el) =>
             (cacheTimeout !== undefined
               ? el.ts + cacheTimeout < currentTs
-              : true) &&
-            (cacheAbsoluteTimeout !== undefined
-              ? el.ts + cacheAbsoluteTimeout > currentTs
-              : true)
+              : true) && !el.actualEndTime
         )
         .map((el) => el.data.uid)
     );
@@ -69,8 +64,7 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
   let data = await prepareCalendarDataFromChannelId(
     vtuberHandle,
     channelId,
-    ICS_TIMEOUT,
-    ICS_TIMEOUT_2
+    ICS_TIMEOUT
   );
   if (!data) {
     throw `Calendar can't be formed`;

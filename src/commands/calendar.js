@@ -62,7 +62,7 @@ export default {
         );
         const data = await getYoutubeLiveDetailsByVideoIds([videoId]);
 
-        updateCalendarData(channelHandle || "custom", [...data]);
+        updateCalendarData(channelHandle || "custom", data);
 
         return await replyEmbedMessage(interaction, `Added.`);
       }
