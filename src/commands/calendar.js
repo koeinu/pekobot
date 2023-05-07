@@ -61,7 +61,7 @@ export default {
 
         return await replyEmbedMessage(interaction, `Added.`);
       }
-      case "remove": {
+      case "delete": {
         const options = getOptions(interaction);
         const url = options[0].value;
         const channel = options[1]?.value;
