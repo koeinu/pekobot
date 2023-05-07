@@ -66,7 +66,7 @@ export class ModerateCommand extends AbstractCommand {
         }
       })
       .catch((e) => {
-        console.error(`Couldn't moderate message ${msg.content}: ${e}`);
+        console.debug(`Couldn't moderate message ${msg.content}: ${e}`);
       });
   }
   async commandMatch(msg) {
