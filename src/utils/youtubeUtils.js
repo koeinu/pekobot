@@ -19,7 +19,7 @@ const config = {
   },
 };
 
-export const getYoutubeLiveDetails = async (channelId) => {
+export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
   return await axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`,
@@ -27,7 +27,10 @@ export const getYoutubeLiveDetails = async (channelId) => {
     )
     .then((resp) => {
       console.log("data:", resp.data);
-      return resp.data.items["0"].contentDetails.relatedPlaylists.uploads;
+      return [
+        resp.data.items["0"].contentDetails.relatedPlaylists.uploads,
+        ...additionalIds,
+      ].join(",");
     })
     .then((uploadsId) => {
       return axios.get(

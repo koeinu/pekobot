@@ -19,6 +19,7 @@ const initializeCalendarData = (jsonFileName) => {
   saveFile(jsonFileName, INITIAL_FILE);
 };
 
+// rewrites all entries with calendarData
 export const saveCalendarData = (channelId, calendarData) => {
   const calendars = loadCalendarData(JSON_FILE_NAME);
   if (!Object.keys(calendars).includes(channelId)) {
@@ -34,6 +35,7 @@ export const saveCalendarData = (channelId, calendarData) => {
   return calendars[channelId];
 };
 
+// adds new entries, updates the existing ones
 export const updateCalendarData = (channelId, updatedEntries) => {
   const calendars = loadCalendarData(JSON_FILE_NAME);
   if (!Object.keys(calendars).includes(channelId)) {

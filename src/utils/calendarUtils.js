@@ -30,6 +30,7 @@ export const prepareCalendarDataFromChannelId = async (
   cacheTimeout
 ) => {
   const cachedCalendarData = getCalendarData(channelId);
+  const idsToUpdate = [];
   if (cachedCalendarData) {
     console.debug(`Cached calendar found for ${vtuberHandle}_${channelId}`);
 
@@ -38,28 +39,20 @@ export const prepareCalendarDataFromChannelId = async (
     }
 
     const currentTs = new Date().getTime();
-    const timedOutIds = cachedCalendarData
-      .filter((el) => el.ts + cacheTimeout < currentTs)
-      .map((el) => el.data.uid);
-    if (timedOutIds.length > 0) {
-      console.debug(
-        `Outdated ids for ${vtuberHandle}_${channelId}:`,
-        timedOutIds.join(", ")
-      );
-      const updatedData = await getYoutubeLiveDetailsByVideoIds(timedOutIds);
-      return updateCalendarData(channelId, updatedData);
-    }
-
-    return cachedCalendarData;
+    idsToUpdate.push(
+      ...cachedCalendarData
+        .filter((el) => el.ts + cacheTimeout < currentTs)
+        .map((el) => el.data.uid)
+    );
   }
 
-  if (channelId === "custom") {
+  if (channelId === "custom" && idsToUpdate.length === 0) {
     return [];
   }
 
-  return getYoutubeLiveDetails(channelId)
+  return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
-      const toReturn = saveCalendarData(channelId, items);
+      const toReturn = updateCalendarData(channelId, items);
       console.debug(
         `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
       );
