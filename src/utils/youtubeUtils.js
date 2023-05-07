@@ -20,17 +20,14 @@ const config = {
 };
 
 export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
+  console.debug(`Updating ids for ${channelId}: [${additionalIds}]`);
   return await axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`,
       config
     )
     .then((resp) => {
-      console.log("data:", resp.data);
-      return [
-        resp.data.items["0"].contentDetails.relatedPlaylists.uploads,
-        ...additionalIds,
-      ].join(",");
+      return resp.data.items["0"].contentDetails.relatedPlaylists.uploads;
     })
     .then((uploadsId) => {
       return axios.get(
@@ -40,7 +37,7 @@ export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
     .then((resp) => {
       return resp.data.items.map((el) => el.snippet.resourceId.videoId);
     })
-    .then((ids) => getYoutubeLiveDetailsByVideoIds(ids));
+    .then((ids) => getYoutubeLiveDetailsByVideoIds([...ids, ...additionalIds]));
 };
 
 export const getYoutubeLiveDetailsByVideoIds = (ids) => {
