@@ -83,7 +83,11 @@ export default {
 
         const result = deleteCalendarData(channelHandle || "custom", [videoId]);
 
-        return await replyEmbedMessage(interaction, `Deleted: `, result);
+        return await replyEmbedMessage(
+          interaction,
+          `Deleted: `,
+          result ? "true" : "false"
+        );
       }
       default: {
         await replyEmbedMessage(interaction, `Unknown command: ${subCommand}`);
