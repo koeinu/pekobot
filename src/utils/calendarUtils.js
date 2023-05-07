@@ -25,8 +25,6 @@ export const prepareCalendarDataFromChannelId = async (
   const cachedCalendarData = getCalendarData(channelId);
   const idsToUpdate = [];
   if (cachedCalendarData) {
-    console.debug(`Cached calendar found for ${vtuberHandle}_${channelId}`);
-
     const currentTs = new Date().getTime();
     idsToUpdate.push(
       ...cachedCalendarData
@@ -48,7 +46,7 @@ export const prepareCalendarDataFromChannelId = async (
     .then((items) => {
       const toReturn = updateCalendarData(channelId, items);
       console.debug(
-        `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
+        `Update complete for ${vtuberHandle}_${channelId} with update ids [${idsToUpdate}]`
       );
       return toReturn;
     })
@@ -58,9 +56,6 @@ export const prepareCalendarDataFromChannelId = async (
 };
 
 export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
-  console.debug(
-    `Calendar requested! ${feedUrl}, ${vtuberHandle}, ${channelId}`
-  );
   let data = await prepareCalendarDataFromChannelId(
     vtuberHandle,
     channelId,
@@ -69,6 +64,9 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
   if (!data) {
     throw `Calendar can't be formed`;
   }
+  console.debug(
+    `Serving ${data.length} entries for ${vtuberHandle}_${channelId}`
+  );
   return generateIcs(
     vtuberHandle,
     data.map((el) => el.data),

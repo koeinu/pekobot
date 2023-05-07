@@ -44,7 +44,6 @@ export const updateCalendarData = (channelId, updatedEntries) => {
     }
   }
   saveFile(JSON_FILE_NAME, calendars);
-  // console.debug(`Successfully updated entries in`, channelId);
   return calendars[channelId];
 };
 
