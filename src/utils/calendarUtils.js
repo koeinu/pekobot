@@ -59,11 +59,11 @@ export const prepareCalendarDataFromChannelId = async (
 
   return getYoutubeLiveDetails(channelId)
     .then((items) => {
-      saveCalendarData(channelId, items);
+      const toReturn = saveCalendarData(channelId, items);
       console.debug(
         `Successfully updated and cached stream data for ${vtuberHandle}_${channelId}`
       );
-      return items;
+      return toReturn;
     })
     .catch((e) => {
       console.error(`Couldn't get calendar,`, e);
