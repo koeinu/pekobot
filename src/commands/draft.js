@@ -16,7 +16,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName("gptdraft")
     .setDefaultMemberPermissions(16)
-    .setDescription("Revise and send messages on behalf of peko-bot")
+    .setDescription("Revise and send messages on behalf of bot")
     .addSubcommand((sc) =>
       sc
         .setName("revise")

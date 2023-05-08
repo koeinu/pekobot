@@ -21,6 +21,7 @@ import {
   PEKO_SERVER,
   TEST_SERVER,
 } from "../../utils/ids/guilds.js";
+import { botName } from "../../utils/openaiUtils.js";
 
 export class GptlCommand extends AbstractCommand {
   constructor() {
@@ -31,7 +32,7 @@ export class GptlCommand extends AbstractCommand {
       "GPT translations",
       1,
       S_MS * H_M_S * 2,
-      ["Mod", "peko-bot"],
+      ["Mod", botName],
       AlertUserMode.Normal
     );
     this.intercept = true;

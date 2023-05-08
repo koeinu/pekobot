@@ -19,6 +19,7 @@ import {
 import { H_M_S, LANGUAGES, S_MS } from "../../utils/constants.js";
 import { getTextMessageContent } from "../../utils/stringUtils.js";
 import { BANNED_USERS } from "../../utils/ids/users.js";
+import { botName } from "../../utils/openaiUtils.js";
 
 export class DeeplCommand extends AbstractCommand {
   constructor() {
@@ -29,7 +30,7 @@ export class DeeplCommand extends AbstractCommand {
       "DeepL",
       1,
       S_MS * H_M_S * 2,
-      ["Mod", "peko-bot"],
+      ["Mod", botName],
       AlertUserMode.Normal
     );
     this.intercept = true;

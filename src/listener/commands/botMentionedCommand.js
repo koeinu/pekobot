@@ -36,16 +36,20 @@ export class BotMentionedCommand extends AbstractCommand {
   }
   async commandMatch(msg) {
     const text = msg.content;
+    const nameVariations = [
+      botName,
+      botName.replaceAll("-", " "),
+      botName.replaceAll("-", ""),
+      botName.replaceAll(" ", ""),
+      "this bot",
+      "that bot",
+      "good bot",
+      "bad bot",
+      "damn bot",
+    ];
     return (
       text &&
-      (text.toLowerCase().includes("peko-bot") ||
-        text.toLowerCase().includes("peko bot") ||
-        text.toLowerCase().includes("pekobot") ||
-        text.toLowerCase().includes("this bot") ||
-        text.toLowerCase().includes("that bot") ||
-        text.toLowerCase().includes("good bot") ||
-        text.toLowerCase().includes("goodest of bots") ||
-        text.toLowerCase().includes(botName))
+      nameVariations.some((variation) => text.toLowerCase().includes(variation))
     );
   }
 }

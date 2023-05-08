@@ -75,7 +75,7 @@ export class GptCommand extends AbstractCommand {
       "GPT",
       1,
       S_MS * H_M_S * 1,
-      ["Mod", "peko-bot"],
+      ["Mod", botName],
       AlertUserMode.Emote
     );
     this.guilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
