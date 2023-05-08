@@ -116,7 +116,10 @@ export class ReactCommand extends AbstractCommand {
   }
   async execute(msg, discordClient, reactMood = false) {
     const guildId = msg.guild.id;
+    console.log(`data: `, MOODS_DATA);
+    console.log(`guildId: `, guildId);
     const guildMoodData = MOODS_DATA[guildId] || MOODS_DATA[PEKO_SERVER];
+    console.log(`found data: `, guildMoodData);
     const moodsData = Object.entries(guildMoodData.moods || {});
     const reactData = Object.entries(guildMoodData.moodsReacts || {});
     const actionsData = Object.entries(guildMoodData.actions || {});
