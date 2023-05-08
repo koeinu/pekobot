@@ -76,7 +76,9 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
           }
         );
         console.debug(`Serving ${data.length} entries for ${vtuberHandle}`);
-        return asmrEvents;
+        return asmrEvents.map(([key, el]) => {
+          return el;
+        });
       })
       .catch((e) => {
         console.error(e);
