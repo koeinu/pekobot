@@ -22,7 +22,7 @@ export class HaikuCommand extends AbstractCommand {
       [],
       AlertUserMode.Silent
     );
-    this.probability = 0.02;
+    this.probability = 1; // 0.02;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.allowedChannels = [MIKO_TEST, TESTING_2];

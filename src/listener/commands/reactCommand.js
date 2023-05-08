@@ -116,7 +116,7 @@ export class ReactCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "react";
-    this.probability = 0.005;
+    this.probability = 0.2; //0.005;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.allowedChannels = [MIKO_TEST, TESTING_2];
