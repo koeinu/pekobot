@@ -6,13 +6,14 @@ import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 export class SameReactCommand extends AbstractCommand {
   constructor() {
     super();
-    this.name = "same_react";
-    this.guilds = [
+    this.name = "sameReact";
+    this.allowedGuilds = [
       // ts
       TEST_SERVER,
       // peko
       PEKO_SERVER,
     ];
+
     this.probability = 0.01;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;

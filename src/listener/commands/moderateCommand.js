@@ -1,7 +1,7 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import extractUrls from "extract-urls";
 import { MOD_THRESHOLDS, moderateMessage } from "../../utils/openaiUtils.js";
-import { PEKO_MOD, TEST_MOD } from "../../utils/ids/channels.js";
+import { PEKO_MOD } from "../../utils/ids/channels.js";
 
 import { PEKO_SERVER } from "../../utils/ids/guilds.js";
 
@@ -51,8 +51,8 @@ export class ModerateCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "moderate";
-    this.guilds = [PEKO_SERVER];
-    this.channelsToSend = [TEST_MOD, PEKO_MOD];
+    this.allowedGuilds = [PEKO_SERVER];
+    this.channelsToSend = [PEKO_MOD];
   }
   async execute(msg, discordClient) {
     return moderateMessage(msg)

@@ -7,7 +7,7 @@ export class CatchPoemCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "poem";
-    this.channels = [PEKO_STREAM, TEST_MAIN];
+    this.triggerChannels = [PEKO_STREAM, TEST_MAIN];
     this.intercept = true;
   }
   async execute(msg) {

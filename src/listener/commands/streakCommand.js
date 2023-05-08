@@ -16,6 +16,7 @@ export class StreakCommand extends AbstractCommand {
     super();
     this.name = "streak";
 
+    // cooldown
     this.rateLimiter = new CustomRateLimiter(
       "streak_limiter",
       1,
@@ -23,7 +24,8 @@ export class StreakCommand extends AbstractCommand {
       [],
       AlertUserMode.Silent
     );
-    this.guilds = [TEST_SERVER, PEKO_SERVER];
+
+    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
   }
   async execute(msg) {

@@ -74,11 +74,11 @@ export class GptCommand extends AbstractCommand {
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
       1,
-      S_MS * H_M_S * 1,
+      S_MS * H_M_S,
       ["Mod", botName],
       AlertUserMode.Emote
     );
-    this.guilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
+    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
     this.consultingChanels = [
       ...RP_CHANNELS,
       TEST_ASSISTANT,

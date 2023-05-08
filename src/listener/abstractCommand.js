@@ -1,4 +1,4 @@
-import { formatMSToHMS } from "../utils/stringUtils.js";
+import { formatMSToHMS, getMsgInfo } from "../utils/stringUtils.js";
 
 import { S_MS } from "../utils/constants.js";
 
@@ -7,17 +7,24 @@ import { AlertUserMode, CustomRateLimiter } from "../utils/rateLimiter.js";
 
 export class AbstractCommand {
   constructor() {
+    this.name = undefined;
+
     this.rateLimiter = undefined;
     this.triggerer = undefined;
-    this.channels = undefined;
-    this.probability = undefined;
+
     this.prohibitedChannels = undefined;
-    this.guilds = undefined;
     this.allowedChannels = undefined;
+    this.triggerChannels = undefined;
+
+    this.probability = undefined;
+
     this.intercept = false;
+
+    this.triggerUsers = undefined;
     this.prohibitedUsers = undefined;
     this.bannedUsers = undefined;
-    this.triggerUsers = undefined;
+
+    this.allowedGuilds = undefined;
   }
 
   async execute() {
@@ -103,25 +110,122 @@ export class AbstractCommand {
 
     return true;
   }
-  rateLimitCheck(msg, customHandle = undefined) {
-    if (this.rateLimiter) {
-      if (this.rateLimiter.ignoreRoles) {
-        if (
-          this.rateLimiter.ignoreRoles.some((privelegedRole) =>
-            msg.member.roles.cache.find((role) => role.name === privelegedRole)
-          )
-        ) {
-          return true;
-        }
-      }
-      const limited = this.rateLimiter.check(
-        customHandle ? customHandle : msg.author.id
-      );
-      if (limited.result) {
-        return false;
+
+  shouldProcessMsg(msg) {
+    // do not respond to system messages and to other bots
+    if (msg.system || msg.author.bot) {
+      return {
+        result: false,
+        reason: `${this.name}, ignoring bot/system msg (${getMsgInfo(msg)})`,
+      };
+    }
+
+    // will trigger from these users ignoring everything else
+    if (this.triggerUsers) {
+      if (this.triggerUsers.some((el) => el === msg.author.id)) {
+        return {
+          result: true,
+          reason: `${this.name}, triggered by user ${
+            msg.author.username
+          } (${getMsgInfo(msg)})`,
+        };
       }
     }
 
-    return true;
+    // won't trigger from these users
+    if (this.prohibitedUsers) {
+      if (this.prohibitedUsers.some((el) => el === msg.author.id)) {
+        return {
+          result: false,
+          reason: `${this.name}, ignoring prohibited user ${
+            msg.author.username
+          } (${getMsgInfo(msg)})`,
+        };
+      }
+    }
+    if (this.bannedUsers) {
+      if (this.bannedUsers.some((el) => el === msg.author.id)) {
+        return {
+          result: false,
+          reason: `${this.name}, ignoring banned user ${
+            msg.author.username
+          } (${getMsgInfo(msg)})`,
+        };
+      }
+    }
+
+    if (this.allowedGuilds) {
+      const result = this.allowedGuilds.some((g) => {
+        return `${msg.guild.id}` === `${g}`;
+      });
+      if (!result) {
+        return {
+          result: false,
+          reason: `${this.name}, guild filtered: ${
+            this.allowedGuilds
+          } (${getMsgInfo(msg)})`,
+        };
+      }
+    }
+    if (this.allowedChannels) {
+      const result = this.allowedChannels.some((g) => {
+        return `${msg.channel.id}` === `${g}`;
+      });
+      if (!result) {
+        return {
+          result: false,
+          reason: `${this.name}, channel filtered: ${
+            this.allowedChannels
+          } (${getMsgInfo(msg)})`,
+        };
+      }
+    }
+    if (this.prohibitedChannels) {
+      const result = this.prohibitedChannels.some((ch) => {
+        return `${msg.channel.id}` === `${ch}`;
+      });
+      if (result) {
+        return {
+          result: false,
+          reason: `${this.name} -> prohibited channel filtered: ${
+            this.prohibitedChannels
+          } (${getMsgInfo(msg)})`,
+        };
+      }
+    }
+
+    // ALWAYS triggering in these channels
+    if (this.triggerChannels) {
+      const result = this.triggerChannels.some((ch) => {
+        return `${msg.channel.id}` === `${ch}`;
+      });
+      if (result) {
+        return {
+          result: true,
+          reason: `${this.name}, channel OK: ${
+            this.triggerChannels
+          } (${getMsgInfo(msg)})`,
+        };
+      }
+    }
+
+    // not matched in always-triggered channels, may be triggered by probability
+    if (this.probability !== undefined) {
+      const value = Math.random();
+      const result = value <= this.probability;
+
+      return {
+        result,
+        reason: `${this.name}, ${value}/${this.probability} (${getMsgInfo(
+          msg
+        )})`,
+      };
+    }
+
+    // if no guilds, channels or probability is set, the name is allowed to be executed by default
+    return {
+      result: true,
+      reason: `${this.name}, default (${getMsgInfo(msg)})`,
+    };
   }
 }

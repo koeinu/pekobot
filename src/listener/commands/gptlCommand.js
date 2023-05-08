@@ -17,7 +17,6 @@ import { ApiUtils } from "../../utils/apiUtils.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_SERVER,
-  MIKO_SERVER,
   PEKO_SERVER,
   TEST_SERVER,
 } from "../../utils/ids/guilds.js";
@@ -27,11 +26,11 @@ export class GptlCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "gptl";
-    this.guilds = [TEST_SERVER, PEKO_SERVER, MIKO_SERVER, DDF_SERVER];
+    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
     this.rateLimiter = new CustomRateLimiter(
       "GPT translations",
       1,
-      S_MS * H_M_S * 2,
+      S_MS * H_M_S,
       ["Mod", botName],
       AlertUserMode.Normal
     );

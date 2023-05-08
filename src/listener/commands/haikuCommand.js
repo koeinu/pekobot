@@ -4,11 +4,7 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 
 import { sendCustomEmbed } from "../../utils/discordUtils.js";
-import {
-  PEKO_TEST,
-  PROHIBITED_RNG_CHANNELS,
-  TEST_MAIN,
-} from "../../utils/ids/channels.js";
+import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
 import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 
@@ -23,18 +19,7 @@ export class HaikuCommand extends AbstractCommand {
       [],
       AlertUserMode.Silent
     );
-    this.channels = [
-      // ts
-      TEST_MAIN,
-      // btg
-      PEKO_TEST,
-    ];
-    this.guilds = [
-      // ts
-      TEST_SERVER,
-      // peko
-      PEKO_SERVER,
-    ];
+    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];
     this.probability = 0.02;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;

@@ -29,7 +29,7 @@ export class DeeplCommand extends AbstractCommand {
     this.rateLimiter = new CustomRateLimiter(
       "DeepL",
       1,
-      S_MS * H_M_S * 2,
+      S_MS * H_M_S,
       ["Mod", botName],
       AlertUserMode.Normal
     );

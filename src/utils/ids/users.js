@@ -4,5 +4,5 @@ export const PROHIBITED_RNG_USERS = [
   "392819210902044673", // Smoker
 ];
 export const BANNED_USERS = [
-  "212991535686352896", // that piece of shit
+  "212991535686352896", // simp
 ];
