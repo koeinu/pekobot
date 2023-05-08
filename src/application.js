@@ -204,7 +204,7 @@ export class Application {
         if (error.message) {
           replyEmbedMessage(
             interaction,
-            `Oh no, I have an error peko! Please contact my creator Hermit! ${
+            `Oh no, I have an error! Please contact my creator Hermit! ${
               error.message ? "Show him this! '" + error.message + "'" : ""
             }`
           ).catch((e) => {

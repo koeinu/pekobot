@@ -93,7 +93,7 @@ export class AbstractCommand {
               .send(
                 `${
                   this.rateLimiter.commandName
-                } user rate limit reached, peko.. Try again after ${formatMSToHMS(
+                } user rate limit reached.. Try again after ${formatMSToHMS(
                   limited.ts
                 )}!`
               )

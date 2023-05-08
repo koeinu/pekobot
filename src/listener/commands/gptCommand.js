@@ -135,7 +135,7 @@ export class GptCommand extends AbstractCommand {
           );
           return reply(
             msg,
-            `Beep boop, couldn't reply.. Likely my GPT capacity was overloaded! Please try again peko!`,
+            `Beep boop, couldn't reply.. Likely my GPT capacity was overloaded! Please try again!`,
             undefined,
             false,
             false

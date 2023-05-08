@@ -92,12 +92,12 @@ const processGeneratePuzzle = async (interaction) => {
     } role in the ${rulesChannel || "#rules"} channel!`;
     let puzzleMessage;
     if (result.status) {
-      puzzleMessage = `Let's do some puzzle peko!`;
+      puzzleMessage = `Let's do some puzzle~!`;
       if (pingTheRole) {
         puzzleMessage = puzzleMessage.concat("\n").concat(pingMessage);
       }
     } else {
-      puzzleMessage = `Gomen peko! I couldn't make a multiplayer version! But here is your singleplayer link. Remember to set it to multiplayer. This message is not displayed publicly, so provide the link manually!`;
+      puzzleMessage = `Gomennye! I couldn't make a multiplayer version! But here is your singleplayer link. Remember to set it to multiplayer. This message is not displayed publicly, so provide the link manually!`;
     }
     await followUpCustomEmbed(
       interaction,

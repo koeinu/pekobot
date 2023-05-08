@@ -60,7 +60,7 @@ export class HaikuCommand extends AbstractCommand {
         haikuText,
         undefined,
         undefined,
-        "I tried to make some haiku, peko. Do you like it~?"
+        "I tried to make some haiku, nye~. Do you like it~?"
       ).catch((e) => {
         console.error(`Couldn't write a haiku: ${e}`);
       });
