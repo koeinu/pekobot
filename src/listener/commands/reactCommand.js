@@ -145,6 +145,7 @@ export class ReactCommand extends AbstractCommand {
               );
               const randomEmote =
                 emotes[Math.floor(Math.random() * emotes.length)];
+              console.log(`reacting with: ${randomEmote}`);
               if (randomEmote) {
                 msg.react(randomEmote).catch(async (e) => {
                   console.error(`Couldn't React: ${e}`);
@@ -169,6 +170,7 @@ export class ReactCommand extends AbstractCommand {
                 );
                 const randomEmote =
                   emotes[Math.floor(Math.random() * emotes.length)];
+                console.log(`reacting with: ${randomEmote}`);
                 if (randomEmote) {
                   msg.react(randomEmote).catch(async (e) => {
                     console.error(`Couldn't React: ${e}`);
