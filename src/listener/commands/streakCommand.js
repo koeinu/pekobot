@@ -58,7 +58,7 @@ export class StreakCommand extends AbstractCommand {
             const toSend = text.toLowerCase().includes("nyahallo")
               ? "Nyahallo~"
               : text.includes("otsu35")
-              ? "Otsu35"
+              ? "Otsu35~"
               : text;
             return msg.channel.send(toSend).catch((e) => {
               console.error(
