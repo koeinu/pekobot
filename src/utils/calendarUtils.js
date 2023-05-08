@@ -1,23 +1,11 @@
 import dotenv from "dotenv";
 import generateIcs from "ics-service/generate-ics.js";
-import {
-  getYoutubeLiveDetails,
-  parseIntoIcsDate,
-  parseDurationStringAsObject,
-} from "./youtubeUtils.js";
+import { getYoutubeLiveDetails } from "./youtubeUtils.js";
 import { getCalendarData, updateCalendarData } from "../model/calendars.js";
-import axios from "axios";
-import ical from "ical";
 
 dotenv.config();
 const ICS_DATA = process.env.ICS_DATA;
 const ICS_TIMEOUT = process.env.ICS_TIMEOUT;
-
-const config = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
 
 export const CALENDAR_METADATA = ICS_DATA
   ? ICS_DATA.split(";").map((el) => {
