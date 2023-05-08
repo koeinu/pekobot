@@ -3,6 +3,12 @@ import { gptMood, gptReaction } from "../../utils/openaiUtils.js";
 import extractUrls from "extract-urls";
 import { PEKO_SERVER, MIKO_SERVER } from "../../utils/ids/guilds.js";
 import {
+  PEKO_SERVER,
+  TEST_SERVER,
+  MIKO_SERVER,
+  TEST_SERVER_2,
+} from "../../utils/ids/guilds.js";
+import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
   MIKO_TEST,
   PROHIBITED_RNG_CHANNELS,
   TESTING_2,
@@ -104,6 +110,8 @@ MOODS_DATA[MIKO_SERVER] = {
     shrug: [],
   },
 };
+MOODS_DATA[TEST_SERVER] = MOODS_DATA[PEKO_SERVER];
+MOODS_DATA[TEST_SERVER_2] = MOODS_DATA[MIKO_SERVER];
 
 export class ReactCommand extends AbstractCommand {
   constructor() {
