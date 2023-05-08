@@ -85,7 +85,7 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
             description: el.description,
             duration: parseDurationStringAsObject(el.duration),
             start: parseIntoIcsDate(el.start),
-            title: el.title,
+            title: el.summary,
             url: el.url,
             uid: el.uid,
           };
