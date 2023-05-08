@@ -31,11 +31,12 @@ export class BotMentionedCommand extends AbstractCommand {
   }
   async commandMatch(msg) {
     const text = msg.content;
+    const botNameLowercase = botName.toLowerCase();
     const nameVariations = [
-      botName,
-      botName.replaceAll("-", " "),
-      botName.replaceAll("-", ""),
-      botName.replaceAll(" ", ""),
+      botNameLowercase,
+      botNameLowercase.replaceAll("-", " "),
+      botNameLowercase.replaceAll("-", ""),
+      botNameLowercase.replaceAll(" ", ""),
       "this bot",
       "that bot",
       "good bot",
