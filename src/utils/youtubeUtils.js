@@ -168,7 +168,7 @@ const parseDurationString = (durationString) => {
 };
 export const parseIntoIcsDate = (dateObj) => {
   const year = dateObj.getUTCFullYear();
-  const month = dateObj.getUTCMonth();
+  const month = dateObj.getUTCMonth() + 1;
   const day = dateObj.getUTCDate();
   const hours = dateObj.getUTCHours();
   const minutes = dateObj.getUTCMinutes();
