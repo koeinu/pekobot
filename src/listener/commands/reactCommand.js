@@ -1,11 +1,12 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import { gptMood, gptReaction } from "../../utils/openaiUtils.js";
 import extractUrls from "extract-urls";
+import { PEKO_SERVER, MIKO_SERVER } from "../../utils/ids/guilds.js";
 import {
-  PEKO_SERVER,
-  MIKO_SERVER,
-} from "../../utils/ids/guilds.js";
-import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
+  MIKO_TEST,
+  PROHIBITED_RNG_CHANNELS,
+  TESTING_2,
+} from "../../utils/ids/channels.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
 
