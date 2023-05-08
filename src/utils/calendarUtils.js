@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 import generateIcs from "ics-service/generate-ics.js";
-import { getYoutubeLiveDetails } from "./youtubeUtils.js";
+import {
+  getYoutubeLiveDetails,
+  parseIntoIcsDate,
+  parseDurationStringAsObject,
+} from "./youtubeUtils.js";
 import { getCalendarData, updateCalendarData } from "../model/calendars.js";
 import axios from "axios";
 import ical from "ical";
@@ -77,7 +81,14 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
         );
         console.debug(`Serving ${data.length} entries for ${vtuberHandle}`);
         return asmrEvents.map(([key, el]) => {
-          return el;
+          return {
+            description: el.description,
+            duration: parseDurationStringAsObject(el.duration),
+            start: parseIntoIcsDate(el.start),
+            title: el.title,
+            url: el.url,
+            uid: el.uid,
+          };
         });
       })
       .catch((e) => {

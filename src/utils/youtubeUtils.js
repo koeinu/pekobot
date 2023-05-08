@@ -166,7 +166,17 @@ const parseDurationString = (durationString) => {
     parseDurationStringAsObject(durationString);
   return ((hours * 60 + minutes) * 60 + seconds) * 1000;
 };
-const parseDurationStringAsObject = (durationString) => {
+export const parseIntoIcsDate = (dateObj) => {
+  const year = dateObj.getUTCFullYear();
+  const month = dateObj.getUTCMonth();
+  const day = dateObj.getUTCDate();
+  const hours = dateObj.getUTCHours();
+  const minutes = dateObj.getUTCMinutes();
+  const seconds = dateObj.getUTCSeconds();
+
+  return [year, month, day, hours, minutes, seconds];
+};
+export const parseDurationStringAsObject = (durationString) => {
   let hours = 0,
     minutes = 0,
     seconds = 0;
