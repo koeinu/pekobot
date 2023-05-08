@@ -25,9 +25,8 @@ import {
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
 import {
-  DDF_SERVER,
-  PEKO_SERVER,
-  TEST_SERVER,
+  MIKO_SERVER,
+  TEST_SERVER_2,
 } from "../../utils/ids/guilds.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
@@ -78,7 +77,7 @@ export class GptCommand extends AbstractCommand {
       ["Mod", botName],
       AlertUserMode.Emote
     );
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
+    this.allowedGuilds = [TEST_SERVER_2, MIKO_SERVER];
     this.consultingChanels = [
       ...RP_CHANNELS,
       TEST_ASSISTANT,
