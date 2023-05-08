@@ -88,6 +88,44 @@ export class Application {
     this.client.once(Events.ClientReady, (c) => {
       console.log(`Logged in as ${c.user.tag}`);
     });
+    this.client.on(Events.InteractionCreate, async (interaction) => {
+      if (!interaction.isModalSubmit()) {
+        return;
+      }
+      try {
+        const customId = interaction.customId;
+        const channelToSendId = customId.split("-")[1];
+        const channelToSend = channelToSendId
+          ? interaction.client.channels.cache.get(channelToSendId)
+          : undefined;
+        const data = interaction.fields.fields.first();
+        const editedMessage = data.value;
+        const msgId = data.customId;
+        const ch = interaction.client.channels.cache.get(interaction.channelId);
+        const msg = ch.messages.cache.get(msgId);
+        msg
+          .edit(editedMessage)
+          .then(() => {
+            if (channelToSend) {
+              channelToSend.send(editedMessage);
+            }
+          })
+          .then(() => {
+            return replyEmbedMessage(
+              interaction,
+              channelToSend
+                ? `Successfully edited and sent.`
+                : `Successfully edited.`
+            );
+          })
+          .catch((e) => {
+            console.error(e);
+            return replyEmbedMessage(interaction, `Error when editing: ` + e);
+          });
+      } catch (e) {
+        console.error("Critical modal error:", e);
+      }
+    });
 
     this.client.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.isChatInputCommand()) {
@@ -107,7 +145,6 @@ export class Application {
 
       if (!command) {
         console.error(`No command matching ${command} was found.`);
-        console.error(`${interaction.client.commands.array()}`);
         return;
       }
 
@@ -118,12 +155,6 @@ export class Application {
         ).execute(interaction, this.client);
         if (result) {
           const data = result.data;
-          const commandsToGenerate = Array.from(this.client.commands)
-            .filter(
-              (el) =>
-                !el[0].includes("__bet") || el[0].includes(interaction.guild.id)
-            )
-            .map((el) => el[1]);
           if (result.create === true) {
             if (data.length > 0) {
               const commands = makeCompoundBetCommands(data);
@@ -131,6 +162,8 @@ export class Application {
                 `${interaction.guild.id}__${commands.data.name}`,
                 commands
               );
+              const commandsToGenerate =
+                this.getCommandsToGenerate(interaction);
               await generateCommands(
                 commandsToGenerate.map((el) =>
                   el.default ? el.default.data.toJSON() : el.data.toJSON()
@@ -143,6 +176,8 @@ export class Application {
                 `${interaction.guild.id}__${commands.data.name}`,
                 commands
               );
+              const commandsToGenerate =
+                this.getCommandsToGenerate(interaction);
               await generateCommands(
                 commandsToGenerate.map((el) =>
                   el.default ? el.default.data.toJSON() : el.data.toJSON()
@@ -155,6 +190,7 @@ export class Application {
             this.client.commands.delete(
               `${interaction.guild.id}__${commands.data.name}`
             );
+            const commandsToGenerate = this.getCommandsToGenerate(interaction);
             await generateCommands(
               commandsToGenerate.map((el) =>
                 el.default ? el.default.data.toJSON() : el.data.toJSON()
@@ -189,6 +225,14 @@ export class Application {
     this.client.on(Events.ClientReady, () => this.onReady());
 
     this.client.login(token);
+  }
+
+  getCommandsToGenerate(interaction) {
+    return Array.from(this.client.commands)
+      .filter(
+        (el) => !el[0].includes("__bet") || el[0].includes(interaction.guild.id)
+      )
+      .map((el) => el[1]);
   }
 
   async onReady() {
@@ -256,12 +300,27 @@ export class Application {
       return;
     }
 
+    oldMessage = await fillMessage(oldMessage);
+    if (!oldMessage) {
+      return;
+    }
+
+    newMessage = await fillMessage(newMessage);
+    if (!newMessage) {
+      return;
+    }
+
     this.listener.processMessageUpdate(oldMessage, newMessage).catch((e) => {
       console.error(`onUpdateMessage error: ${oldMessage.content}, ${e}`);
     });
   }
   async onMessageDelete(msg) {
     if (!this.ready) {
+      return;
+    }
+
+    msg = await fillMessage(msg);
+    if (!msg) {
       return;
     }
 

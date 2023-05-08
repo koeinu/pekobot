@@ -78,7 +78,7 @@ export class ApiUtils {
         await gptGetLanguage(textToTranslate)
           .then((response) => {
             if (response && response.text.toLowerCase().includes("eng")) {
-              console.warn(
+              console.debug(
                 `Not translating, as the text is already in English: ${textToTranslate}`
               );
               return Promise.resolve({
@@ -152,7 +152,7 @@ export class ApiUtils {
       translated: response === textToTranslate,
     };
 
-    console.warn(`final translation:`, toReturn);
+    console.debug(`final translation:`, toReturn);
     tlCache[text] = toReturn;
     return toReturn;
   }

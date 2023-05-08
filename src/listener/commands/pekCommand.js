@@ -12,8 +12,6 @@ export class PekCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "pek";
-    // 5 requests per 30s
-    // this.rateLimiter = new RateLimiter("pek", 1, S_MS * H_M_S * 10);
     this.channels = [PEKO_TEST, TEST_MAIN];
     this.guilds = [TEST_SERVER, PEKO_SERVER];
     this.probability = 0.3;
@@ -23,10 +21,6 @@ export class PekCommand extends AbstractCommand {
     this.intercept = true;
   }
   async execute(msg) {
-    // if (!(await this.rateLimitPass(msg))) {
-    //   return;
-    // }
-    // increaseCounter("pek");
     return msg.react("<:pek:775493108154236938>").catch((e) => {
       console.error(`Couldn't pek: ${e}`);
     });

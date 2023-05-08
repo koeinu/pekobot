@@ -6,6 +6,7 @@ import { listBans } from "../../model/youtube.js";
 
 import { getYoutubeChannelId } from "../../utils/youtubeUtils.js";
 import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import { getMsgInfo } from "../../utils/stringUtils.js";
 
 const DELETE_MESSAGE_TIMEOUT = 2000; //ms
 
@@ -26,6 +27,7 @@ export class LinkFilterCommand extends AbstractCommand {
         const channelId = await getYoutubeChannelId(url);
         const bannedKey = Object.keys(bans).find((el) => el === channelId);
         if (bannedKey) {
+          console.error(`${this.name} triggered, ${getMsgInfo(msg)}`);
           return replyEmbedMessage(
             msg,
             `This link is not allowed on this server.\n\nReason: ${bans[bannedKey]}`

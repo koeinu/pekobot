@@ -127,12 +127,37 @@ const crawlURL = async (url) => {
   return data;
 };
 
+export const parseHashtags = (text) => {
+  if (typeof text !== "string") {
+    throw new TypeError("Expected a text");
+  }
+
+  let matcher = /[#＃][\S]+[\s|\n]*/g;
+  return text.match(matcher);
+};
+
+export const getMessage = (msg) => {
+  if (msg.content && msg.content.length > 0) {
+    return msg.content;
+  }
+  if (msg.embeds.length > 0) {
+    return msg.embeds[0].data.description;
+  }
+  return "<empty>";
+};
+
+export const getMsgInfo = (msg) => {
+  return `msg: ${getMessage(msg)} in ${msg.channel.name}, ${msg.guild.name} (${
+    msg.url
+  })`;
+};
+
 // preferring embed description text
 export const getTextMessageContent = async (
   msg,
-  canOCR,
-  silentAttachments = false,
-  recursionFlag = false
+  isTranslating,
+  silentAttachments,
+  recursionFlag
 ) => {
   const parts = [];
   let countObject = undefined;
@@ -152,7 +177,7 @@ export const getTextMessageContent = async (
             const message = await channel.messages.fetch(link.messageId);
             const messageContent = await getTextMessageContent(
               message,
-              canOCR,
+              isTranslating,
               silentAttachments,
               true
             );
@@ -169,7 +194,11 @@ export const getTextMessageContent = async (
     const urls = extractUrls(messageText);
     if (urls && urls.length > 0) {
       for (let parsedUrl of urls) {
-        if (parsedUrl.includes("twitter.com") && !isSimplifed) {
+        if (
+          parsedUrl.includes("twitter.com") &&
+          !isSimplifed &&
+          isTranslating
+        ) {
           const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
           const tweet = await getTweetById(tweetId);
@@ -201,7 +230,7 @@ export const getTextMessageContent = async (
         parts.push("Text attachment:");
       }
       parts.push(text);
-    } else if (canOCR) {
+    } else {
       const imageUrl = parseAttachmentUrl(msg);
 
       console.log(`translating image`);

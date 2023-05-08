@@ -55,6 +55,15 @@ const processGeneratePuzzle = async (interaction) => {
     const numberOfPieces = interaction.options._hoistedOptions[1].value;
     const pingTheRole = interaction.options._hoistedOptions[2]?.value || false;
 
+    console.warn(
+      `jigsaw at `,
+      interaction.guild.name,
+      ":",
+      url,
+      numberOfPieces,
+      pingTheRole
+    );
+
     await replyCustomEmbed(
       interaction,
       "Puzzle is being generated",
@@ -159,7 +168,7 @@ const makeWholePuzzle = async (username, imageUrl, nop) => {
     const n = await page.$("#jigex-game-link");
     toReturn = await page.evaluate((n) => n.value, n);
     isSuccessful = true;
-    console.warn("successful multiplayer link:", toReturn);
+    console.debug("successful multiplayer link:", toReturn);
   } catch (e) {
     console.error(
       `Failed to make multiplayer puzzle link: ${e}. Unsuccessful link: ${toReturn}`

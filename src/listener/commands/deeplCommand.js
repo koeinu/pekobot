@@ -2,8 +2,12 @@ import { MessageType } from "discord.js";
 
 import { AbstractCommand } from "../abstractCommand.js";
 import { ApiUtils } from "../../utils/apiUtils.js";
-import { CustomRateLimiter } from "../../utils/rateLimiter.js";
-import { formatTLText, printTLInfo } from "../../utils/stringUtils.js";
+import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
+import {
+  formatTLText,
+  getMsgInfo,
+  printTLInfo,
+} from "../../utils/stringUtils.js";
 
 import { getCounter } from "../../model/counter.js";
 
@@ -22,18 +26,22 @@ export class DeeplCommand extends AbstractCommand {
     this.name = "deepl";
     // 1 request per 10 min
     this.rateLimiter = new CustomRateLimiter(
-      "Optical Image Recognition",
+      "DeepL",
       1,
       S_MS * H_M_S * 2,
-      ["Mod"]
+      ["Mod", "peko-bot"],
+      AlertUserMode.Normal
     );
     this.intercept = true;
     this.bannedUsers = BANNED_USERS;
   }
 
   async execute(msg) {
-    const canOCR = this.rateLimitCheck(msg);
-    let data = await getTextMessageContent(msg, canOCR, true);
+    if (!(await this.rateLimitPass(msg))) {
+      return Promise.resolve();
+    }
+    console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
+    let data = await getTextMessageContent(msg, true, true, false);
     const parsed = data.text.split(" ");
     const sourceLanguage = LANGUAGES.find((el) =>
       parsed.map((el) => el.toUpperCase()).includes(el)
@@ -49,7 +57,7 @@ export class DeeplCommand extends AbstractCommand {
         msg.reference.messageId
       );
       replyMessage = repliedTo;
-      data = await getTextMessageContent(repliedTo, canOCR, true);
+      data = await getTextMessageContent(repliedTo, true, true, false);
     }
 
     if (isCount) {

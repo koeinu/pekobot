@@ -196,7 +196,7 @@ export const parseBetChoices = (betCategories, betContents) => {
     const categoryName = categoryNames[index];
     return {
       name: categoryName,
-      content: content.split(", ").map((choice) => {
+      content: content.split(",").map((choice) => {
         const trimmedChoice = choice.trim();
         validateString(trimmedChoice);
         return trimmedChoice;

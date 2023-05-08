@@ -1,5 +1,9 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { formatTL, textIsRelayTL } from "../../utils/stringUtils.js";
+import {
+  formatTL,
+  getMsgInfo,
+  textIsRelayTL,
+} from "../../utils/stringUtils.js";
 
 import { fetchMessage } from "../../utils/discordUtils.js";
 
@@ -22,7 +26,11 @@ export class RelayMessageCommand extends AbstractCommand {
     if (relaysFile.enabled === false) {
       return;
     }
-    console.log(text, "relaying to channels: ", this.targetChannels);
+    console.debug(
+      `${this.name} triggered, ${getMsgInfo(msg)}, sending to: ${
+        this.targetChannels
+      }`
+    );
     const foundChannels = this.targetChannels
       .reduce((array, channelToSend) => {
         const foundChannels = discordClient.channels.cache.filter(

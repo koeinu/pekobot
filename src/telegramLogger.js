@@ -1,12 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
-import { gpt } from "./utils/openaiUtils.js";
 dotenv.config();
 const token = process.env.TG_BOT_TOKEN;
 
 export const originalConsoleLog = console.log;
 export const originalConsoleError = console.error;
 export const originalConsoleWarn = console.warn;
+export const originalConsoleDebug = console.debug;
 
 export class TelegramBotWrapper {
   constructor() {
@@ -16,18 +16,23 @@ export class TelegramBotWrapper {
       } catch (e) {
         console.error(e);
       }
+      this.bot.on("channel_post", (msg) => {
+        const chatId = msg.chat.id;
+        console.log("got channel message, channel id:", chatId);
+      });
       this.bot.on("message", (msg) => {
         const chatId = msg.chat.id;
-        const text = msg.text;
-        gpt(text, "")
-          .then((result) => {
-            if (result.text) {
-              this.sendMessage(chatId, result.text);
-            }
-          })
-          .catch((e) => {
-            console.log(`Couldn't telegram gpt: ${e}`);
-          });
+        console.log("got message, channel id:", chatId);
+        // const text = msg.text;
+        // gpt(text, "")
+        //   .then((result) => {
+        //     if (result.text) {
+        //       this.sendMessage(chatId, result.text);
+        //     }
+        //   })
+        //   .catch((e) => {
+        //     console.log(`Couldn't telegram gpt: ${e}`);
+        //   });
       });
       this.bot.on("command", (command) => {
         console.log(command);
@@ -36,6 +41,7 @@ export class TelegramBotWrapper {
     this.logsId = -1001906303858;
     this.errorsId = -1001920972703;
     this.warningsId = -1001838776203;
+    this.debugId = -1001928890609;
   }
 
   async sendMessage(id, str) {
@@ -72,6 +78,11 @@ export class TelegramBotWrapper {
   }
   sendWarning(...args) {
     this.sendMessage(this.warningsId, this.makeString(...args)).catch((e) => {
+      originalConsoleError(e);
+    });
+  }
+  sendDebug(...args) {
+    this.sendMessage(this.debugId, this.makeString(...args)).catch((e) => {
       originalConsoleError(e);
     });
   }

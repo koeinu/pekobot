@@ -3,7 +3,7 @@ import { formatMSToHMS } from "../utils/stringUtils.js";
 import { S_MS } from "../utils/constants.js";
 
 import { sleep } from "../utils/discordUtils.js";
-import { CustomRateLimiter } from "../utils/rateLimiter.js";
+import { AlertUserMode, CustomRateLimiter } from "../utils/rateLimiter.js";
 
 export class AbstractCommand {
   constructor() {
@@ -47,7 +47,7 @@ export class AbstractCommand {
         initValue,
         cooldown,
         [],
-        false
+        AlertUserMode.Silent
       );
     }
     const trigger = this.triggerer.take(
@@ -76,23 +76,26 @@ export class AbstractCommand {
       );
       console.log(`Limit check for ${msg.content}: ${limited.result}`);
       if (limited.result) {
-        if (this.rateLimiter.alertUser) {
+        if (this.rateLimiter.alertUser !== AlertUserMode.Silent) {
           await msg.react("<:PekoDerp:709152458978492477>").catch((e) => {
             console.error(`Couldn't derp-react: ${e}`);
           });
-          await sleep(() => {}, S_MS);
-          // await msg.channel.messages.delete(msg.id);
-          await msg.author
-            .send(
-              `${
-                this.rateLimiter.commandName
-              } user rate limit reached, peko.. Try again after ${formatMSToHMS(
-                limited.ts
-              )}!`
-            )
-            .catch((e) => {
-              console.error(`Couldn't alert the rate limit to the user: ${e}`);
-            });
+          if (this.rateLimiter.alertUser === AlertUserMode.Normal) {
+            await sleep(() => {}, S_MS);
+            await msg.author
+              .send(
+                `${
+                  this.rateLimiter.commandName
+                } user rate limit reached, peko.. Try again after ${formatMSToHMS(
+                  limited.ts
+                )}!`
+              )
+              .catch((e) => {
+                console.error(
+                  `Couldn't alert the rate limit to the user: ${e}`
+                );
+              });
+          }
         }
         return false;
       }
