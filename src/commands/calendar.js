@@ -6,6 +6,7 @@ import {
 
 import { SlashCommandBuilder, TextInputStyle } from "discord.js";
 import {
+  getYoutubeChannelId,
   getYoutubeLiveDetailsByVideoIds,
   parseVideoId,
 } from "../utils/youtubeUtils.js";
@@ -24,9 +25,6 @@ export default {
         .addStringOption((option) =>
           option.setName("url").setDescription("Video URL").setRequired(true)
         )
-        .addStringOption((option) =>
-          option.setName("channel").setDescription("Channel handle to add to")
-        )
     )
     .addSubcommand((sc) =>
       sc
@@ -34,11 +32,6 @@ export default {
         .setDescription("Removes a video from a custom calendar")
         .addStringOption((option) =>
           option.setName("url").setDescription("Video URL").setRequired(true)
-        )
-        .addStringOption((option) =>
-          option
-            .setName("channel")
-            .setDescription("Channel handle to remove from")
         )
     ),
   async execute(interaction) {
@@ -49,11 +42,10 @@ export default {
       case "add": {
         const options = getOptions(interaction);
         const url = options[0].value;
-        const channel = options[1]?.value;
 
-        const channelHandle = CALENDAR_METADATA.find(
-          (el) => el.handle === channel
-        )?.id;
+        const channelId = await getYoutubeChannelId(url);
+        const channelHandle =
+          CALENDAR_METADATA.find((el) => el.id === channelId)?.id || "custom";
 
         const videoId = parseVideoId(url) || url;
         console.warn(
@@ -69,11 +61,10 @@ export default {
       case "delete": {
         const options = getOptions(interaction);
         const url = options[0].value;
-        const channel = options[1]?.value;
 
-        const channelHandle = CALENDAR_METADATA.find(
-          (el) => el.handle === channel
-        )?.id;
+        const channelId = await getYoutubeChannelId(url);
+        const channelHandle =
+          CALENDAR_METADATA.find((el) => el.id === channelId)?.id || "custom";
 
         const videoId = parseVideoId(url) || url;
         console.warn(

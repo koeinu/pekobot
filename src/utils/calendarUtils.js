@@ -32,7 +32,8 @@ export const prepareCalendarDataFromChannelId = async (
           (el) =>
             (cacheTimeout !== undefined
               ? el.ts + cacheTimeout < currentTs
-              : true) && !el.actualEndTime
+              : true) &&
+            (!el.actualEndTime || !el.parsedDuration)
         )
         .map((el) => el.data.uid)
     );

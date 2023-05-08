@@ -39,7 +39,9 @@ export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
     .then((resp) => {
       return resp.data.items.map((el) => el.snippet.resourceId.videoId);
     })
-    .then((ids) => getYoutubeLiveDetailsByVideoIds([...ids, ...additionalIds]));
+    .then((ids) =>
+      getYoutubeLiveDetailsByVideoIds([...new Set([...ids, ...additionalIds])])
+    );
 };
 
 export const getYoutubeLiveDetailsByVideoIds = (ids) => {
@@ -53,7 +55,7 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
       const items = resp.data.items;
       return items
         .map((video) => {
-          let duration = undefined;
+          let parsedDuration = undefined;
           const lsd = video.liveStreamingDetails;
           const startTime =
             lsd?.actualStartTime ||
@@ -63,11 +65,11 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
             return undefined;
           }
           if (video.contentDetails.duration) {
-            duration = parseDurationStringAsObject(
+            parsedDuration = parseDurationStringAsObject(
               video.contentDetails.duration
             );
           }
-          if (!duration && lsd) {
+          if (!parsedDuration && lsd) {
             const endTime =
               lsd.actualEndTime ||
               (lsd.actualStartTime
@@ -78,7 +80,7 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
                 ? new Date(new Date(endTime) - new Date(startTime))
                 : undefined;
             if (durationDate) {
-              duration = {
+              parsedDuration = {
                 hours: durationDate.getUTCHours(),
                 minutes: durationDate.getUTCMinutes(),
                 seconds: durationDate.getUTCSeconds(),
@@ -86,7 +88,7 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
             }
           }
 
-          duration = duration || PREDICTED_DURATION;
+          const duration = parsedDuration || PREDICTED_DURATION;
 
           const uid = video.id;
           const url = `https://www.youtube.com/watch?v=${uid}`;
@@ -97,6 +99,8 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
             .map((el) => Number.parseInt(el));
           return {
             actualEndTime: lsd?.actualEndTime,
+            isLive: lsd !== undefined,
+            parsedDuration,
             calendarData: {
               description,
               duration,

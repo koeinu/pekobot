@@ -33,11 +33,13 @@ export const updateCalendarData = (channelId, updatedEntries) => {
     if (toUpdateEntry) {
       toUpdateEntry.ts = new Date().getTime();
       toUpdateEntry.actualEndTime = entry.actualEndTime;
+      toUpdateEntry.parsedDuration = entry.parsedDuration;
       toUpdateEntry.data = entry.calendarData;
     } else {
       calendars[channelId].push({
         ts: new Date().getTime(),
         channelId,
+        parsedDuration: entry.parsedDuration,
         actualEndTime: entry.actualEndTime,
         data: entry.calendarData,
       });
