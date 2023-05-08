@@ -1,6 +1,7 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import { H_M_S, S_MS } from "./constants.js";
+import ical from "ical";
 
 dotenv.config();
 const API_KEY = process.env.API_KEY;
@@ -22,6 +23,25 @@ const config = {
 export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
   if (channelId === "custom") {
     return getYoutubeLiveDetailsByVideoIds(additionalIds);
+  }
+  if (channelId === "asmr") {
+    return await axios
+      .get("https://sarisia.cc/holodule-ics/holodule-all.ics", config)
+      .then((resp) => {
+        const cal = resp.data;
+        const data = ical.parseICS(cal);
+        const ids = Object.values(data)
+          .filter((calendarData) => {
+            return calendarData.summary.toLowerCase().includes(channelId);
+          })
+          .map((calendarData) => {
+            return calendarData.uid;
+          });
+        console.debug(`Serving ${ids.length} entries`);
+        return getYoutubeLiveDetailsByVideoIds([
+          ...new Set([...ids, ...additionalIds]),
+        ]);
+      });
   }
   return await axios
     .get(

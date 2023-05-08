@@ -65,37 +65,6 @@ export const prepareCalendarDataFromChannelId = async (
 };
 
 export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
-  if (vtuberHandle === "asmr") {
-    const data = await axios
-      .get("https://sarisia.cc/holodule-ics/holodule-all.ics", config)
-      .then((resp) => {
-        const cal = resp.data;
-        const data = ical.parseICS(cal);
-        const asmrEvents = Object.entries(data).filter(
-          ([key, calendarData]) => {
-            if (calendarData.summary.toLowerCase().includes("asmr")) {
-              return true;
-            }
-            return false;
-          }
-        );
-        console.debug(`Serving ${data.length} entries for ${vtuberHandle}`);
-        return asmrEvents.map(([key, el]) => {
-          return {
-            description: el.description,
-            duration: parseDurationStringAsObject(el.duration),
-            start: parseIntoIcsDate(el.start),
-            title: el.summary,
-            url: el.url,
-            uid: el.uid,
-          };
-        });
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-    return generateIcs(vtuberHandle, data, feedUrl);
-  }
   let data = await prepareCalendarDataFromChannelId(
     vtuberHandle,
     channelId,

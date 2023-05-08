@@ -23,7 +23,7 @@ const initializeCalendarData = (jsonFileName) => {
 export const updateCalendarData = (channelId, updatedEntries) => {
   const calendars = loadCalendarData(JSON_FILE_NAME);
   if (!Object.keys(calendars).includes(channelId)) {
-    calendars[channelId] = {};
+    calendars[channelId] = [];
   }
   const toUpdateEntries = calendars[channelId];
   for (let entry of updatedEntries) {
