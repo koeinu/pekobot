@@ -3,8 +3,11 @@ import { AbstractCommand } from "../abstractCommand.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 
 import { H_M_S, S_MS } from "../../utils/constants.js";
-import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
-import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
+import {
+  MIKO_TEST,
+  PROHIBITED_RNG_CHANNELS,
+  TESTING_2,
+} from "../../utils/ids/channels.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
 
 const STREAK_TIMEOUT = 2000; //ms
@@ -25,8 +28,8 @@ export class StreakCommand extends AbstractCommand {
       AlertUserMode.Silent
     );
 
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
+    this.allowedChannels = [MIKO_TEST, TESTING_2];
   }
   async execute(msg) {
     const text = msg.content.trim();

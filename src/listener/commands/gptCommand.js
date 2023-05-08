@@ -17,17 +17,9 @@ import { fetchMessages, reply } from "../../utils/discordUtils.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
-  DDF_CONSULTING,
-  PEKO_GPT,
   PROHIBITED_GPT_CHANNELS,
   RP_CHANNELS,
-  TEST_ASSISTANT,
-  TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
-import {
-  MIKO_SERVER,
-  TEST_SERVER_2,
-} from "../../utils/ids/guilds.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
   if (msg.type === MessageType.Reply) {
@@ -77,14 +69,7 @@ export class GptCommand extends AbstractCommand {
       ["Mod", botName],
       AlertUserMode.Emote
     );
-    this.allowedGuilds = [TEST_SERVER_2, MIKO_SERVER];
-    this.consultingChanels = [
-      ...RP_CHANNELS,
-      TEST_ASSISTANT,
-      DDF_CONSULTING,
-      TEST_USUAL_PEKO_GPT,
-      PEKO_GPT,
-    ];
+    this.consultingChanels = [];
     this.prohibitedChannels = PROHIBITED_GPT_CHANNELS;
     this.intercept = true;
   }

@@ -5,7 +5,6 @@ import { replyEmbedMessage } from "../../utils/discordUtils.js";
 import { listBans } from "../../model/youtube.js";
 
 import { getYoutubeChannelId } from "../../utils/youtubeUtils.js";
-import { PEKO_SERVER } from "../../utils/ids/guilds.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
 
 const DELETE_MESSAGE_TIMEOUT = 2000; //ms
@@ -14,7 +13,7 @@ export class LinkFilterCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "linkFilter";
-    this.allowedGuilds = [PEKO_SERVER];
+    this.allowedGuilds = [];
     this.intercept = false;
   }
   async execute(msg) {

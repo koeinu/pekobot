@@ -1,8 +1,12 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import { gptMood, gptReaction } from "../../utils/openaiUtils.js";
 import extractUrls from "extract-urls";
-import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
-import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
+import { PEKO_SERVER } from "../../utils/ids/guilds.js";
+import {
+  MIKO_TEST,
+  PROHIBITED_RNG_CHANNELS,
+  TESTING_2,
+} from "../../utils/ids/channels.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
 
@@ -112,10 +116,10 @@ export class ReactCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "react";
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];
     this.probability = 0.005;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
+    this.allowedChannels = [MIKO_TEST, TESTING_2];
   }
   async execute(msg, discordClient, reactMood = false) {
     const guildId = msg.guild.id;

@@ -4,8 +4,11 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 
 import { sendCustomEmbed } from "../../utils/discordUtils.js";
-import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
-import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import {
+  MIKO_TEST,
+  PROHIBITED_RNG_CHANNELS,
+  TESTING_2,
+} from "../../utils/ids/channels.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
 
 export class HaikuCommand extends AbstractCommand {
@@ -19,10 +22,10 @@ export class HaikuCommand extends AbstractCommand {
       [],
       AlertUserMode.Silent
     );
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];
     this.probability = 0.02;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
+    this.allowedChannels = [MIKO_TEST, TESTING_2];
   }
   async execute(msg) {
     const text = msg.content;

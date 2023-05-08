@@ -9,15 +9,14 @@ import { fetchMessage } from "../../utils/discordUtils.js";
 
 import { addRelay, loadRelays, updateRelays } from "../../model/relay.js";
 
-import { PEKO_STREAM, SNAXXX_STREAM } from "../../utils/ids/channels.js";
 import { RELAY_AUTHORS } from "../../utils/ids/users.js";
 
 export class RelayMessageCommand extends AbstractCommand {
   constructor() {
     super();
     this.name = "relay";
-    this.allowedChannels = [SNAXXX_STREAM];
-    this.targetChannels = [PEKO_STREAM];
+    this.allowedChannels = [];
+    this.targetChannels = [];
     this.intercept = true;
   }
   async execute(msg, discordClient) {

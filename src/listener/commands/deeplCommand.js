@@ -18,7 +18,6 @@ import {
 
 import { H_M_S, LANGUAGES, S_MS } from "../../utils/constants.js";
 import { getTextMessageContent } from "../../utils/stringUtils.js";
-import { BANNED_USERS } from "../../utils/ids/users.js";
 import { botName } from "../../utils/openaiUtils.js";
 
 export class DeeplCommand extends AbstractCommand {
@@ -34,7 +33,6 @@ export class DeeplCommand extends AbstractCommand {
       AlertUserMode.Normal
     );
     this.intercept = true;
-    this.bannedUsers = BANNED_USERS;
   }
 
   async execute(msg) {
