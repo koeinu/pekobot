@@ -5,6 +5,7 @@ import {
   PEKO_SERVER,
   TEST_SERVER,
   MIKO_SERVER,
+  TEST_SERVER_2,
 } from "../../utils/ids/guilds.js";
 import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
@@ -104,6 +105,8 @@ MOODS_DATA[MIKO_SERVER] = {
     shrug: [],
   },
 };
+MOODS_DATA[TEST_SERVER] = MOODS_DATA[PEKO_SERVER];
+MOODS_DATA[TEST_SERVER_2] = MOODS_DATA[MIKO_SERVER];
 
 export class ReactCommand extends AbstractCommand {
   constructor() {
