@@ -16,7 +16,7 @@ export class BotMentionedCommand extends AbstractCommand {
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.intercept = true;
-    this.probability = 1; //0.35;
+    this.probability = 0.35;
     this.allowedChannels = [MIKO_TEST, TESTING_2, ...MIKO_ALLOWED_CHANNELS];
   }
   async execute(msg) {

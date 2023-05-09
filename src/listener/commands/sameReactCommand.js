@@ -12,7 +12,7 @@ export class SameReactCommand extends AbstractCommand {
     super();
     this.name = "sameReact";
 
-    this.probability = 0.5; //0.01;
+    this.probability = 0.01;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.intercept = true;
