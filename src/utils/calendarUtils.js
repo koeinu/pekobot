@@ -36,9 +36,11 @@ export const prepareCalendarDataFromChannelId = async (
               : true) &&
             (!el.actualEndTime || !el.parsedDuration);
           console.log(
-            `${el.data.title}: ${el.ts + cacheTimeout} < ${currentTs}, ${
-              el.actualEndTime
-            }, ${el.parsedDuration}: ${result}`
+            `${el.data.title}: ${
+              Number.parseInt(el.ts) + Number.parseInt(cacheTimeout)
+            } < ${currentTs}, ${el.actualEndTime}, ${
+              el.parsedDuration
+            }: ${result}`
           );
           return result;
         })
