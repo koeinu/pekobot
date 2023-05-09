@@ -76,7 +76,7 @@ export class GptCommand extends AbstractCommand {
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
       1,
-      S_MS * H_M_S * 15,
+      S_MS * H_M_S * 3,
       ["Mod", botName],
       [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL],
       AlertUserMode.Emote
