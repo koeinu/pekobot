@@ -37,7 +37,6 @@ export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
           .map((calendarData) => {
             return calendarData.uid;
           });
-        console.debug(`Serving ${ids.length} entries`);
         return getYoutubeLiveDetailsByVideoIds([
           ...new Set([...ids, ...additionalIds]),
         ]);
