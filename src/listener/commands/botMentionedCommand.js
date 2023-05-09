@@ -1,6 +1,7 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import { ReactCommand } from "./reactCommand.js";
 import {
+  MIKO_ALLOWED_CHANNELS,
   MIKO_TEST,
   PROHIBITED_RNG_CHANNELS,
   TESTING_2,
@@ -16,7 +17,7 @@ export class BotMentionedCommand extends AbstractCommand {
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.intercept = true;
     this.probability = 1; //0.35;
-    this.allowedChannels = [MIKO_TEST, TESTING_2];
+    this.allowedChannels = [MIKO_TEST, TESTING_2, ...MIKO_ALLOWED_CHANNELS];
   }
   async execute(msg) {
     console.error(

@@ -4,6 +4,7 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import {
+  MIKO_ALLOWED_CHANNELS,
   MIKO_TEST,
   PROHIBITED_RNG_CHANNELS,
   TESTING_2,
@@ -30,7 +31,7 @@ export class StreakCommand extends AbstractCommand {
     );
 
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
-    this.allowedChannels = [MIKO_TEST, TESTING_2];
+    this.allowedChannels = [MIKO_TEST, TESTING_2, ...MIKO_ALLOWED_CHANNELS];
   }
   async execute(msg) {
     const text = msg.content.trim();

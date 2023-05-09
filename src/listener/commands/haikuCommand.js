@@ -5,6 +5,7 @@ import { H_M_S, S_MS } from "../../utils/constants.js";
 
 import { sendCustomEmbed } from "../../utils/discordUtils.js";
 import {
+  MIKO_ALLOWED_CHANNELS,
   MIKO_TEST,
   PROHIBITED_RNG_CHANNELS,
   TESTING_2,
@@ -26,7 +27,7 @@ export class HaikuCommand extends AbstractCommand {
     this.probability = 1; // 0.02;
     this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
-    this.allowedChannels = [MIKO_TEST, TESTING_2];
+    this.allowedChannels = [MIKO_TEST, TESTING_2, ...MIKO_ALLOWED_CHANNELS];
   }
   async execute(msg) {
     const text = msg.content;
