@@ -26,6 +26,7 @@ export class GptlCommand extends AbstractCommand {
       1,
       S_MS * H_M_S,
       ["Mod", botName],
+      [],
       AlertUserMode.Normal
     );
     this.intercept = true;

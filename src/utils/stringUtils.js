@@ -217,7 +217,7 @@ export const getTextMessageContent = async (
         }
       }
     }
-    parts.push(extractCommandMessage(messageText));
+    parts.push(messageText);
   }
 
   if (msg.attachments.size > 0) {

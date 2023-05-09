@@ -20,6 +20,7 @@ export class HaikuCommand extends AbstractCommand {
       1,
       S_MS * H_M_S * 5,
       [],
+      [],
       AlertUserMode.Silent
     );
     this.probability = 1; // 0.02;

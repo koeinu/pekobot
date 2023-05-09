@@ -120,7 +120,7 @@ const processGeneratePuzzle = async (interaction) => {
   }
 };
 
-const makeWholePuzzle = async (username, imageUrl, nop) => {
+export const makeWholePuzzle = async (username, imageUrl, nop) => {
   const startPage = "https://jigsawexplorer.com/create-a-custom-jigsaw-puzzle";
 
   const browser = await puppeteer.launch({
@@ -154,17 +154,29 @@ const makeWholePuzzle = async (username, imageUrl, nop) => {
   let toReturn = puzzleUrl;
   let isSuccessful = false;
   try {
-    await page.waitForSelector("#jigex-multiplayer-btn", { visible: true });
+    await page.waitForSelector("#jigex-multiplayer-btn", {
+      visible: true,
+      timeout: 60000,
+    });
     await page.click("#jigex-multiplayer-btn");
 
-    await page.waitForSelector("#jigex-player-name", { visible: true });
+    await page.waitForSelector("#jigex-player-name", {
+      visible: true,
+      timeout: 60000,
+    });
     await page.type("#jigex-player-name", username);
 
-    await page.waitForSelector("#jigex-invite-btn", { visible: true });
+    await page.waitForSelector("#jigex-invite-btn", {
+      visible: true,
+      timeout: 60000,
+    });
     await sleep(() => {}, 500);
     await page.click("#jigex-invite-btn");
 
-    await page.waitForSelector("#jigex-game-link", { visible: true });
+    await page.waitForSelector("#jigex-game-link", {
+      visible: true,
+      timeout: 60000,
+    });
     const n = await page.$("#jigex-game-link");
     toReturn = await page.evaluate((n) => n.value, n);
     isSuccessful = true;

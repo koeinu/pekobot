@@ -17,8 +17,10 @@ import { fetchMessages, reply } from "../../utils/discordUtils.js";
 import { H_M_S, S_MS } from "../../utils/constants.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
+  PEKO_GPT_OK_CHANNEL,
   PROHIBITED_GPT_CHANNELS,
   RP_CHANNELS,
+  TEST_GPT_OK_CHANNEL,
 } from "../../utils/ids/channels.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
@@ -67,6 +69,7 @@ export class GptCommand extends AbstractCommand {
       1,
       S_MS * H_M_S,
       ["Mod", botName],
+      [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL],
       AlertUserMode.Emote
     );
     this.consultingChanels = [];
@@ -109,7 +112,9 @@ export class GptCommand extends AbstractCommand {
           (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
         )
       : await getReplyChain(msg);
-    const msgList = await formatMessagesAsChat(replyChain);
+    const msgList = (await formatMessagesAsChat(replyChain)).filter(
+      (el) => el.msg && el.msg.length > 0
+    );
 
     const gptPrompt = await formChainGPTPrompt(msgList, rpMode);
 

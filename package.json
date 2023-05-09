@@ -8,6 +8,7 @@
     "start": "node --trace-warnings src/app.js",
     "test": "node src/test.js",
     "test_ical": "node src/test_ical.js",
+    "testjigsaw": "node src/testjigsaw.js",
     "commands": "node --trace-warnings src/deploy-commands.js",
     "jest": "jest src"
   },

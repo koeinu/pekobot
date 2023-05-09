@@ -1,7 +1,15 @@
 export const AlertUserMode = { Silent: 0, Normal: 1, Emote: 2 };
 export class CustomRateLimiter {
-  constructor(commandName, amount, interval, ignoreRoles, alertUser) {
+  constructor(
+    commandName,
+    amount,
+    interval,
+    ignoreRoles,
+    ignoreChannels,
+    alertUser
+  ) {
     this.ignoreRoles = ignoreRoles;
+    this.ignoreChannels = ignoreChannels;
     this.commandName = commandName;
     this.interval = interval;
     this.amount = amount;
@@ -24,7 +32,7 @@ export class CustomRateLimiter {
         );
       }
       if (this.entities[entityId].count === this.amount) {
-        console.debug(
+        console.log(
           `rate hit! ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
         );
         return {

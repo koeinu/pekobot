@@ -54,13 +54,14 @@ export class AbstractCommand {
         initValue,
         cooldown,
         [],
+        [],
         AlertUserMode.Silent
       );
     }
     const trigger = this.triggerer.take(
       customHandle ? customHandle : msg.author.id
     );
-    console.log(`Trigger check for ${msg.content}: ${trigger.result}`);
+    console.log(`Trigger check for ${getMsgInfo(msg)}: ${trigger.result}`);
     if (trigger.result) {
       this.triggerer = undefined;
     }
@@ -78,11 +79,25 @@ export class AbstractCommand {
           return true;
         }
       }
+      if (this.rateLimiter.ignoreChannels) {
+        if (
+          this.rateLimiter.ignoreChannels.some(
+            (okChannel) => msg.channel.id === okChannel
+          )
+        ) {
+          return true;
+        }
+      }
       const limited = this.rateLimiter.take(
         customHandle ? customHandle : msg.author.id
       );
-      console.log(`Limit check for ${msg.content}: ${limited.result}`);
+      console.log(`Limit check for ${getMsgInfo(msg)}: ${limited.result}`);
       if (limited.result) {
+        console.debug(
+          `Limit hit for ${this.rateLimiter.commandName}, cd ${formatMSToHMS(
+            limited.ts
+          )}, info: ${getMsgInfo(msg)}`
+        );
         if (this.rateLimiter.alertUser !== AlertUserMode.Silent) {
           await msg.react("<:PekoDerp:709152458978492477>").catch((e) => {
             console.error(`Couldn't derp-react: ${e}`);
