@@ -32,7 +32,7 @@ export class CustomRateLimiter {
         );
       }
       if (this.entities[entityId].count === this.amount) {
-        console.debug(
+        console.log(
           `rate hit! ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
         );
         return {
