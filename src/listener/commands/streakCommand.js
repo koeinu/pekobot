@@ -57,11 +57,13 @@ export class StreakCommand extends AbstractCommand {
         })
         .finally(() => {
           setTimeout(() => {
-            const toSend = text.toLowerCase().includes("nyahallo")
-              ? "Nyahallo~"
-              : text.includes("otsu35")
-              ? "Otsu35~"
-              : text;
+            const toSend =
+              text.toLowerCase().includes("nyahallo") ||
+              text.toLowerCase().includes("nyahello")
+                ? "Nyahallo~"
+                : text.includes("otsu35")
+                ? "Otsu35~"
+                : text;
             return msg.channel.send(toSend).catch((e) => {
               console.error(
                 `Couldn't send a streak message ${msg.content} in ${msg.channel}: ${e}`
@@ -77,6 +79,7 @@ export class StreakCommand extends AbstractCommand {
     return (
       emojiPattern.test(text) ||
       text.toLowerCase().includes("nyahallo") ||
+      text.toLowerCase().includes("nyahello") ||
       text.toLowerCase().includes("otsu35")
     );
   }
