@@ -45,12 +45,10 @@ const getReplyChain = async (msg, msgChain = [msg]) => {
 const formatMessagesAsChat = async (msgChain) => {
   const list = msgChain.reverse();
   return Promise.all(
-    list
-      .map(async (el) => ({
-        msg: (await getTextMessageContent(el, false, false, false)).text,
-        username: el.author.username,
-      }))
-      .filter((el) => el.msg && el.msg.length > 0)
+    list.map(async (el) => ({
+      msg: (await getTextMessageContent(el, false, false, false)).text,
+      username: el.author.username,
+    }))
   );
 };
 
@@ -127,7 +125,9 @@ export class GptCommand extends AbstractCommand {
           (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
         )
       : await getReplyChain(msg);
-    const msgList = await formatMessagesAsChat(replyChain);
+    const msgList = (await formatMessagesAsChat(replyChain)).filter(
+      (el) => el.msg && el.msg.length > 0
+    );
 
     const gptPrompt = await formChainGPTPrompt(msgList, rpMode);
 
