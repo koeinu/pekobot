@@ -39,13 +39,11 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
+  console.log(`IDs to update: ${idsToUpdate.join(", ")}`);
+
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
-      const toReturn = updateCalendarData(channelId, items);
-      console.debug(
-        `Update complete for ${vtuberHandle}_${channelId} with update ids [${idsToUpdate}]`
-      );
-      return toReturn;
+      return updateCalendarData(channelId, items);
     })
     .catch((e) => {
       console.error(`Couldn't get calendar,`, e);
@@ -62,7 +60,9 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
     throw `Calendar can't be formed`;
   }
   console.debug(
-    `Serving ${data.length} entries for ${vtuberHandle}_${channelId}`
+    `Serving [${data
+      .map((el) => el.data.title)
+      .join(", ")}] entries for ${vtuberHandle}_${channelId}`
   );
   return generateIcs(
     vtuberHandle,
