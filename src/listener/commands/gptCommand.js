@@ -19,9 +19,11 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_CONSULTING,
   PEKO_GPT,
+  PEKO_GPT_OK_CHANNEL,
   PROHIBITED_GPT_CHANNELS,
   RP_CHANNELS,
   TEST_ASSISTANT,
+  TEST_GPT_OK_CHANNEL,
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
 import {
@@ -74,8 +76,9 @@ export class GptCommand extends AbstractCommand {
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
       1,
-      S_MS * H_M_S,
+      S_MS * H_M_S * 15,
       ["Mod", botName],
+      [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL],
       AlertUserMode.Emote
     );
     this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];

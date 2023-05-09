@@ -54,6 +54,7 @@ export class AbstractCommand {
         initValue,
         cooldown,
         [],
+        [],
         AlertUserMode.Silent
       );
     }
@@ -73,6 +74,15 @@ export class AbstractCommand {
         if (
           this.rateLimiter.ignoreRoles.some((privelegedRole) =>
             msg.member.roles.cache.find((role) => role.name === privelegedRole)
+          )
+        ) {
+          return true;
+        }
+      }
+      if (this.rateLimiter.ignoreChannels) {
+        if (
+          this.rateLimiter.ignoreChannels.some(
+            (okChannel) => msg.channel.id === okChannel
           )
         ) {
           return true;

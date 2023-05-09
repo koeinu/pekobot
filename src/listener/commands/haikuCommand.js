@@ -17,6 +17,7 @@ export class HaikuCommand extends AbstractCommand {
       1,
       S_MS * H_M_S * 5,
       [],
+      [],
       AlertUserMode.Silent
     );
     this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];

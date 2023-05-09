@@ -22,6 +22,7 @@ export class StreakCommand extends AbstractCommand {
       1,
       S_MS * H_M_S * 15,
       [],
+      [],
       AlertUserMode.Silent
     );
 
