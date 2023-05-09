@@ -28,13 +28,19 @@ export const prepareCalendarDataFromChannelId = async (
     const currentTs = new Date().getTime();
     idsToUpdate.push(
       ...cachedCalendarData
-        .filter(
-          (el) =>
+        .filter((el) => {
+          const result =
             (cacheTimeout !== undefined
               ? el.ts + cacheTimeout < currentTs
               : true) &&
-            (!el.actualEndTime || !el.parsedDuration)
-        )
+            (!el.actualEndTime || !el.parsedDuration);
+          console.log(
+            `${el.data.title}: ${el.ts + cacheTimeout} < ${currentTs}, ${
+              el.actualEndTime
+            }, ${el.parsedDuration}: ${result}`
+          );
+          return result;
+        })
         .map((el) => el.data.uid)
     );
   }
@@ -61,7 +67,9 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
   }
   console.debug(
     `Serving [${data
-      .map((el) => el.data.title)
+      .map((el) =>
+        [el.data.title, JSON.stringify(el.data.duration)].join(" | ")
+      )
       .join(", ")}] entries for ${vtuberHandle}_${channelId}`
   );
   return generateIcs(
