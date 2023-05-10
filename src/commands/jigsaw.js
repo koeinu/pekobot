@@ -156,26 +156,26 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   try {
     await page.waitForSelector("#jigex-multiplayer-btn", {
       visible: true,
-      timeout: 60000,
+      timeout: 100000,
     });
     await page.click("#jigex-multiplayer-btn");
 
     await page.waitForSelector("#jigex-player-name", {
       visible: true,
-      timeout: 60000,
+      timeout: 100000,
     });
     await page.type("#jigex-player-name", username);
 
     await page.waitForSelector("#jigex-invite-btn", {
       visible: true,
-      timeout: 60000,
+      timeout: 100000,
     });
     await sleep(() => {}, 500);
     await page.click("#jigex-invite-btn");
 
     await page.waitForSelector("#jigex-game-link", {
       visible: true,
-      timeout: 60000,
+      timeout: 100000,
     });
     const n = await page.$("#jigex-game-link");
     toReturn = await page.evaluate((n) => n.value, n);
