@@ -68,12 +68,15 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
   if (!data) {
     throw `Calendar can't be formed`;
   }
+  // console.debug(
+  //   `Serving [${data
+  //     .map((el) =>
+  //       [el.data.title, JSON.stringify(el.data.duration)].join(" | ")
+  //     )
+  //     .join(", ")}] entries for ${vtuberHandle}_${channelId}`
+  // );
   console.debug(
-    `Serving [${data
-      .map((el) =>
-        [el.data.title, JSON.stringify(el.data.duration)].join(" | ")
-      )
-      .join(", ")}] entries for ${vtuberHandle}_${channelId}`
+    `Serving ${data.length} entries for ${vtuberHandle}_${channelId}`
   );
   return generateIcs(
     vtuberHandle,
