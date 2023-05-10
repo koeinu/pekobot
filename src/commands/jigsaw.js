@@ -149,7 +149,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   const puzzleUrl = await page.evaluate((sl) => sl.value, sl);
 
   console.log("intermediate link:", puzzleUrl);
-  await page.goto(puzzleUrl);
+  await page.goto(puzzleUrl, { timeout: 100000 });
 
   let toReturn = puzzleUrl;
   let isSuccessful = false;
