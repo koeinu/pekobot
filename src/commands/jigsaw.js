@@ -144,7 +144,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
 
   // main result page
 
-  await page.waitForSelector("#short-link", { visible: true });
+  await page.waitForSelector("#short-link", { visible: true, timeout: 100000 });
   const sl = await page.$("#short-link");
   const puzzleUrl = await page.evaluate((sl) => sl.value, sl);
 
