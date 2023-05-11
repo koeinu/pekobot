@@ -17,21 +17,47 @@ export default {
   data: new SlashCommandBuilder()
     .setName("calendar")
     .setDefaultMemberPermissions(16)
-    .setDescription("Manages custom calendars")
+    .setDescription("Manages calendars")
     .addSubcommand((sc) =>
       sc
         .setName("add")
-        .setDescription("Adds a video to a custom calendar")
+        .setDescription("Adds a video to a calendar")
         .addStringOption((option) =>
           option.setName("url").setDescription("Video URL").setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("url")
+            .setDescription("Video URL")
+            .addChoices(
+              ...(CALENDAR_METADATA.length > 0
+                ? CALENDAR_METADATA.content.map((el) => ({
+                    name: el.handle,
+                    value: el.handle,
+                  }))
+                : [{ name: "custom", value: "custom" }])
+            )
         )
     )
     .addSubcommand((sc) =>
       sc
         .setName("delete")
-        .setDescription("Removes a video from a custom calendar")
+        .setDescription("Removes a video from a calendar")
         .addStringOption((option) =>
           option.setName("url").setDescription("Video URL").setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("url")
+            .setDescription("Video URL")
+            .addChoices(
+              ...(CALENDAR_METADATA.length > 0
+                ? CALENDAR_METADATA.content.map((el) => ({
+                    name: el.handle,
+                    value: el.handle,
+                  }))
+                : [{ name: "custom", value: "custom" }])
+            )
         )
     ),
   async execute(interaction) {
@@ -42,8 +68,11 @@ export default {
       case "add": {
         const options = getOptions(interaction);
         const url = options[0].value;
+        const manualChannelHandle = options[1].value;
 
-        const channelId = await getYoutubeChannelId(url);
+        const channelId =
+          CALENDAR_METADATA.find((el) => el.handle === manualChannelHandle)
+            ?.id || (await getYoutubeChannelId(url));
         const channelHandle =
           CALENDAR_METADATA.find((el) => el.id === channelId)?.id || "custom";
 
@@ -54,15 +83,18 @@ export default {
         );
         const data = await getYoutubeLiveDetailsByVideoIds([videoId]);
 
-        updateCalendarData(channelHandle || "custom", data);
+        updateCalendarData(channelHandle, data);
 
         return await replyEmbedMessage(interaction, `Added.`);
       }
       case "delete": {
         const options = getOptions(interaction);
         const url = options[0].value;
+        const manualChannelHandle = options[1].value;
 
-        const channelId = await getYoutubeChannelId(url);
+        const channelId =
+          CALENDAR_METADATA.find((el) => el.handle === manualChannelHandle)
+            ?.id || (await getYoutubeChannelId(url));
         const channelHandle =
           CALENDAR_METADATA.find((el) => el.id === channelId)?.id || "custom";
 
@@ -72,7 +104,7 @@ export default {
           interaction.guild.name
         );
 
-        const result = deleteCalendarData(channelHandle || "custom", [videoId]);
+        const result = deleteCalendarData(channelHandle, [videoId]);
 
         return await replyEmbedMessage(interaction, `Deleted: ${result}`);
       }
