@@ -68,7 +68,7 @@ export default {
       case "add": {
         const options = getOptions(interaction);
         const url = options[0].value;
-        const manualChannelHandle = options[1].value;
+        const manualChannelHandle = options[1]?.value;
 
         const channelId =
           CALENDAR_METADATA.find((el) => el.handle === manualChannelHandle)
@@ -90,7 +90,7 @@ export default {
       case "delete": {
         const options = getOptions(interaction);
         const url = options[0].value;
-        const manualChannelHandle = options[1].value;
+        const manualChannelHandle = options[1]?.value;
 
         const channelId =
           CALENDAR_METADATA.find((el) => el.handle === manualChannelHandle)
