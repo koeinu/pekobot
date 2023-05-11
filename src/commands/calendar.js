@@ -27,8 +27,8 @@ export default {
         )
         .addStringOption((option) =>
           option
-            .setName("url")
-            .setDescription("Video URL")
+            .setName("handle")
+            .setDescription("Calendar handle")
             .addChoices(
               ...(CALENDAR_METADATA.length > 0
                 ? CALENDAR_METADATA.map((el) => ({
@@ -48,8 +48,8 @@ export default {
         )
         .addStringOption((option) =>
           option
-            .setName("url")
-            .setDescription("Video URL")
+            .setName("handle")
+            .setDescription("Calendar handle")
             .addChoices(
               ...(CALENDAR_METADATA.length > 0
                 ? CALENDAR_METADATA.map((el) => ({
