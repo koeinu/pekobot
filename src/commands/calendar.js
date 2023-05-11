@@ -31,7 +31,7 @@ export default {
             .setDescription("Video URL")
             .addChoices(
               ...(CALENDAR_METADATA.length > 0
-                ? CALENDAR_METADATA.content.map((el) => ({
+                ? CALENDAR_METADATA.map((el) => ({
                     name: el.handle,
                     value: el.handle,
                   }))
@@ -52,7 +52,7 @@ export default {
             .setDescription("Video URL")
             .addChoices(
               ...(CALENDAR_METADATA.length > 0
-                ? CALENDAR_METADATA.content.map((el) => ({
+                ? CALENDAR_METADATA.map((el) => ({
                     name: el.handle,
                     value: el.handle,
                   }))
