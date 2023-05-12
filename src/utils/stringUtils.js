@@ -199,7 +199,7 @@ export const getTextMessageContent = async (
 
           const tweetParts = await getTweetChainTextParts(tweetId);
           const partsToMerge = silentAttachments
-            ? tweetParts
+            ? [tweetParts]
             : ["Tweet attachment:", tweetParts.join("\n---\n")];
 
           messageText = messageText.replace(parsedUrl, partsToMerge.join("\n"));
@@ -214,7 +214,7 @@ export const getTextMessageContent = async (
           }
           const info = await getYoutubeVideoInfo(parsedUrl);
           const partsToMerge = silentAttachments
-            ? info
+            ? [info]
             : ["Tweet attachment:", info];
           if (info) {
             parsedLinks = true;
