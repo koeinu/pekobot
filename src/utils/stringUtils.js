@@ -198,9 +198,7 @@ export const getTextMessageContent = async (
     }
     if (testWithoutUrls.length === 0) {
       // message is just a bunch of urls or other attachments..
-      parts.push(
-        "Write your opinion about the attachments provided in the message."
-      );
+      parts.push("Write your opinion about these attachments:");
     }
   }
 
@@ -214,9 +212,9 @@ export const getTextMessageContent = async (
           const partsToMerge = silentAttachments
             ? [tweetPartsObjects.map((el) => el.text).join("\n---\n")]
             : [
-                "Message contains a tweet attachment:",
+                "{Tweet attachment:}",
                 tweetPartsObjects
-                  .map((el) => `${el.userData.name} tweeted: '${el.text}'`)
+                  .map((el) => `${el.userData.name} tweeted: '${el.text}'.`)
                   .join("\n---\n"),
               ];
 
@@ -231,7 +229,7 @@ export const getTextMessageContent = async (
           if (info) {
             const partsToMerge = silentAttachments
               ? [info]
-              : ["Message contains a youtube video attachment:", info];
+              : ["{Video attachment:}", info];
             parsedLinks = true;
             messageText = messageText.replace(
               parsedUrl,

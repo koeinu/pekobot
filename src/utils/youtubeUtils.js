@@ -150,9 +150,9 @@ export const getYoutubeVideoInfo = async (videoIdOrUrl) => {
       const snippet = video?.snippet;
       if (snippet) {
         return [
-          `Video title: '${snippet.title}'`,
-          `Video description: '${snippet.description.split("\n\n")[0]}'`,
-        ].join("\n---\n");
+          `{Video title:} '${snippet.title}'.`,
+          `{Video description:} '${snippet.description.split("\n\n")[0]}'.`,
+        ].join("\n");
       }
       return undefined;
     });
