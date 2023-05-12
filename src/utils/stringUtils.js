@@ -200,7 +200,7 @@ export const getTextMessageContent = async (
           const tweetParts = await getTweetChainTextParts(tweetId);
           const partsToMerge = silentAttachments
             ? tweetParts
-            : ["Tweet attachment:", tweetParts].join("\n---\n");
+            : ["Tweet attachment:", tweetParts.join("\n---\n")];
 
           messageText = messageText.replace(parsedUrl, partsToMerge.join("\n"));
 
@@ -215,10 +215,13 @@ export const getTextMessageContent = async (
           const info = await getYoutubeVideoInfo(parsedUrl);
           const partsToMerge = silentAttachments
             ? info
-            : ["Tweet attachment:", info].join("\n---\n");
+            : ["Tweet attachment:", info];
           if (info) {
             parsedLinks = true;
-            messageText = messageText.replace(parsedUrl, partsToMerge);
+            messageText = messageText.replace(
+              parsedUrl,
+              partsToMerge.join("\n")
+            );
           }
         }
       }
