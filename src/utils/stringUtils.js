@@ -190,9 +190,9 @@ export const getTextMessageContent = async (
     }
   }
 
+  const urls = extractUrls(messageText);
   if (!isTranslating && !silentAttachments) {
     let testWithoutUrls = messageText;
-    const urls = extractUrls(messageText);
     for (let parsedUrl of urls) {
       testWithoutUrls = testWithoutUrls.replace(parsedUrl, "").trim();
     }
