@@ -191,7 +191,7 @@ export const getTextMessageContent = async (
   }
 
   const urls = extractUrls(messageText);
-  if (!isTranslating && !silentAttachments) {
+  if (!isTranslating && !silentAttachments && urls && urls.length > 0) {
     let testWithoutUrls = messageText;
     for (let parsedUrl of urls) {
       testWithoutUrls = testWithoutUrls.replace(parsedUrl, "").trim();
