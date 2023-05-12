@@ -199,11 +199,11 @@ export const getTextMessageContent = async (
 
           const tweetPartsObjects = await getTweetChainTextParts(tweetId);
           const partsToMerge = silentAttachments
-            ? tweetPartsObjects.map((el) => el.text)
+            ? [tweetPartsObjects.map((el) => el.text).join("\n---\n")]
             : [
-                "Tweet attachment:",
+                "Message contains a tweet attachment:",
                 tweetPartsObjects
-                  .map((el) => `${el.userData.name} tweeted: ${el.text}`)
+                  .map((el) => `${el.userData.name} tweeted: '${el.text}'`)
                   .join("\n---\n"),
               ];
 
@@ -214,14 +214,11 @@ export const getTextMessageContent = async (
           parsedUrl.includes("youtube") ||
           parsedUrl.includes("youtu.be")
         ) {
-          if (!silentAttachments) {
-            parts.push("Youtube video attachment:");
-          }
           const info = await getYoutubeVideoInfo(parsedUrl);
-          const partsToMerge = silentAttachments
-            ? [info]
-            : ["Tweet attachment:", info];
           if (info) {
+            const partsToMerge = silentAttachments
+              ? [info]
+              : ["Message contains a youtube video attachment:", info];
             parsedLinks = true;
             messageText = messageText.replace(
               parsedUrl,
