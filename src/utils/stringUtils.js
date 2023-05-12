@@ -198,7 +198,7 @@ export const getTextMessageContent = async (
   if (testWithoutUrls.length === 0) {
     // message is just a bunch of urls or other attachments..
     parts.push(
-      "Write your opinion about the following the attachments provided in the message."
+      "Write your opinion about the attachments provided in the message."
     );
   }
 
