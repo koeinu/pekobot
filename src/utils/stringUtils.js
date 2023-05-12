@@ -190,8 +190,19 @@ export const getTextMessageContent = async (
     }
   }
 
+  let testWithoutUrls = messageText;
+  const urls = extractUrls(messageText);
+  for (let parsedUrl of urls) {
+    testWithoutUrls = testWithoutUrls.replace(parsedUrl, "").trim();
+  }
+  if (testWithoutUrls.length === 0) {
+    // message is just a bunch of urls or other attachments..
+    parts.push(
+      "Write your opinion about the following the attachments provided in the message."
+    );
+  }
+
   if (messageText && messageText.length > 0) {
-    const urls = extractUrls(messageText);
     if (urls && urls.length > 0) {
       for (let parsedUrl of urls) {
         if (parsedUrl.includes("twitter.com") && !isSimplifed) {
