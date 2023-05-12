@@ -22,7 +22,7 @@ const BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
 
 console.log(`twitter token: ${BEARER_TOKEN}`);
 
-const client = new TwitterApi(BEARER_TOKEN);
+export const client = new TwitterApi(BEARER_TOKEN);
 let catchingPoem = false;
 
 const TWITTER_RELAY_DATA = [
@@ -78,7 +78,8 @@ const sendTweetToChannels = async (discordClient, finalText, channels) => {
 
 export const getTweetById = async (tweetId) => {
   const tweet = await client.v2.singleTweet(tweetId, {
-    "tweet.fields": ["referenced_tweets", "text"],
+    "tweet.fields": ["referenced_tweets", "text", "author_id"],
+    "user.fields": ["name"],
   });
 
   return tweet;
@@ -89,6 +90,7 @@ export const getTweetChainTextParts = (tweetId) => {
     .then(async (res) => {
       const parts = [];
       const data = res.data;
+      const userData = await client.v2.user(data.author_id);
       const refData = data.referenced_tweets;
       if (refData && refData.length > 0 && refData[0].type === "replied_to") {
         // need to get more
@@ -96,7 +98,7 @@ export const getTweetChainTextParts = (tweetId) => {
         const refTweetTextParts = await getTweetChainTextParts(refId);
         parts.push(...refTweetTextParts);
       }
-      parts.push(data.text);
+      parts.push({ userData: userData.data, text: data.text });
       return parts;
     })
     .catch((e) => {

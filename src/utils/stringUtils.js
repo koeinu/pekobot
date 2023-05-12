@@ -197,10 +197,15 @@ export const getTextMessageContent = async (
         if (parsedUrl.includes("twitter.com") && !isSimplifed) {
           const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
-          const tweetParts = await getTweetChainTextParts(tweetId);
+          const tweetPartsObjects = await getTweetChainTextParts(tweetId);
           const partsToMerge = silentAttachments
-            ? [tweetParts]
-            : ["Tweet attachment:", tweetParts.join("\n---\n")];
+            ? tweetPartsObjects.map((el) => el.text)
+            : [
+                "Tweet attachment:",
+                tweetPartsObjects
+                  .map((el) => `${el.userData.name} tweeted: ${el.text}`)
+                  .join("\n---\n"),
+              ];
 
           messageText = messageText.replace(parsedUrl, partsToMerge.join("\n"));
 
