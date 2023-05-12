@@ -190,16 +190,18 @@ export const getTextMessageContent = async (
     }
   }
 
-  let testWithoutUrls = messageText;
-  const urls = extractUrls(messageText);
-  for (let parsedUrl of urls) {
-    testWithoutUrls = testWithoutUrls.replace(parsedUrl, "").trim();
-  }
-  if (testWithoutUrls.length === 0) {
-    // message is just a bunch of urls or other attachments..
-    parts.push(
-      "Write your opinion about the attachments provided in the message."
-    );
+  if (!isTranslating && !silentAttachments) {
+    let testWithoutUrls = messageText;
+    const urls = extractUrls(messageText);
+    for (let parsedUrl of urls) {
+      testWithoutUrls = testWithoutUrls.replace(parsedUrl, "").trim();
+    }
+    if (testWithoutUrls.length === 0) {
+      // message is just a bunch of urls or other attachments..
+      parts.push(
+        "Write your opinion about the attachments provided in the message."
+      );
+    }
   }
 
   if (messageText && messageText.length > 0) {
