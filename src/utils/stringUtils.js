@@ -6,7 +6,7 @@ import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
 import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
 import puppeteer from "puppeteer";
-import { getTweetById } from "./twitterUtils.js";
+import { getTweetById, getTweetChainTextParts } from "./twitterUtils.js";
 import { getYoutubeVideoInfo } from "./youtubeUtils.js";
 
 dotenv.config();
@@ -201,9 +201,13 @@ export const getTextMessageContent = async (
         ) {
           const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
-          const tweet = await getTweetById(tweetId);
+          const tweetParts = await getTweetChainTextParts(tweetId);
 
-          messageText = messageText.replace(parsedUrl, tweet.data.text);
+          messageText = messageText.replace(
+            parsedUrl,
+            tweetParts.join("\n---\n")
+          );
+
           parsedLinks = true;
         } else if (
           parsedUrl.includes("youtube") ||

@@ -83,6 +83,27 @@ export const getTweetById = async (tweetId) => {
 
   return tweet;
 };
+
+export const getTweetChainTextParts = (tweetId) => {
+  return getTweetById(tweetId)
+    .then(async (res) => {
+      const parts = [];
+      const data = res.data;
+      const refData = data.referenced_tweets;
+      if (refData && refData.length > 0 && refData[0].type === "replied_to") {
+        // need to get more
+        const refId = refData[0].id;
+        const refTweetTextParts = await getTweetChainTextParts(refId);
+        parts.push(...refTweetTextParts);
+      }
+      parts.push(data.text);
+      return parts;
+    })
+    .catch((e) => {
+      console.error(`Couldn't get a tweet chain: ${e}`);
+    });
+};
+
 const onStreamTweet = async (tweet, discordClient) => {
   const userData = await client.v2.user(tweet.data.author_id);
   const userName = userData.data.username;
