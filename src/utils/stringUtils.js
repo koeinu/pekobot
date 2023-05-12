@@ -212,10 +212,12 @@ export const getTextMessageContent = async (
           const partsToMerge = silentAttachments
             ? [tweetPartsObjects.map((el) => el.text).join("\n---\n")]
             : [
-                "{Tweet attachment:}",
+                tweetPartsObjects.length > 1
+                  ? "{Tweet conversation:}"
+                  : "{Tweet attachment:}",
                 tweetPartsObjects
                   .map((el) => `${el.userData.name} tweeted: '${el.text}'.`)
-                  .join("\n---\n"),
+                  .join("\n"),
               ];
 
           messageText = messageText.replace(parsedUrl, partsToMerge.join("\n"));
