@@ -198,14 +198,11 @@ export const getTextMessageContent = async (
           const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
           const tweetParts = await getTweetChainTextParts(tweetId);
+          const partsToMerge = silentAttachments
+            ? tweetParts
+            : ["Tweet attachment:", tweetParts].join("\n---\n");
 
-          if (!silentAttachments) {
-            parts.push("Tweet attachment:");
-          }
-          messageText = messageText.replace(
-            parsedUrl,
-            tweetParts.join("\n---\n")
-          );
+          messageText = messageText.replace(parsedUrl, partsToMerge.join("\n"));
 
           parsedLinks = true;
         } else if (
@@ -216,9 +213,12 @@ export const getTextMessageContent = async (
             parts.push("Youtube video attachment:");
           }
           const info = await getYoutubeVideoInfo(parsedUrl);
+          const partsToMerge = silentAttachments
+            ? info
+            : ["Tweet attachment:", info].join("\n---\n");
           if (info) {
             parsedLinks = true;
-            messageText = messageText.replace(parsedUrl, info);
+            messageText = messageText.replace(parsedUrl, partsToMerge);
           }
         }
       }
