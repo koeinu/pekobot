@@ -68,7 +68,16 @@ export class DeeplCommand extends AbstractCommand {
       });
     }
 
-    let tlData = await ApiUtils.GetTranslation(data.text, deeplLanguage);
+    let tlData = await ApiUtils.GetTranslation(
+      data.text,
+      deeplLanguage,
+      undefined,
+      this.settings
+    );
+    if (this.settings.inactive) {
+      console.log("deepl inactive mode, doing nothing", data.text);
+      return Promise.resolve();
+    }
     return replyCustomEmbed(
       replyMessage,
       undefined,

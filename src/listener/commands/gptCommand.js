@@ -140,12 +140,21 @@ export class GptCommand extends AbstractCommand {
       });
 
       return gpt(
-        [messageContextArray(msg), serverRules(msg), gptPrompt].join("\n"),
+        [
+          messageContextArray(msg, this.settings),
+          serverRules(msg),
+          gptPrompt,
+        ].join("\n"),
+        this.settings,
         ""
       )
         .then((data) => {
           const response = data.text;
           if (response) {
+            if (this.settings.inactive) {
+              console.log("gpt inactive mode, doing nothing", response);
+              return Promise.resolve();
+            }
             return reply(msg, response, undefined, false, false);
           }
           return Promise.resolve();
@@ -154,6 +163,10 @@ export class GptCommand extends AbstractCommand {
           console.error(
             `Couldn't GPT reply ${msg.content} in ${msg.channel}: ${e}`
           );
+          if (this.settings.inactive) {
+            console.log("gpt error inactive mode, doing nothing");
+            return Promise.resolve();
+          }
           return reply(
             msg,
             `Beep boop, couldn't reply.. Likely my GPT capacity was overloaded! Please try again!`,
@@ -170,7 +183,10 @@ export class GptCommand extends AbstractCommand {
     const repliedToMessage = msg.reference
       ? await msg.channel.messages.fetch(msg.reference.messageId)
       : undefined;
-    if (repliedToMessage && repliedToMessage.author.username === botName) {
+    if (
+      repliedToMessage &&
+      repliedToMessage.author.username === this.settings.name
+    ) {
       return !isFormattedTl(repliedToMessage.content);
     }
     return (

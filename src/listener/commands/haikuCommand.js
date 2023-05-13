@@ -52,6 +52,10 @@ export class HaikuCommand extends AbstractCommand {
         });
       }
 
+      if (this.settings.inactive) {
+        console.log("haiku inactive mode, doing nothing");
+        return Promise.resolve();
+      }
       return sendCustomEmbed(
         msg.channel,
         undefined,

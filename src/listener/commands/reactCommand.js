@@ -35,6 +35,7 @@ export class ReactCommand extends AbstractCommand {
 
     return gptReaction(
       msg.content,
+      this.settings,
       actionsData.map((el) => el[0]),
       reactMood
     )
@@ -49,6 +50,10 @@ export class ReactCommand extends AbstractCommand {
               );
               const randomEmote =
                 emotes[Math.floor(Math.random() * emotes.length)];
+              if (this.settings.inactive) {
+                console.log("react action inactive mode, doing nothing");
+                return true;
+              }
               if (randomEmote) {
                 msg.react(randomEmote).catch(async (e) => {
                   console.error(`Couldn't React: ${e}`);
@@ -62,6 +67,7 @@ export class ReactCommand extends AbstractCommand {
         } else {
           return gptMood(
             msg.content,
+            this.settings,
             (reactMood ? reactData : moodsData).map((el) => el[0]),
             reactMood
           ).then((result) => {
@@ -73,6 +79,10 @@ export class ReactCommand extends AbstractCommand {
                 );
                 const randomEmote =
                   emotes[Math.floor(Math.random() * emotes.length)];
+                if (this.settings.inactive) {
+                  console.log("react mood inactive mode, doing nothing");
+                  return true;
+                }
                 if (randomEmote) {
                   msg.react(randomEmote).catch(async (e) => {
                     console.error(`Couldn't React: ${e}`);

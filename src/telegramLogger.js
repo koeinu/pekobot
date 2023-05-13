@@ -39,7 +39,7 @@ export class TelegramBotWrapper {
       const parts = str.match(/.{1,4000}/g);
       for (let part of parts) {
         await this.bot.sendMessage(id, part).catch((e) => {
-          originalConsoleError(e);
+          originalConsoleError("Telegram overflow", e);
         });
       }
     }

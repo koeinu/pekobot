@@ -60,6 +60,7 @@ export class ApiUtils {
     text,
     source,
     msg = undefined,
+    settings,
     isGpt = false,
     isFallback = false
   ) {
@@ -75,7 +76,7 @@ export class ApiUtils {
     if (isGpt) {
       if (textToTranslate.length > 0) {
         let responseData = { text: undefined };
-        await gptGetLanguage(textToTranslate)
+        await gptGetLanguage(textToTranslate, settings)
           .then((response) => {
             if (response && response.text.toLowerCase().includes("eng")) {
               console.debug(
@@ -86,7 +87,7 @@ export class ApiUtils {
                 data: response.data,
               });
             } else {
-              return gptl(msg, textToTranslate);
+              return gptl(msg, settings, textToTranslate);
             }
           })
           .then((res) => {
@@ -109,7 +110,14 @@ export class ApiUtils {
 
       if (!response || response.length === 0) {
         if (!isFallback) {
-          return ApiUtils.GetTranslation(text, source, msg, false, true);
+          return ApiUtils.GetTranslation(
+            text,
+            source,
+            msg,
+            settings,
+            false,
+            true
+          );
         } else {
           throw `Both deepl and gptl failed miserably.`;
         }
@@ -128,7 +136,14 @@ export class ApiUtils {
       response = t.data.translations[0].text;
       if (response.length === 0) {
         if (!isFallback) {
-          return ApiUtils.GetTranslation(text, source, msg, true, true);
+          return ApiUtils.GetTranslation(
+            text,
+            source,
+            msg,
+            settings,
+            true,
+            true
+          );
         } else {
           throw `Both deepl and gptl failed miserably.`;
         }

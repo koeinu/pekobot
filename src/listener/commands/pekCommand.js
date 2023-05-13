@@ -19,6 +19,10 @@ export class PekCommand extends AbstractCommand {
     this.intercept = true;
   }
   async execute(msg) {
+    if (this.settings.inactive) {
+      console.log("pek inactive mode, doing nothing");
+      return Promise.resolve();
+    }
     return msg.react("<:pek:775493108154236938>").catch((e) => {
       console.error(`Couldn't pek: ${e}`);
     });

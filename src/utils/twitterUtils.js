@@ -1,5 +1,5 @@
 import { ApiUtils } from "./apiUtils.js";
-import { formatTLText, formatMSToHMS, formatNewline } from "./stringUtils.js";
+import { formatMSToHMS, formatNewline, formatTLText } from "./stringUtils.js";
 
 import { CATCH_TWEET_TIMEOUT } from "./constants.js";
 
@@ -10,12 +10,14 @@ import {
   PEKO_PEKORA_FEED,
   PEKO_STREAM,
   TEST_INA_FEED,
+  TEST_MIKO_FEED,
   TEST_PEKORA_FEED,
   TEST_PEKORA_POEM,
   TEST_POEM_FEED,
   TEST_TEST_FEED,
   TEST_TEST_POEM_FEED,
 } from "./ids/channels.js";
+
 dotenv.config();
 
 const BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
@@ -51,12 +53,22 @@ const TWITTER_RELAY_DATA = [
     feedIds: [TEST_INA_FEED],
     poemIds: [],
   },
+  {
+    src: "sakuramiko35",
+    feedIds: [TEST_MIKO_FEED],
+    poemIds: [],
+  },
 ];
 
 const getUserTweetLink = (tweet, userIdToForward) =>
   `https://twitter.com/${userIdToForward}/status/${tweet.data.id}`;
 
-const sendTweetToChannels = async (discordClient, finalText, channels) => {
+const sendTweetToChannels = async (
+  discordClient,
+  finalText,
+  channels,
+  settings
+) => {
   const foundChannels = channels
     .reduce((array, channelToSend) => {
       const fc = discordClient.channels.cache.filter(
@@ -68,6 +80,10 @@ const sendTweetToChannels = async (discordClient, finalText, channels) => {
     .map((el) => el[1]);
 
   console.log("found channels to tweet to:", foundChannels);
+  if (settings.inactive) {
+    console.log("inactive mode, doing nothing");
+    return;
+  }
   foundChannels.forEach((channel) => {
     console.log(`sending to ${channel.name}`);
     channel.send(finalText).catch((e) => {
@@ -77,12 +93,10 @@ const sendTweetToChannels = async (discordClient, finalText, channels) => {
 };
 
 export const getTweetById = async (tweetId) => {
-  const tweet = await client.v2.singleTweet(tweetId, {
+  return await client.v2.singleTweet(tweetId, {
     "tweet.fields": ["referenced_tweets", "text", "author_id"],
     "user.fields": ["name"],
   });
-
-  return tweet;
 };
 
 export const getTweetChainTextParts = (tweetId) => {
@@ -106,7 +120,7 @@ export const getTweetChainTextParts = (tweetId) => {
     });
 };
 
-const onStreamTweet = async (tweet, discordClient) => {
+const onStreamTweet = async (tweet, botApps) => {
   const userData = await client.v2.user(tweet.data.author_id);
   const userName = userData.data.username;
 
@@ -138,34 +152,39 @@ const onStreamTweet = async (tweet, discordClient) => {
     );
   }
 
-  const translatedData = await formatTweet(
-    tweet,
-    userName,
-    referencedTweet,
-    referencedUsername
-  );
+  for (let botApp of botApps) {
+    const translatedData = await formatTweet(
+      botApp.settings,
+      tweet,
+      userName,
+      referencedTweet,
+      referencedUsername
+    );
 
-  await sendTweetToChannels(
-    discordClient,
-    translatedData.usualText,
-    feedChannels
-  );
+    await sendTweetToChannels(
+      botApp.client,
+      translatedData.usualText,
+      feedChannels,
+      botApp.settings
+    );
 
-  // for the poems, catch only non-retweets, and only when asked
-  if (!catchingPoem || tweet.data.text.indexOf("RT") === 0) {
-    return;
+    // for the poems, catch only non-retweets, and only when asked
+    if (!catchingPoem || tweet.data.text.indexOf("RT") === 0) {
+      continue;
+    }
+
+    await sendTweetToChannels(
+      botApp.client,
+      translatedData.poemText,
+      poemChannels,
+      botApp.settings
+    );
   }
-
-  await sendTweetToChannels(
-    discordClient,
-    translatedData.poemText,
-    poemChannels
-  );
 
   stopCatchingTweets();
 };
 
-export const connectToStream = async (discordClient) => {
+export const connectToStream = async (botApps) => {
   const rules = await client.v2.streamRules();
   console.log("rules:", rules.data);
   const usersToRelay = TWITTER_RELAY_DATA.map((el) => el.src);
@@ -204,13 +223,19 @@ export const connectToStream = async (discordClient) => {
   stream.autoReconnect = true;
 
   stream.on(ETwitterStreamEvent.Data, (tweet) =>
-    onStreamTweet(tweet, discordClient).catch((e) => {
+    onStreamTweet(tweet, botApps).catch((e) => {
       console.error(`Tweet relay failed: ${e}`);
     })
   );
 };
 
-const formatTweet = async (tweet, username, refTweet, refUsername) => {
+const formatTweet = async (
+  settings,
+  tweet,
+  username,
+  refTweet,
+  refUsername
+) => {
   const url = getUserTweetLink(tweet, username);
   const refUrl =
     refTweet && refUsername
@@ -226,6 +251,7 @@ const formatTweet = async (tweet, username, refTweet, refUsername) => {
     targetText,
     undefined,
     undefined,
+    settings,
     true
   );
 

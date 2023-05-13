@@ -12,6 +12,10 @@ export class CatchPoemCommand extends AbstractCommand {
   }
   async execute(msg) {
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
+    if (this.settings.inactive) {
+      console.log("inactive mode, doing nothing", "pekohai");
+      return Promise.resolve();
+    }
     msg.react("<:pekohai:1007996906821128242>").catch((e) => {
       console.error(`Couldn't react: ${e}`);
     });

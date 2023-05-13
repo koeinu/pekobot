@@ -6,7 +6,6 @@ import {
   fetchMessage,
   fillMessage,
   replyEmbedMessage,
-  sleep,
 } from "./utils/discordUtils.js";
 
 import { CommandListener } from "./listener/commandListener.js";
@@ -16,13 +15,11 @@ import {
   makeCompoundBetCommands,
   makeSimpleBetCommands,
 } from "./commands/commandGenerators/bet.js";
-import { connectToStream } from "./utils/twitterUtils.js";
 import { loadRelays } from "./model/relay.js";
 import _path from "path";
 import { fileURLToPath } from "url";
 import { JSON_FILE_NAME, convertJsonToParsed } from "./model/bets.js";
 import { loadFile } from "./utils/fileUtils.js";
-import { H_M_S, S_MS } from "./utils/constants.js";
 import { getBotSettings } from "./model/botSettings.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -249,37 +246,9 @@ export class Application {
     }, []);
 
     this.ready = true;
-    if (!this.settings.isSimplified) {
-      this.keepConnectingToStreamFeed().catch((e) => {
-        console.error(`Critical error when connecting to twitter feed!: ${e}`);
-      });
 
-      for (let i = 0; i < uniqueRelays.length; i++) {
-        await fetchMessage(this.client, uniqueRelays[i].source);
-      }
-    }
-  }
-
-  async keepConnectingToStreamFeed() {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      await connectToStream(this.client)
-        .then(() => {
-          console.log("Connected to twitter feed");
-          this.connectedToStreamFeed = true;
-        })
-        .catch((e) => {
-          console.error(`Can't connect to twitter stream: ${e}`);
-        });
-      if (this.connectedToStreamFeed) {
-        return;
-      }
-
-      const MINUTES = 5;
-      console.log(`Reconnecting in ${MINUTES} mins..`);
-
-      await sleep(() => {}, MINUTES * H_M_S * S_MS);
-      console.log("Another attempt to connect to twitter feed..");
+    for (let i = 0; i < uniqueRelays.length; i++) {
+      await fetchMessage(this.client, uniqueRelays[i].source);
     }
   }
 

@@ -13,6 +13,7 @@ import express from "express";
 import aboutRoute from "ics-service/about.js";
 import feedRoute from "ics-service/feed.js";
 import { CALENDAR_METADATA, getCalendar } from "./utils/calendarUtils.js";
+import { TwitterClient } from "./twitterClient.js";
 
 dotenv.config();
 
@@ -41,6 +42,9 @@ const init = async () => {
   try {
     const pekoBot = new Application("peko-bot");
     const mikoBot = new Application("Mikodanye");
+
+    const twitterClient = new TwitterClient();
+    twitterClient.init([pekoBot, mikoBot]);
   } catch (e) {
     console.error(`Couldn't initialize discord bots:`, e);
   }

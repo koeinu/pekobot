@@ -16,6 +16,10 @@ export class SameReactCommand extends AbstractCommand {
     this.intercept = true;
   }
   async execute(msg) {
+    if (this.settings.inactive) {
+      console.log("inactive mode, doing nothing");
+      return Promise.resolve();
+    }
     return msg.react(msg.content).catch(async (e) => {
       console.error(`Couldn't React: ${e}`);
     });

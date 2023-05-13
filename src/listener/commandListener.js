@@ -51,10 +51,6 @@ export class CommandListener {
         if (processData.result) {
           console.log(`executing ${processData.reason}`);
           commandIntercepted = commandIntercepted || command.intercept;
-          if (this.settings.inactive) {
-            console.log("inactive mode, doing nothing");
-            continue;
-          }
           await command.execute(msg, this.client).catch((e) => {
             console.error(
               `Couldn't execute command ${command.name} (${getMsgInfo(
@@ -78,10 +74,6 @@ export class CommandListener {
         const processData = command.shouldProcessMsg(msg);
         if (processData.result && command.executeUpdate) {
           console.log(`updating ${processData.reason}`);
-          if (this.settings.inactive) {
-            console.log("inactive mode, doing nothing");
-            continue;
-          }
           command.executeUpdate(oldMsg, newMsg, this.client).catch((e) => {
             console.error(
               `Couldn't execute update command ${command.name} (${getMsgInfo(
@@ -104,10 +96,6 @@ export class CommandListener {
         const processData = command.shouldProcessMsg(msg);
         if (processData.result && command.executeDelete) {
           console.log(`deleting ${processData.reason}`);
-          if (this.settings.inactive) {
-            console.log("inactive mode, doing nothing");
-            continue;
-          }
           command.executeDelete(msg, this.client).catch((e) => {
             console.error(
               `Couldn't execute delete command ${command.name} for ${getMessage(

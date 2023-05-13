@@ -64,6 +64,10 @@ export class StreakCommand extends AbstractCommand {
         .finally(() => {
           setTimeout(() => {
             const toSend = reactionData ? reactionData.reaction : text;
+            if (this.settings.inactive) {
+              console.log("streak inactive mode, doing nothing");
+              return Promise.resolve();
+            }
             return msg.channel.send(toSend).catch((e) => {
               console.error(
                 `Couldn't send a streak message ${msg.content} in ${msg.channel}: ${e}`

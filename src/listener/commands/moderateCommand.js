@@ -58,6 +58,10 @@ export class ModerateCommand extends AbstractCommand {
     return moderateMessage(msg)
       .then((triggerData) => {
         if (triggerData && triggerData.flagged) {
+          if (this.settings.inactive) {
+            console.log("moderate inactive mode, doing nothing");
+            return Promise.resolve();
+          }
           return sendToChannels(
             discordClient,
             gatherMessageInfo(msg, triggerData),

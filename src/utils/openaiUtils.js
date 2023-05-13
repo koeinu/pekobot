@@ -84,13 +84,16 @@ export const messageContextArray = (msg, settings) => {
       `Always stay in character. Repetition is discouraged.`
     );
     if (rpSettings["characterInstructions"]) {
-      parts.push(...rpSettings["characterInstructions"]);
+      parts.push(
+        "{Speech instructions:}",
+        ...rpSettings["characterInstructions"]
+      );
     }
     if (rpSettings["traits"]) {
-      parts.push(...rpSettings["traits"]);
+      parts.push("{Traits:}", ...rpSettings["traits"]);
     }
     if (rpSettings["appearances"]) {
-      parts.push(...rpSettings["appearances"]);
+      parts.push("{Appearance:}", ...rpSettings["appearances"]);
     }
   } else {
     parts.push(
@@ -168,7 +171,7 @@ export const gptReaction = async (text, settings, actionsArray, reactMode) => {
   parts.push(`{Options:} ${actionsArray.join(", ")}, other.`);
   parts.push(`{Message:} "${text}."`);
 
-  return gpt(parts.join(`\n`), "");
+  return gpt(parts.join(`\n`), settings, "");
 };
 export const gptMood = async (text, settings, moodsArray, reactMode) => {
   const parts = [];
@@ -194,18 +197,18 @@ export const gptMood = async (text, settings, moodsArray, reactMode) => {
   }
   parts.push(`The message: "${text}."`);
 
-  return gpt(parts.join(`\n`), "");
+  return gpt(parts.join(`\n`), settings, "");
 };
 
-export const gptGetLanguage = async (text) => {
+export const gptGetLanguage = async (text, settings) => {
   const parts = [
     "Determine the language of the text between [START] and [END]. If there are Japanese words writen with English letters, treat them as English words. Ignore hashtags, kaomojis, urls, as their content doesn't affect the language of the text. Respond with the name of the language, one word. The text:",
   ];
   parts.push(`[START]${text}[END]`);
 
-  return gpt(parts.join(`\n`), "", GPTL_PARAMS);
+  return gpt(parts.join(`\n`), settings, "", GPTL_PARAMS);
 };
-export const gptl = async (msg, text) => {
+export const gptl = async (msg, settings, text) => {
   const dict = listDictionary(msg ? msg.guild.id : undefined);
   const entries = Object.entries(dict).map((el) => ({
     src: el[0],
@@ -236,7 +239,7 @@ export const gptl = async (msg, text) => {
   }
   parts.push(`[START]${textWithoutHashtags}[END]`);
 
-  return gpt(parts.join(`\n`), "", GPTL_PARAMS);
+  return gpt(parts.join(`\n`), settings, "", GPTL_PARAMS);
 };
 // throws
 export const gpt = async (
@@ -256,7 +259,10 @@ export const gpt = async (
       throw e;
     });
   let result = res.text;
-  if (result.toLowerCase().indexOf(settings.name.toLowerCase()) === 0) {
+  if (
+    result &&
+    result.toLowerCase().indexOf(settings.name.toLowerCase()) === 0
+  ) {
     result = result.slice(9).trim();
   }
 

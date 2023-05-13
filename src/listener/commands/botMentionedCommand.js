@@ -23,7 +23,7 @@ export class BotMentionedCommand extends AbstractCommand {
   async execute(msg) {
     console.error(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
-    const reactCommand = new ReactCommand();
+    const reactCommand = new ReactCommand(this.settings);
     const match = await reactCommand.commandMatch(msg);
     if (match) {
       return reactCommand.execute(msg, undefined, true);

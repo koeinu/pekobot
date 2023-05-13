@@ -47,6 +47,10 @@ export class RelayMessageCommand extends AbstractCommand {
       console.log(
         `sending ${msgToSend} to ${channel.name} on ${channel.guild.name}`
       );
+      if (this.settings.inactive) {
+        console.error("relay inactive mode, doing nothing");
+        return Promise.resolve();
+      }
       channel
         .send(msgToSend)
         .then((sentMessage) => {

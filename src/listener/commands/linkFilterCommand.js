@@ -28,6 +28,10 @@ export class LinkFilterCommand extends AbstractCommand {
         const bannedKey = Object.keys(bans).find((el) => el === channelId);
         if (bannedKey) {
           console.error(`${this.name} triggered, ${getMsgInfo(msg)}`);
+          if (this.settings.inactive) {
+            console.log("linkFilter inactive mode, doing nothing");
+            return Promise.resolve();
+          }
           return replyEmbedMessage(
             msg,
             `This link is not allowed on this server.\n\nReason: ${bans[bannedKey]}`
