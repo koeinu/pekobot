@@ -30,12 +30,14 @@ export class StreakCommand extends AbstractCommand {
 
     this.allowedChannels = [...PEKO_ALLOWED_RNG, ...MIKO_ALLOWED_RNG_GPT];
   }
-  async execute(msg, client) {
+  async execute(msg) {
     const text = msg.content.trim();
     const streakData = this.settings["streakData"];
     if (!streakData) {
       return Promise.resolve();
     }
+
+    const chosenTrigger = streakData.triggers[0];
 
     const reactionData = streakData.find((data) =>
       data.triggers.find((trigger) => text.toLowerCase().includes(trigger))
@@ -46,13 +48,13 @@ export class StreakCommand extends AbstractCommand {
       "streak_triggerer",
       pickRandomTriggerValue(),
       S_MS * H_M_S * 2,
-      text
+      chosenTrigger
     );
     if (trigger) {
       if (!(await this.rateLimitPass(msg, "streakSharedHandle"))) {
         return Promise.resolve();
       }
-      this.resetTrigger(msg, text);
+      this.resetTrigger(msg, chosenTrigger);
 
       console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
