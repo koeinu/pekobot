@@ -3,8 +3,10 @@ import { AbstractCommand } from "../abstractCommand.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 
 import { H_M_S, S_MS } from "../../utils/constants.js";
-import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
-import { PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
+import {
+  MIKO_ALLOWED_RNG_GPT,
+  PEKO_ALLOWED_RNG,
+} from "../../utils/ids/channels.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
 
 const STREAK_TIMEOUT = 2000; //ms
@@ -12,8 +14,8 @@ const STREAK_TIMEOUT = 2000; //ms
 const pickRandomTriggerValue = () => Math.round(Math.random() * 3 + 4);
 
 export class StreakCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "streak";
 
     // cooldown
@@ -26,11 +28,19 @@ export class StreakCommand extends AbstractCommand {
       AlertUserMode.Silent
     );
 
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];
-    this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
+    this.allowedChannels = [...PEKO_ALLOWED_RNG, ...MIKO_ALLOWED_RNG_GPT];
   }
-  async execute(msg) {
+  async execute(msg, client) {
     const text = msg.content.trim();
+    const streakData = this.settings["streakData"];
+    if (!streakData) {
+      return Promise.resolve();
+    }
+
+    const reactionData = streakData.find((data) =>
+      data.triggers.find((trigger) => text.toLowerCase().includes(trigger))
+    );
+
     const trigger = this.triggerCheck(
       msg,
       "streak_triggerer",
@@ -53,15 +63,7 @@ export class StreakCommand extends AbstractCommand {
         })
         .finally(() => {
           setTimeout(() => {
-            const toSend = text.includes("にーん")
-              ? "にーん…"
-              : text.includes("おつぺこ") ||
-                text.toLowerCase().includes("otsupeko")
-              ? "おつぺこ〜"
-              : text.includes("こんぺこ") ||
-                text.toLowerCase().includes("konpeko")
-              ? "こんぺこ〜"
-              : text;
+            const toSend = reactionData ? reactionData.reaction : text;
             return msg.channel.send(toSend).catch((e) => {
               console.error(
                 `Couldn't send a streak message ${msg.content} in ${msg.channel}: ${e}`
@@ -72,15 +74,14 @@ export class StreakCommand extends AbstractCommand {
     }
   }
   async commandMatch(msg) {
+    const streakData = this.settings["streakData"];
     const text = msg.content;
     const emojiPattern = /^<:\w+:\d+>$/;
     return (
       emojiPattern.test(text) ||
-      text.includes("にーん") ||
-      text.includes("おつぺこ") ||
-      text.includes("こんぺこ") ||
-      text.toLowerCase().includes("konpeko") ||
-      text.toLowerCase().includes("otsupeko")
+      streakData.some((data) =>
+        data.triggers.some((trigger) => text.toLowerCase().includes(trigger))
+      )
     );
   }
 }

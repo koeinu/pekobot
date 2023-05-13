@@ -10,7 +10,6 @@ import {
 } from "./utils/discordUtils.js";
 
 import { CommandListener } from "./listener/commandListener.js";
-import dotenv from "dotenv";
 
 import { generateCommands } from "./generateCommands.js";
 import {
@@ -24,17 +23,17 @@ import { fileURLToPath } from "url";
 import { JSON_FILE_NAME, convertJsonToParsed } from "./model/bets.js";
 import { loadFile } from "./utils/fileUtils.js";
 import { H_M_S, S_MS } from "./utils/constants.js";
-
-dotenv.config();
-const token = process.env.DISCORD_TOKEN;
-const isSimplifed = process.env.SIMPLIFED_FUNCTIONS;
+import { getBotSettings } from "./model/botSettings.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = _path.dirname(__filename);
 
 export class Application {
-  constructor() {
+  constructor(botName) {
+    this.settings = getBotSettings(botName);
+
     this.ready = false;
+
     this.client = new Client({
       intents: [
         GatewayIntentBits.Guilds,
@@ -43,8 +42,9 @@ export class Application {
         GatewayIntentBits.MessageContent,
       ],
     });
+
     this.client.commands = new Collection();
-    this.listener = new CommandListener(this.client);
+    this.listener = new CommandListener(this.client, this.settings);
 
     const commandsPath = path.join(__dirname, "commands");
     const commandFiles = fs
@@ -165,6 +165,7 @@ export class Application {
               const commandsToGenerate =
                 this.getCommandsToGenerate(interaction);
               await generateCommands(
+                this.settings,
                 commandsToGenerate.map((el) =>
                   el.default ? el.default.data.toJSON() : el.data.toJSON()
                 ),
@@ -179,6 +180,7 @@ export class Application {
               const commandsToGenerate =
                 this.getCommandsToGenerate(interaction);
               await generateCommands(
+                this.settings,
                 commandsToGenerate.map((el) =>
                   el.default ? el.default.data.toJSON() : el.data.toJSON()
                 ),
@@ -192,6 +194,7 @@ export class Application {
             );
             const commandsToGenerate = this.getCommandsToGenerate(interaction);
             await generateCommands(
+              this.settings,
               commandsToGenerate.map((el) =>
                 el.default ? el.default.data.toJSON() : el.data.toJSON()
               ),
@@ -224,7 +227,7 @@ export class Application {
     this.client.on(Events.MessageDelete, (msg) => this.onMessageDelete(msg));
     this.client.on(Events.ClientReady, () => this.onReady());
 
-    this.client.login(token);
+    this.client.login(this.settings.token);
   }
 
   getCommandsToGenerate(interaction) {
@@ -246,7 +249,7 @@ export class Application {
     }, []);
 
     this.ready = true;
-    if (!isSimplifed) {
+    if (!this.settings.isSimplified) {
       this.keepConnectingToStreamFeed().catch((e) => {
         console.error(`Critical error when connecting to twitter feed!: ${e}`);
       });

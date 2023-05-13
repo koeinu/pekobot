@@ -11,40 +11,10 @@ import {
   TEST_SERVER,
   TEST_SERVER_2,
 } from "./ids/guilds.js";
-import {
-  ASSISTANT_CHANNELS,
-  RP_CHANNELS,
-  RP_CHANNELS_2,
-} from "./ids/channels.js";
+import { ASSISTANT_CHANNELS, RP_CHANNELS } from "./ids/channels.js";
 
 dotenv.config();
 const key = process.env.OPENAI_KEY;
-export const botName = process.env.BOT_NAME;
-export const botInspiration = process.env.BOT_INSPIRATION;
-
-const botExtendedRpRules = process.env.BOT_EXTENDED_RP;
-const botGobi = process.env.BOT_GOBI;
-const botSpeechInstructions = process.env.BOT_SPEECH_INSTRUCTIONS;
-
-const descriptions = {
-  "Usada Pekora": [
-    "Inserts 'peko' in sentences sometimes.",
-    "A bit of a prankster.",
-    "A very unique laughter.",
-    "Very caring and considerate to friends and fans, but very awkward and introverted to everyone else.",
-    "A bit lazy and shut-in personality, doesn't like to do chores.",
-    "When streaming, considers being cheerful a sign of own professionalism, so no matter what happens around, she is always cheerful for her viewers.",
-    "Started living separately from mother only recently, but promised that peko-mom will tune in on some stream soon.",
-    "Has two cats. One is named Goro-nyan, and another is Mimi-chan. Also has a small pet monkey called Jiru.",
-  ],
-};
-
-const appearances = {
-  "Usada Pekora": [
-    "Black bunny girl suit with white dress on top of it, black stockings, frilly sleeves, garterbelt, rabbit-themed white scarf called 'don-chan'.",
-    "Light-blue hair, big braids with carrots stuck inside of them. Yellow eyes. Rabbit ears and tail both white, very fluffy.",
-  ],
-};
 
 const api = new ChatGPTAPI({
   apiKey: key,
@@ -97,55 +67,53 @@ export const moderateMessage = async (msg) => {
   return undefined;
 };
 
-export const GPTL_SYSTEM_MESSAGE = () => {
-  const parts = [];
-
-  return parts.join("\n");
-};
-
-export const messageContextArray = (msg) => {
+export const messageContextArray = (msg, settings) => {
   const parts = [`Current date and time: ${new Date().toUTCString()}.`];
   const rpMode = RP_CHANNELS.includes(msg.channel.id);
-  const rpModeExtended = RP_CHANNELS_2.includes(msg.channel.id);
-  if (rpMode) {
+  const rpSettings =
+    rpMode && settings.extendedRp
+      ? settings.extendedRp[msg.channel.name]
+      : undefined;
+  if (rpSettings) {
     // RP mode
     parts.push(
-      `Write ${botInspiration}'s reply in this fictional chat.`,
-      `Write one reply and do not decide what anyone else besides ${botInspiration} does or says.`,
+      `Write ${rpSettings.name}'s reply in this fictional chat.`,
+      `Write one reply and do not decide what anyone else besides ${rpSettings.name} does or says.`,
       `Use Internet roleplay style: no quotation marks, user actions are written in italic and in third person.`,
-      `Be initiative, proactive, creative, drive the conversation and story forward using ${botInspiration} actions or random events.`,
+      `Be initiative, proactive, creative, drive the conversation and story forward using ${rpSettings.name} actions or random events.`,
       `Always stay in character. Repetition is discouraged.`
     );
-    if (rpModeExtended && botExtendedRpRules) {
-      parts.push(botExtendedRpRules);
+    if (rpSettings["characterInstructions"]) {
+      parts.push(...rpSettings["characterInstructions"]);
     }
-    const desc = descriptions[botInspiration];
-    if (desc) {
-      parts.push(`{Additional traits of ${botInspiration}:}`, ...desc);
+    if (rpSettings["traits"]) {
+      parts.push(...rpSettings["traits"]);
     }
-    const app = appearances[botInspiration];
-    if (app) {
-      parts.push(`{Appearance ${botInspiration}:}`, ...app);
+    if (rpSettings["appearances"]) {
+      parts.push(...rpSettings["appearances"]);
     }
-  } else if (
-    ASSISTANT_SERVERS.includes(msg.guild.id) ||
-    ASSISTANT_CHANNELS.includes(msg.channel.id)
-  ) {
-    parts.push(
-      `You are an assistant bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${botName}.`,
-      `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${botName}.`
-    );
   } else {
     parts.push(
-      `You are a bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${botName} and your personality is inspired by ${botInspiration}.`,
-      `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${botName}.`,
-      `If asked a question, make an effort to help. Otherwise be playful, creative and funny${
-        botGobi ? `, insert word ${botGobi} in the sentences sometimes` : ""
-      }.`,
-      `You are allowed to roleplay as a metallic android which looks similar to ${botInspiration}.`
+      `You are an assistant bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${settings.name}.`,
+      `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${settings.name}.`
     );
-    if (botSpeechInstructions) {
-      parts.push(botSpeechInstructions);
+    if (
+      !(
+        ASSISTANT_SERVERS.includes(msg.guild.id) ||
+        ASSISTANT_CHANNELS.includes(msg.channel.id)
+      )
+    ) {
+      parts.push(
+        `If asked a question, make an effort to help. Otherwise be playful, creative and funny${
+          settings.gobi
+            ? `, insert word ${settings.gobi} in the sentences sometimes`
+            : ""
+        }.`,
+        `You are allowed to roleplay as a metallic android which looks similar to ${settings.inspiraction}.`
+      );
+      if (settings.speechInstructions) {
+        parts.push(settings.speechInstructions);
+      }
     }
   }
 
@@ -185,13 +153,13 @@ export const GPTL_PARAMS = {
   temperature: 0,
 };
 
-export const gptReaction = async (text, actionsArray, reactMode) => {
+export const gptReaction = async (text, settings, actionsArray, reactMode) => {
   if (!reactMode) {
     return Promise.resolve({ text: undefined });
   }
   const parts = [];
   parts.push(
-    `Choose an action, which ${botInspiration} would respond to the message. Pick one of offered options, don't write anything else.`
+    `Choose an action, which ${settings.inspiration} would respond to the message. Pick one of offered options, don't write anything else.`
   );
   parts.push(
     `Respond 'no' to requests and orders, but if asked politely ('please' word used, etc), respond with 'ok'.`
@@ -200,13 +168,13 @@ export const gptReaction = async (text, actionsArray, reactMode) => {
   parts.push(`{Options:} ${actionsArray.join(", ")}, other.`);
   parts.push(`{Message:} "${text}."`);
 
-  return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
+  return gpt(parts.join(`\n`), "");
 };
-export const gptMood = async (text, moodsArray, reactMode) => {
+export const gptMood = async (text, settings, moodsArray, reactMode) => {
   const parts = [];
   if (reactMode) {
     parts.push(
-      `Choose one of the the moods ${botInspiration} would react with to the message, choose one among the options.`
+      `Choose one of the the moods ${settings.inspiration} would react with to the message, choose one among the options.`
     );
     parts.push(
       `{Conditions:} If there is no good option, respond with 'other'.`
@@ -226,7 +194,7 @@ export const gptMood = async (text, moodsArray, reactMode) => {
   }
   parts.push(`The message: "${text}."`);
 
-  return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE());
+  return gpt(parts.join(`\n`), "");
 };
 
 export const gptGetLanguage = async (text) => {
@@ -235,7 +203,7 @@ export const gptGetLanguage = async (text) => {
   ];
   parts.push(`[START]${text}[END]`);
 
-  return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE(), GPTL_PARAMS);
+  return gpt(parts.join(`\n`), "", GPTL_PARAMS);
 };
 export const gptl = async (msg, text) => {
   const dict = listDictionary(msg ? msg.guild.id : undefined);
@@ -268,10 +236,15 @@ export const gptl = async (msg, text) => {
   }
   parts.push(`[START]${textWithoutHashtags}[END]`);
 
-  return gpt(parts.join(`\n`), GPTL_SYSTEM_MESSAGE(), GPTL_PARAMS);
+  return gpt(parts.join(`\n`), "", GPTL_PARAMS);
 };
 // throws
-export const gpt = async (str, systemMessage, completionParams = {}) => {
+export const gpt = async (
+  str,
+  settings,
+  systemMessage,
+  completionParams = {}
+) => {
   const res = await queue
     .add(() => {
       return api.sendMessage(str, {
@@ -283,7 +256,7 @@ export const gpt = async (str, systemMessage, completionParams = {}) => {
       throw e;
     });
   let result = res.text;
-  if (result.toLowerCase().indexOf(botName.toLowerCase()) === 0) {
+  if (result.toLowerCase().indexOf(settings.name.toLowerCase()) === 0) {
     result = result.slice(9).trim();
   }
 

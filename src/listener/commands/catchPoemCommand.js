@@ -4,8 +4,8 @@ import { PEKO_STREAM, TEST_MAIN } from "../../utils/ids/channels.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
 
 export class CatchPoemCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "poem";
     this.triggerChannels = [PEKO_STREAM, TEST_MAIN];
     this.intercept = true;

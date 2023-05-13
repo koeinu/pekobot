@@ -1,7 +1,6 @@
 import fetch from "isomorphic-fetch";
 
 import dotenv from "dotenv";
-import { botInspiration } from "./openaiUtils.js";
 import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
 import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
@@ -10,8 +9,6 @@ import { getTweetChainTextParts } from "./twitterUtils.js";
 import { getYoutubeVideoInfo } from "./youtubeUtils.js";
 
 dotenv.config();
-const botName = process.env.BOT_NAME;
-const isSimplifed = process.env.SIMPLIFED_FUNCTIONS;
 
 export const MAX_BET_LENGTH = 20;
 export const MAX_CATEGORY_LENGTH = 40;
@@ -49,14 +46,20 @@ export const formGPTPrompt = (repliedUsername, repliedText, username, text) => {
   return "";
 };
 
-export const formChainGPTPrompt = async (msgStructList, rpMode = false) => {
+export const formChainGPTPrompt = async (
+  msgStructList,
+  settings,
+  rpMode = false
+) => {
   const msgs = (
     await Promise.all(
       msgStructList.map(async (msgStruct) => {
         const extractedText = await extractCommandMessage(msgStruct.msg);
         const extractedName = msgStruct.username;
         const finalName =
-          rpMode && extractedName === botName ? botInspiration : extractedName;
+          rpMode && extractedName === settings.name
+            ? settings.inspiration
+            : extractedName;
 
         return extractedText && extractedText.length > 0
           ? `${finalName}: ${extractedText}`
@@ -80,7 +83,7 @@ export const formChainGPTPrompt = async (msgStructList, rpMode = false) => {
       ? [
           `{Current dialog starts here:}`,
           finalMsgArray.join("\n"),
-          `${rpMode ? botInspiration : botName}:`,
+          `${rpMode ? settings.inspiration : settings.name}:`,
         ]
       : [];
   return toReturn.join("\n");
@@ -113,19 +116,6 @@ function parseDiscordLink(link) {
     return undefined;
   }
 }
-
-const crawlURL = async (url) => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto(url, {
-    waitUntil: "domcontentloaded",
-  });
-
-  const data = await page.evaluate(() => document.querySelector("*").outerHTML);
-  await browser.close();
-
-  return data;
-};
 
 export const parseHashtags = (text) => {
   if (typeof text !== "string") {
@@ -205,7 +195,7 @@ export const getTextMessageContent = async (
   if (messageText && messageText.length > 0) {
     if (urls && urls.length > 0) {
       for (let parsedUrl of urls) {
-        if (parsedUrl.includes("twitter.com") && !isSimplifed) {
+        if (parsedUrl.includes("twitter.com")) {
           const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
 
           const tweetPartsObjects = await getTweetChainTextParts(tweetId);

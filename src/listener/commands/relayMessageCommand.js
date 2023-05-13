@@ -13,8 +13,8 @@ import { PEKO_STREAM, SNAXXX_STREAM } from "../../utils/ids/channels.js";
 import { RELAY_AUTHORS } from "../../utils/ids/users.js";
 
 export class RelayMessageCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "relay";
     this.allowedChannels = [SNAXXX_STREAM];
     this.targetChannels = [PEKO_STREAM];

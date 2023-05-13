@@ -17,21 +17,21 @@ import { ApiUtils } from "../../utils/apiUtils.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_SERVER,
+  MIKO_SERVER,
   PEKO_SERVER,
   TEST_SERVER,
 } from "../../utils/ids/guilds.js";
-import { botName } from "../../utils/openaiUtils.js";
 
 export class GptlCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "gptl";
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
+    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER, MIKO_SERVER];
     this.rateLimiter = new CustomRateLimiter(
       "GPT translations",
       1,
       S_MS * H_M_S,
-      ["Mod", botName],
+      ["Mod", this.settings.name],
       [],
       AlertUserMode.Normal
     );

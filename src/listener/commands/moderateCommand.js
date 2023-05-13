@@ -48,8 +48,8 @@ const gatherMessageInfo = (msg, triggerData) => {
 };
 
 export class ModerateCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "moderate";
     this.allowedGuilds = [PEKO_SERVER];
     this.channelsToSend = [PEKO_MOD];

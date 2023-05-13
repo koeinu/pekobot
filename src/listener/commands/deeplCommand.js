@@ -19,18 +19,17 @@ import {
 import { H_M_S, LANGUAGES, S_MS } from "../../utils/constants.js";
 import { getTextMessageContent } from "../../utils/stringUtils.js";
 import { BANNED_USERS } from "../../utils/ids/users.js";
-import { botName } from "../../utils/openaiUtils.js";
 
 export class DeeplCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "deepl";
     // 1 request per 10 min
     this.rateLimiter = new CustomRateLimiter(
       "DeepL",
       1,
       S_MS * H_M_S,
-      ["Mod", botName],
+      ["Mod", this.settings.name],
       [],
       AlertUserMode.Normal
     );

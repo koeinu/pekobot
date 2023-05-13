@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { disabledCommands, generateCommands } from "./generateCommands.js";
+import { generateCommands } from "./generateCommands.js";
 
 import {
   makeCompoundBetCommands,
@@ -8,13 +8,28 @@ import {
 
 import { convertJsonToParsed, JSON_FILE_NAME } from "./model/bets.js";
 import fs from "node:fs";
+import { getBotSettings } from "./model/botSettings.js";
 
 dotenv.config();
 
-export const makeCmds = async (guildIdsString) => {
-  const parsedGuildIds = guildIdsString.split(",").map((el) => el.trim());
+const disabledCommands = {
+  "584977240358518784": ["calendar", "youtube", "relay", "gptdraft"], // miko
+  "999666683176308807": [
+    "calendar",
+    "jigsaw",
+    "betedit",
+    "gptDict",
+    "youtube",
+    "gptdraft",
+  ], // snaxxx
+  "1061909810943115337": [], // ts
+  "683140640166510717": ["calendar"], // peko
+  "1088005181171580949": [], // ts2
+};
+
+export const makeCmds = async (settings) => {
   const disabledGuildCommands = {};
-  parsedGuildIds.forEach((id) => {
+  settings.guildIds.forEach((id) => {
     disabledGuildCommands[id] = disabledCommands[id] || [];
   });
   const finalGuildCommands = {};
@@ -25,7 +40,7 @@ export const makeCmds = async (guildIdsString) => {
 
   for (const file of commandFiles) {
     const command = await import(`./commands/${file}`);
-    parsedGuildIds.forEach((id) => {
+    settings.guildIds.forEach((id) => {
       if (!finalGuildCommands[id]) {
         finalGuildCommands[id] = [];
       }
@@ -40,30 +55,41 @@ export const makeCmds = async (guildIdsString) => {
     });
   }
 
-  return finalGuildCommands;
+  return { settings, commands: finalGuildCommands };
 };
-makeCmds(process.env.GUILD_ID)
-  .then((guildCommandsData) => {
-    const returnPromises = [];
-    Object.entries(guildCommandsData).forEach(([guildId, cmds]) => {
-      const parsedData = convertJsonToParsed(JSON_FILE_NAME, guildId);
-      console.log(parsedData);
-      if (parsedData) {
-        switch (parsedData.betType) {
-          case 0:
-            cmds.push(makeSimpleBetCommands().data.toJSON());
-            break;
-          case 1:
-            cmds.push(makeCompoundBetCommands(parsedData.data).data.toJSON());
-            break;
-          default:
-            break;
-        }
+
+const processCommannds = (commandsData) => {
+  const returnPromises = [];
+  const settings = commandsData.settings;
+  const guildCommandsData = commandsData.commands;
+  Object.entries(guildCommandsData).forEach(([guildId, cmds]) => {
+    const parsedData = convertJsonToParsed(JSON_FILE_NAME, guildId);
+    console.log(parsedData);
+    if (parsedData) {
+      switch (parsedData.betType) {
+        case 0:
+          cmds.push(makeSimpleBetCommands().data.toJSON());
+          break;
+        case 1:
+          cmds.push(makeCompoundBetCommands(parsedData.data).data.toJSON());
+          break;
+        default:
+          break;
       }
-      returnPromises.push(generateCommands(cmds, [guildId]));
-    });
-    return Promise.all(returnPromises);
-  })
+    }
+    returnPromises.push(generateCommands(settings, cmds, [guildId]));
+  });
+  return Promise.all(returnPromises);
+};
+
+makeCmds(getBotSettings("peko-bot"))
+  .then(processCommannds)
+  .catch((e) => {
+    console.log(`Commands generate failed: ${e}`);
+  });
+
+makeCmds(getBotSettings("Mikodanye"))
+  .then(processCommannds)
   .catch((e) => {
     console.log(`Commands generate failed: ${e}`);
   });

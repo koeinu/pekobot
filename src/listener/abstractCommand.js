@@ -6,7 +6,9 @@ import { sleep } from "../utils/discordUtils.js";
 import { AlertUserMode, CustomRateLimiter } from "../utils/rateLimiter.js";
 
 export class AbstractCommand {
-  constructor() {
+  constructor(settings) {
+    this.settings = settings;
+
     this.name = undefined;
 
     this.rateLimiter = undefined;

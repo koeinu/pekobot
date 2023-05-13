@@ -1,16 +1,17 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import { ReactCommand } from "./reactCommand.js";
-import { CREATOR, PROHIBITED_RNG_CHANNELS } from "../../utils/ids/channels.js";
-import { PEKO_SERVER, TEST_SERVER } from "../../utils/ids/guilds.js";
+import {
+  CREATOR,
+  MIKO_ALLOWED_RNG_GPT,
+  PEKO_ALLOWED_RNG,
+} from "../../utils/ids/channels.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
-import { botName } from "../../utils/openaiUtils.js";
 
 export class BotMentionedCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "botMentioned";
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER];
-    this.prohibitedChannels = PROHIBITED_RNG_CHANNELS;
+    this.allowedChannels = [...PEKO_ALLOWED_RNG, ...MIKO_ALLOWED_RNG_GPT];
     this.prohibitedUsers = PROHIBITED_RNG_USERS;
     this.intercept = true;
     this.probability = 0.35;
@@ -31,7 +32,7 @@ export class BotMentionedCommand extends AbstractCommand {
   }
   async commandMatch(msg) {
     const text = msg.content;
-    const botNameLowercase = botName.toLowerCase();
+    const botNameLowercase = this.settings.name.toLowerCase();
     const nameVariations = [
       botNameLowercase,
       botNameLowercase.replaceAll("-", " "),

@@ -1,7 +1,6 @@
 import { AbstractCommand } from "../abstractCommand.js";
 
 import {
-  botName,
   gpt,
   messageContextArray,
   serverRules,
@@ -18,19 +17,16 @@ import { H_M_S, S_MS } from "../../utils/constants.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_CONSULTING,
+  MIKO_ALLOWED_RNG_GPT,
+  PEKO_ALLOWED_GPT,
   PEKO_GPT,
   PEKO_GPT_OK_CHANNEL,
-  PROHIBITED_GPT_CHANNELS,
   RP_CHANNELS,
   TEST_ASSISTANT,
+  TEST_ENABLED_CHANNELS,
   TEST_GPT_OK_CHANNEL,
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
-import {
-  DDF_SERVER,
-  PEKO_SERVER,
-  TEST_SERVER,
-} from "../../utils/ids/guilds.js";
 
 const getReplyChain = async (msg, msgChain = [msg]) => {
   if (msg.type === MessageType.Reply) {
@@ -70,18 +66,23 @@ const splitMessages = (msgChain) => {
 };
 
 export class GptCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "gpt";
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
       1,
       S_MS * H_M_S * 3,
-      ["Mod", botName],
+      ["Mod", this.settings.name],
       [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL],
       AlertUserMode.Emote
     );
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER];
+    this.allowedChannels = [
+      ...MIKO_ALLOWED_RNG_GPT,
+      ...PEKO_ALLOWED_GPT,
+      ...TEST_ENABLED_CHANNELS,
+      ...RP_CHANNELS,
+    ];
     this.consultingChanels = [
       ...RP_CHANNELS,
       TEST_ASSISTANT,
@@ -89,7 +90,6 @@ export class GptCommand extends AbstractCommand {
       TEST_USUAL_PEKO_GPT,
       PEKO_GPT,
     ];
-    this.prohibitedChannels = PROHIBITED_GPT_CHANNELS;
     this.intercept = true;
   }
   async execute(msg) {
@@ -132,7 +132,7 @@ export class GptCommand extends AbstractCommand {
       (el) => el.msg && el.msg.length > 0
     );
 
-    const gptPrompt = await formChainGPTPrompt(msgList, rpMode);
+    const gptPrompt = await formChainGPTPrompt(msgList, this.settings, rpMode);
 
     if (gptPrompt.length > 0) {
       msg.channel.sendTyping().catch((e) => {
