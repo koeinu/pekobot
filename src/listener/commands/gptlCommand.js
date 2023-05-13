@@ -84,7 +84,7 @@ export class GptlCommand extends AbstractCommand {
             return replyCustomEmbed(
               msg,
               undefined,
-              `Beep boop, looks like I'm overloaded with requests, peko.. Try again later!`,
+              `Beep boop, looks like I'm overloaded with requests.. Try again later!`,
               undefined,
               undefined,
               printTLInfo(data.countObject, tlData.time, tlData.metaData)

@@ -23,16 +23,6 @@ export class TelegramBotWrapper {
       this.bot.on("message", (msg) => {
         const chatId = msg.chat.id;
         console.log("got message, channel id:", chatId);
-        // const text = msg.text;
-        // gpt(text, "")
-        //   .then((result) => {
-        //     if (result.text) {
-        //       this.sendMessage(chatId, result.text);
-        //     }
-        //   })
-        //   .catch((e) => {
-        //     console.log(`Couldn't telegram gpt: ${e}`);
-        //   });
       });
       this.bot.on("command", (command) => {
         console.log(command);

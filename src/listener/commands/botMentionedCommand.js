@@ -6,6 +6,7 @@ import {
   PEKO_ALLOWED_RNG,
 } from "../../utils/ids/channels.js";
 import { PROHIBITED_RNG_USERS } from "../../utils/ids/users.js";
+import { getMsgInfo } from "../../utils/stringUtils.js";
 
 export class BotMentionedCommand extends AbstractCommand {
   constructor(settings) {
@@ -20,9 +21,7 @@ export class BotMentionedCommand extends AbstractCommand {
     ];
   }
   async execute(msg) {
-    console.error(
-      `Bot mentioned! ${msg.content} at ${msg.channel.name}, ${msg.guild.name}`
-    );
+    console.error(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
     const reactCommand = new ReactCommand();
     const match = await reactCommand.commandMatch(msg);

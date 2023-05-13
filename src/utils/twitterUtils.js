@@ -235,7 +235,7 @@ const formatTweet = async (tweet, username, refTweet, refUsername) => {
   fmtText = formatNewline(targetUrl, formatTLText(tlData.text, tlData.isGpt));
 
   return {
-    poemText: `${username} wrote a poem, peko!\n${fmtText}`,
+    poemText: `${username} wrote a poem!\n${fmtText}`,
     usualText:
       refUrl && tweet.data.text.indexOf("RT") === 0
         ? `${username} retweeted ${refUsername}!\n${fmtText}`
