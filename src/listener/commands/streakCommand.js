@@ -37,11 +37,11 @@ export class StreakCommand extends AbstractCommand {
       return Promise.resolve();
     }
 
-    const chosenTrigger = streakData.triggers[0];
-
     const reactionData = streakData.find((data) =>
       data.triggers.find((trigger) => text.toLowerCase().includes(trigger))
     );
+
+    const chosenTrigger = reactionData ? reactionData.triggers[0] : text;
 
     const trigger = this.triggerCheck(
       msg,
