@@ -58,6 +58,11 @@ const TWITTER_RELAY_DATA = [
     feedIds: [TEST_MIKO_FEED],
     poemIds: [],
   },
+  {
+    src: "mikochisub",
+    feedIds: [TEST_MIKO_FEED],
+    poemIds: [],
+  },
 ];
 
 const getUserTweetLink = (tweet, userIdToForward) =>
@@ -202,16 +207,28 @@ export const connectToStream = async (botApps) => {
       console.log("adding a user rule");
       // Add our rules
       await client.v2.updateStreamRules({
-        add: usersToRelay.map((el) => {
-          return { value: `from:${el}` };
-        }),
+        add: [
+          {
+            value: usersToRelay
+              .map((el) => {
+                return `from:${el}`;
+              })
+              .join(" OR "),
+          },
+        ],
       });
     }
   } else {
     await client.v2.updateStreamRules({
-      add: usersToRelay.map((el) => {
-        return { value: `from:${el}` };
-      }),
+      add: [
+        {
+          value: usersToRelay
+            .map((el) => {
+              return `from:${el}`;
+            })
+            .join(" OR "),
+        },
+      ],
     });
   }
 

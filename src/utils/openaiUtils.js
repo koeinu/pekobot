@@ -78,14 +78,14 @@ export const messageContextArray = (msg, settings) => {
     // RP mode
     parts.push(
       `Write ${rpSettings.name}'s reply in this fictional chat.`,
-      `Write one reply and do not decide what anyone else besides ${rpSettings.name} does or says.`,
+      `Write one reply, keep it simple and do not decide what anyone else besides ${rpSettings.name} does or says.`,
       `Use Internet roleplay style: no quotation marks, user actions are written in italic and in third person.`,
       `Be initiative, proactive, creative, drive the conversation and story forward using ${rpSettings.name} actions or random events.`,
-      `Always stay in character. Repetition is discouraged.`
+      `Always stay in character. Repetition is discouraged. Feel free to introduce new elements or events to the scene. Because it's fiction, random events are encouraged.`
     );
     if (rpSettings["characterInstructions"]) {
       parts.push(
-        "{Speech instructions:}",
+        "{Additional instructions:}",
         ...rpSettings["characterInstructions"]
       );
     }
