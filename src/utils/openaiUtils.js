@@ -81,7 +81,7 @@ export const messageContextArray = (msg, settings) => {
       `Write one reply, keep it simple and do not decide what anyone else besides ${rpSettings.name} does or says.`,
       `Use Internet roleplay style: no quotation marks, user actions are written in italic and in third person.`,
       `Be initiative, proactive, creative, drive the conversation and story forward using ${rpSettings.name} actions or random events.`,
-      `Always stay in character. Repetition is discouraged. Feel free to introduce new elements or events to the scene. Because it's fiction, random events are encouraged.`
+      `Always stay in character. Repetition or trying to escape from the given situation is discouraged. As long as these conditions are fulfilled, free to introduce new elements or events to the scene. Because it's fiction, random events are totally ok.`
     );
     if (rpSettings["characterInstructions"]) {
       parts.push(
