@@ -66,16 +66,8 @@ const splitMessages = (msgChain) => {
       return false;
     }
   });
-  const finalResult = [];
-  result.some((msg) => {
-    if (calculateCumulativeLength(finalResult) > 2000) {
-      return true;
-    }
-    finalResult.push(msg);
-    return false;
-  });
 
-  return finalResult;
+  return result;
 };
 
 const calculateCumulativeLength = (msgs) =>

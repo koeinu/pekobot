@@ -49,24 +49,16 @@ export const formGPTPrompt = (repliedUsername, repliedText, username, text) => {
 export const formChainGPTPrompt = async (
   msgStructList,
   settings,
-  rpMode = false
+  rpSettings = undefined
 ) => {
-  let storedRpName = undefined;
   const msgs = (
     await Promise.all(
       msgStructList.map(async (msgStruct) => {
         const extractedText = await extractCommandMessage(msgStruct.msg);
         const extractedName = msgStruct.username;
-        const rpSettings =
-          rpMode && settings.extendedRp
-            ? settings.extendedRp[msgStruct.originalMessage.channel.name]
-            : undefined;
-        if (rpSettings) {
-          storedRpName = rpSettings.name;
-        }
         const finalName =
-          rpMode && extractedName === settings.name
-            ? storedRpName || settings.inspiration
+          rpSettings && extractedName === settings.name
+            ? rpSettings.nickname
             : extractedName;
 
         return extractedText && extractedText.length > 0
@@ -92,7 +84,7 @@ export const formChainGPTPrompt = async (
       ? [
           `{Current dialog starts here:}`,
           finalMsgArray.join("\n"),
-          `${storedRpName || (rpMode ? settings.inspiration : settings.name)}:`,
+          `${rpSettings?.nickname || settings.name}:`,
         ]
       : [];
   return toReturn.join("\n");
