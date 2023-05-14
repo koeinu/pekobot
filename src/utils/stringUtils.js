@@ -65,10 +65,9 @@ export const formChainGPTPrompt = async (
           storedRpName = rpSettings.name;
         }
         const finalName =
-          storedRpName ||
-          (rpMode && extractedName === settings.name
-            ? settings.inspiration
-            : extractedName);
+          rpMode && extractedName === settings.name
+            ? storedRpName || settings.inspiration
+            : extractedName;
 
         return extractedText && extractedText.length > 0
           ? `${finalName}: ${extractedText}`

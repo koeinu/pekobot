@@ -146,7 +146,7 @@ export class GptCommand extends AbstractCommand {
       return gpt(
         [
           messageContextArray(msg, this.settings),
-          serverRules(msg),
+          serverRules(msg, this.settings),
           gptPrompt,
         ].join("\n"),
         this.settings,

@@ -123,8 +123,17 @@ export const messageContextArray = (msg, settings) => {
   return parts.join(" ");
 };
 
-export const serverRules = (msg) => {
+export const serverRules = (msg, settings) => {
   const guildId = msg.guild.id;
+  const rpMode = RP_CHANNELS.includes(msg.channel.id);
+  const rpSettings =
+    rpMode && settings.extendedRp
+      ? settings.extendedRp[msg.channel.name]
+      : undefined;
+  if (rpSettings) {
+    return "";
+  }
+
   const parts = [
     "{Rules:}",
     "1. Don't say anything controversial or sexual.",
