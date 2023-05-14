@@ -7,6 +7,7 @@ import { ETwitterStreamEvent, TwitterApi } from "twitter-api-v2";
 
 import dotenv from "dotenv";
 import {
+  MIKO_TEST_FEED,
   PEKO_PEKORA_FEED,
   PEKO_STREAM,
   TEST_INA_FEED,
@@ -55,12 +56,12 @@ const TWITTER_RELAY_DATA = [
   },
   {
     src: "sakuramiko35",
-    feedIds: [TEST_MIKO_FEED],
+    feedIds: [TEST_MIKO_FEED, MIKO_TEST_FEED],
     poemIds: [],
   },
   {
     src: "mikochisub",
-    feedIds: [TEST_MIKO_FEED],
+    feedIds: [TEST_MIKO_FEED, MIKO_TEST_FEED],
     poemIds: [],
   },
 ];
