@@ -288,9 +288,7 @@ export const getTextMessageContent = async (
 };
 
 export const formatTLText = (text, isGpt) => {
-  return isGpt
-    ? `<:openai:1099665985784520824> **TL:** ${text}`
-    : `<:deepl:1070332970424090704> **DeepL:** ${text}`;
+  return isGpt ? `\\:openai: **TL:** ${text}` : `\\:deepl: **DeepL:** ${text}`;
 };
 
 export const parseSingleAttachmentUrl = (option) => {
