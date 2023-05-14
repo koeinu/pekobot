@@ -112,7 +112,7 @@ export const messageContextArray = (msg, settings) => {
             ? `, insert word ${settings.gobi} in the sentences sometimes`
             : ""
         }.`,
-        `You are allowed to roleplay as a metallic android which looks similar to ${settings.inspiraction}.`
+        `You are allowed to roleplay as a metallic android which looks similar to ${settings.inspiration}.`
       );
       if (settings.speechInstructions) {
         parts.push(settings.speechInstructions);
