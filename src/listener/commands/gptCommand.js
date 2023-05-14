@@ -144,7 +144,11 @@ export class GptCommand extends AbstractCommand {
       (el) => el.msg && el.msg.length > 0
     );
 
-    const gptPrompt = await formChainGPTPrompt(msgList, this.settings, rpMode);
+    const gptPrompt = await formChainGPTPrompt(
+      msgList,
+      this.settings,
+      rpSettings
+    );
 
     if (gptPrompt.length > 0) {
       msg.channel.sendTyping().catch((e) => {
