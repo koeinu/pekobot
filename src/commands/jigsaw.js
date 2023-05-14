@@ -82,14 +82,15 @@ const processGeneratePuzzle = async (interaction) => {
     isReplied = true;
 
     const jigsawRole = interaction.guild.roles.cache.find(
-      (role) => role.name === "Jigsaw Enjoyer"
+      (role) => role.name === "Jigsaw Enjoyer" || role.name === "Jigsaw 35P"
     );
     const rulesChannel = interaction.guild.channels.cache.find(
-      (channel) => channel.name === "rules"
+      (channel) =>
+        channel.name === "rules" || channel.name === "roles-and-rules"
     );
     const pingMessage = `If you would like to be pinged on such events, feel free to get a ${
-      jigsawRole || "@Jigsaw Enjoyer"
-    } role in the ${rulesChannel || "#rules"} channel!`;
+      jigsawRole || "jigsaw"
+    } role in the ${rulesChannel || "rules"} channel!`;
     let puzzleMessage;
     if (result.status) {
       puzzleMessage = `Let's do some puzzle!`;
