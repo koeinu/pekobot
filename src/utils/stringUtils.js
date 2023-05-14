@@ -51,15 +51,24 @@ export const formChainGPTPrompt = async (
   settings,
   rpMode = false
 ) => {
+  let storedRpName = undefined;
   const msgs = (
     await Promise.all(
       msgStructList.map(async (msgStruct) => {
         const extractedText = await extractCommandMessage(msgStruct.msg);
         const extractedName = msgStruct.username;
+        const rpSettings =
+          rpMode && settings.extendedRp
+            ? settings.extendedRp[msgStruct.originalMessage.channel.name]
+            : undefined;
+        if (rpSettings) {
+          storedRpName = rpSettings.name;
+        }
         const finalName =
-          rpMode && extractedName === settings.name
+          storedRpName ||
+          (rpMode && extractedName === settings.name
             ? settings.inspiration
-            : extractedName;
+            : extractedName);
 
         return extractedText && extractedText.length > 0
           ? `${finalName}: ${extractedText}`
@@ -77,13 +86,14 @@ export const formChainGPTPrompt = async (
       finalMsgArray.push(m);
     }
   }
+
   finalMsgArray.reverse();
   const toReturn =
     finalMsgArray.length > 0
       ? [
           `{Current dialog starts here:}`,
           finalMsgArray.join("\n"),
-          `${rpMode ? settings.inspiration : settings.name}:`,
+          `${storedRpName || (rpMode ? settings.inspiration : settings.name)}:`,
         ]
       : [];
   return toReturn.join("\n");
@@ -283,7 +293,7 @@ export const getTextMessageContent = async (
     });
   }
 
-  return { countObject, text: parts.join("\n") };
+  return { countObject, text: parts.join("\n"), originalMessage: msg };
 };
 
 export const formatTLText = (text, isGpt) => {

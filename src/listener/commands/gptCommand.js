@@ -43,10 +43,14 @@ const getReplyChain = async (msg, msgChain = [msg]) => {
 const formatMessagesAsChat = async (msgChain) => {
   const list = msgChain.reverse();
   return Promise.all(
-    list.map(async (el) => ({
-      msg: (await getTextMessageContent(el, false, false, false)).text,
-      username: el.author.username,
-    }))
+    list.map(async (el) => {
+      const msgData = await getTextMessageContent(el, false, false, false);
+      return {
+        msg: msgData.text,
+        username: el.author.username,
+        originalMessage: msgData.originalMessage,
+      };
+    })
   );
 };
 
