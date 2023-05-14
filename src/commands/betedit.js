@@ -23,6 +23,7 @@ import {
 import { printUnbet } from "../utils/stringUtils.js";
 
 import { SlashCommandBuilder } from "discord.js";
+import { MOD_PERMS } from "../utils/constants.js";
 
 const processAssignRole = async (interaction) => {
   try {
@@ -30,7 +31,7 @@ const processAssignRole = async (interaction) => {
     const options = getOptions(interaction);
     const category = options[0].value;
     const winner = options[1].value;
-    const role = options[2];
+    const role = options[2].value;
     const set = options[3].value;
     const winners = await findChoiceBetWinners(
       JSON_FILE_NAME,
@@ -53,9 +54,7 @@ const processAssignRole = async (interaction) => {
       );
     } else {
       const guildRoles = await interaction.guild.roles.fetch();
-      const foundRole = [...guildRoles.values()].find(
-        (el) => el.id === role.value
-      );
+      const foundRole = [...guildRoles.values()].find((el) => el.id === role);
 
       for (let i = 0; i < winners.length; i++) {
         const foundUser = await interaction.guild.members.fetch(winners[i].id);
@@ -75,7 +74,7 @@ const processAssignRole = async (interaction) => {
       );
     }
   } catch (e) {
-    console.error(e);
+    console.error(`Couldn't assign winner roles:`, e);
     await reply(interaction, e, undefined, false, true);
   }
 };
@@ -205,7 +204,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName("betedit")
     .setDescription("Manage the bet")
-    .setDefaultMemberPermissions(16)
+    .setDefaultMemberPermissions(MOD_PERMS)
     .addSubcommand((sc) =>
       sc
         .setName("create_simple")

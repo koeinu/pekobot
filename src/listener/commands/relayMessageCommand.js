@@ -24,7 +24,7 @@ export class RelayMessageCommand extends AbstractCommand {
     const text = msg.content;
     const relaysFile = loadRelays();
     if (relaysFile.enabled === false) {
-      return;
+      return Promise.resolve();
     }
     console.debug(
       `${this.name} triggered, ${getMsgInfo(msg)}, sending to: ${

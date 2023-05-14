@@ -7,13 +7,15 @@ import {
 } from "../../utils/openaiUtils.js";
 import { MessageType } from "discord.js";
 import {
-  getTextMessageContent,
   formChainGPTPrompt,
   isFormattedTl,
   getMsgInfo,
+  getGptMessagesContents,
+  getGptReplyChain,
+  splitGptDialogues,
 } from "../../utils/stringUtils.js";
 import { fetchMessages, reply } from "../../utils/discordUtils.js";
-import { H_M_S, S_MS } from "../../utils/constants.js";
+import { FETCH_CHUNK, H_M_S, S_MS } from "../../utils/constants.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_CONSULTING,
@@ -27,51 +29,6 @@ import {
   TEST_GPT_OK_CHANNEL,
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
-
-const getReplyChain = async (msg, msgChain = [msg]) => {
-  if (msg.type === MessageType.Reply) {
-    const repliedToMessage = await msg.channel.messages.fetch(
-      msg.reference.messageId
-    );
-    msgChain.push(repliedToMessage);
-    await getReplyChain(repliedToMessage, msgChain);
-  }
-
-  return msgChain;
-};
-
-const formatMessagesAsChat = async (msgChain) => {
-  const list = msgChain.reverse();
-  return Promise.all(
-    list.map(async (el) => {
-      const msgData = await getTextMessageContent(el, false, false, false);
-      return {
-        msg: msgData.text,
-        username: el.author.username,
-        originalMessage: msgData.originalMessage,
-      };
-    })
-  );
-};
-
-const splitMessages = (msgChain) => {
-  const result = [];
-  msgChain.some((msg) => {
-    if (msg.content === "---") {
-      return true;
-    } else {
-      if (msg.content !== "~") {
-        result.push(msg);
-      }
-      return false;
-    }
-  });
-
-  return result;
-};
-
-const calculateCumulativeLength = (msgs) =>
-  msgs.reduce((amount, curr) => amount + curr.content.length, 0);
 
 export class GptCommand extends AbstractCommand {
   constructor(settings) {
@@ -136,11 +93,13 @@ export class GptCommand extends AbstractCommand {
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
     const replyChain = rpSettings
-      ? splitMessages(
-          (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
+      ? splitGptDialogues(
+          (
+            await fetchMessages(msg.channel, undefined, undefined, FETCH_CHUNK)
+          ).reverse()
         )
-      : await getReplyChain(msg);
-    const msgList = (await formatMessagesAsChat(replyChain)).filter(
+      : await getGptReplyChain(msg);
+    const msgList = (await getGptMessagesContents(replyChain)).filter(
       (el) => el.msg && el.msg.length > 0
     );
 

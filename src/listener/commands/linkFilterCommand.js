@@ -7,8 +7,7 @@ import { listBans } from "../../model/youtube.js";
 import { getYoutubeChannelId } from "../../utils/youtubeUtils.js";
 import { PEKO_SERVER } from "../../utils/ids/guilds.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
-
-const DELETE_MESSAGE_TIMEOUT = 2000; //ms
+import { MESSAGE_TIMEOUT } from "../../utils/constants.js";
 
 export class LinkFilterCommand extends AbstractCommand {
   constructor() {
@@ -44,7 +43,7 @@ export class LinkFilterCommand extends AbstractCommand {
                 msg.delete().catch((e) => {
                   console.error(`Couldn't delete a filtered link: ${e}`);
                 });
-              }, DELETE_MESSAGE_TIMEOUT);
+              }, MESSAGE_TIMEOUT);
             });
         }
       }

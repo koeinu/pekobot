@@ -21,6 +21,7 @@ import { formatTL } from "../utils/stringUtils.js";
 import { SlashCommandBuilder } from "discord.js";
 
 import { RELAY_AUTHORS } from "../utils/ids/users.js";
+import { MESSAGE_TIMEOUT, MOD_PERMS } from "../utils/constants.js";
 
 const options = {
     month: "numeric",
@@ -53,7 +54,7 @@ const dateOptions = {
 export default {
   data: new SlashCommandBuilder()
     .setName("tl_relay")
-    .setDefaultMemberPermissions(16)
+    .setDefaultMemberPermissions(MOD_PERMS)
     .setDescription("Manage TL relaying")
     .addSubcommand((sc) =>
       sc
@@ -209,9 +210,6 @@ export default {
         );
         const options = getOptions(interaction);
         const streamUrl = options.length > 0 ? options[0].value : undefined;
-        // const streamStartedAt = streamUrl
-        //   ? await getYoutubeStartTimestamp(streamUrl)
-        //   : undefined;
 
         console.warn(`relay dump at `, interaction.guild.name, ":", streamUrl);
 
@@ -221,15 +219,9 @@ export default {
         for (let i = 0; i < uniqueRelays.length; i++) {
           const relay = uniqueRelays[i];
           let ts = undefined;
-          // let streamTs = undefined;
           if (relay.source?.createdTimestamp) {
             // easier way
             ts = formatter.format(new Date(relay.source.createdTimestamp));
-            // streamTs = streamStartedAt
-            //   ? streamTimeFormatter.format(
-            //       new Date(relay.source.createdTimestamp - streamStartedAt)
-            //     )
-            //   : undefined;
             if (!firstTs) {
               firstTs = new Date(relay.source.createdTimestamp);
             }
@@ -242,11 +234,6 @@ export default {
             const message = await channel.messages.fetch(relay.sourceId);
             console.log("dumping message ", relay.sourceId);
             ts = formatter.format(message.createdAt);
-            // streamTs = streamStartedAt
-            //   ? streamTimeFormatter.format(
-            //       new Date(message.createdAt - streamStartedAt)
-            //     )
-            //   : undefined;
             if (!firstTs) {
               firstTs = message.createdAt;
             }
@@ -258,7 +245,7 @@ export default {
         }
 
         const passedMS = new Date().getTime() - dumpingStartTime.getTime();
-        const elapsedMS = Math.max(0, 2000 - passedMS);
+        const elapsedMS = Math.max(0, MESSAGE_TIMEOUT - passedMS);
         if (elapsedMS > 0) {
           await sleep(() => {}, elapsedMS);
         }

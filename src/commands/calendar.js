@@ -4,7 +4,7 @@ import {
   replyEmbedMessage,
 } from "../utils/discordUtils.js";
 
-import { SlashCommandBuilder, TextInputStyle } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import {
   getYoutubeChannelId,
   getYoutubeLiveDetailsByVideoIds,
@@ -12,11 +12,12 @@ import {
 } from "../utils/youtubeUtils.js";
 import { deleteCalendarData, updateCalendarData } from "../model/calendars.js";
 import { CALENDAR_METADATA } from "../utils/calendarUtils.js";
+import { MOD_PERMS } from "../utils/constants.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("calendar")
-    .setDefaultMemberPermissions(16)
+    .setDefaultMemberPermissions(MOD_PERMS)
     .setDescription("Manages calendars")
     .addSubcommand((sc) =>
       sc

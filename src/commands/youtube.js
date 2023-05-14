@@ -9,11 +9,12 @@ import {
 } from "../utils/discordUtils.js";
 
 import { SlashCommandBuilder } from "discord.js";
+import { MOD_PERMS } from "../utils/constants.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("message_filters")
-    .setDefaultMemberPermissions(16)
+    .setDefaultMemberPermissions(MOD_PERMS)
     .setDescription("Youtube commands")
     .addSubcommand((sc) =>
       sc

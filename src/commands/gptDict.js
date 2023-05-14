@@ -6,6 +6,7 @@ import {
 
 import { SlashCommandBuilder } from "discord.js";
 import { addEntry, deleteEntry, listDictionary } from "../model/gptDict.js";
+import { MOD_PERMS } from "../utils/constants.js";
 
 const processAdd = async (interaction) => {
   const guildId = interaction.guild.id;
@@ -59,7 +60,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName("dict")
     .setDescription("GPT dictionary management")
-    .setDefaultMemberPermissions(16)
+    .setDefaultMemberPermissions(MOD_PERMS)
     .addSubcommand((sc) =>
       sc
         .setName("add")

@@ -1,6 +1,4 @@
-import { PEKO_COLOR } from "../utils/constants.js";
-
-import { MAX_BET_LENGTH } from "../utils/stringUtils.js";
+import { MAX_BET_LENGTH, PEKO_COLOR } from "../utils/constants.js";
 
 import { loadFile, saveFile } from "../utils/fileUtils.js";
 

@@ -1,6 +1,12 @@
-import { PEKO_COLOR } from "./constants.js";
+import {
+  DISCORD_BOT_MAX_MESSAGE,
+  FETCH_CHUNK,
+  MAX_FETCH,
+  PEKO_COLOR,
+} from "./constants.js";
 
 import { EmbedBuilder } from "@discordjs/builders";
+import { getMsgInfo } from "./stringUtils.js";
 
 export const getOptions = (interaction) =>
   interaction.options?._hoistedOptions || [];
@@ -24,9 +30,37 @@ export const send = async (target, strContent, msg, ping) => {
   return await target.send(msgOptions);
 };
 
+export const sendToChannels = async (discordClient, text, channels) => {
+  const foundChannels = channels
+    .reduce((array, channelToSend) => {
+      const fc = discordClient.channels.cache.filter(
+        (el) => el.id === channelToSend
+      );
+      array.push(...fc);
+      return array;
+    }, [])
+    .map((el) => el[1]);
+
+  foundChannels.forEach((channel) => {
+    channel
+      .send(text)
+      .then((msg) => {
+        console.log("ok!");
+        msg.react("☑️").catch((e) => {
+          console.error(`Couldn't react: ${e}`);
+        });
+      })
+      .catch((e) => {
+        console.error(`Couldn't send text to ${channel.name}, ${e}`);
+      });
+  });
+};
+
 export const fillMessage = async (msg) => {
   if (msg.partial) {
-    return await msg.fetch();
+    return await msg.fetch().catch((e) => {
+      console.error(`Couldn't fetch message ${getMsgInfo(msg)}:`, e);
+    });
   }
 
   return msg;
@@ -49,7 +83,7 @@ export const reply = async (
   ephemeral = true
 ) => {
   console.log("ephemeral ", ephemeral);
-  if (replyText.length <= 2000) {
+  if (replyText.length <= DISCORD_BOT_MAX_MESSAGE) {
     return msg.reply({
       content: replyText,
       allowedMentions: ping
@@ -61,7 +95,7 @@ export const reply = async (
       files: attachment ? [{ attachment }] : undefined,
     });
   } else {
-    const chunks = chunkSubstr(replyText, 2000);
+    const chunks = chunkSubstr(replyText, DISCORD_BOT_MAX_MESSAGE);
     chunks.forEach((chunk) => {
       msg.channel.send({ content: chunk });
     });
@@ -304,7 +338,7 @@ export async function fetchMessage(discordClient, targetData) {
   let guild = await discordClient.guilds.cache.get(targetData.guildId);
   if (!guild) {
     guild = await discordClient.guilds.fetch(targetData.guildId).catch((e) => {
-      console.log(`Unknown guild:`, e);
+      // this is fine.
     });
   }
   if (!guild) {
@@ -313,6 +347,7 @@ export async function fetchMessage(discordClient, targetData) {
   let channel = await guild.channels.cache.get(targetData.channelId);
   if (!channel) {
     channel = await guild.channels.fetch(targetData.channelId).catch((e) => {
+      // this is not really fine.
       console.log(`Unknown channel:`, e);
     });
   }
@@ -322,6 +357,7 @@ export async function fetchMessage(discordClient, targetData) {
   let message = await channel.messages.cache.get(targetData.messageId);
   if (!message) {
     message = await channel.messages.fetch(targetData.messageId).catch((e) => {
+      // this is not really fine.
       console.log(`Unknown message:`, e);
     });
   }
@@ -332,14 +368,19 @@ export async function fetchMessage(discordClient, targetData) {
   return message;
 }
 
-export async function fetchMessages(channel, startId, endId, limit = 500) {
+export async function fetchMessages(
+  channel,
+  startId,
+  endId,
+  limit = MAX_FETCH
+) {
   const toReturn = [];
   let lastId;
 
   while (true) {
     console.log("msg count: ", toReturn.length, "...");
     const options = {
-      limit: Math.min(limit, 100),
+      limit: Math.min(limit, FETCH_CHUNK),
       cache: true,
       after: startId, // The date time you want it from
     };
@@ -347,7 +388,12 @@ export async function fetchMessages(channel, startId, endId, limit = 500) {
       options.after = lastId;
     }
 
-    const messages = await channel.messages.fetch(options);
+    const messages = await channel.messages.fetch(options).catch((e) => {
+      console.error(`Couldn't fetch messages for channel ${channel?.name}:`, e);
+    });
+    if (!messages) {
+      return toReturn;
+    }
     let values = Array.from(messages.values()).reverse();
     const foundEndMessage = values.find((el) => el.id === endId);
     if (foundEndMessage) {
@@ -360,7 +406,7 @@ export async function fetchMessages(channel, startId, endId, limit = 500) {
     console.log("lastId:", lastId);
     console.log("last message:", lastMessage.content);
 
-    if (values.length < 100 || toReturn.length > limit) {
+    if (values.length < FETCH_CHUNK || toReturn.length > limit) {
       break;
     }
   }

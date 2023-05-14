@@ -4,19 +4,17 @@ import dotenv from "dotenv";
 import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
 import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
-import puppeteer from "puppeteer";
 import { getTweetChainTextParts } from "./twitterUtils.js";
 import { getYoutubeVideoInfo } from "./youtubeUtils.js";
+import { MessageType } from "discord.js";
+import { MOD_THRESHOLDS } from "./openaiUtils.js";
+import {
+  GPT_INFORMATIVE_CONTENT_LIMIT_CHAR,
+  MAX_TL_TAG_LENGTH,
+  S_MS,
+} from "./constants.js";
 
 dotenv.config();
-
-export const MAX_BET_LENGTH = 20;
-export const MAX_CATEGORY_LENGTH = 40;
-export const GPT_TOKENS_LIMIT_TOKEN = 4096;
-export const GPT_PROMPT_LIMIT_TOKEN = 3600;
-export const GPT_TOKENS_LIMIT_CHAR = 4000 * 4;
-export const GPT_PROMPT_LIMIT_CHAR = 3600 * 4;
-export const GPT_INFORMATIVE_CONTENT_LIMIT_CHAR = GPT_PROMPT_LIMIT_CHAR - 2000;
 
 export const validateString = (betValue, maxLength) => {
   if (betValue.length === 0) {
@@ -127,7 +125,10 @@ export const parseHashtags = (text) => {
   return text.match(matcher);
 };
 
-export const getMessage = (msg) => {
+const getMessage = (msg) => {
+  if (!msg) {
+    return "<empty>";
+  }
   if (msg.content && msg.content.length > 0) {
     return msg.content;
   }
@@ -137,10 +138,76 @@ export const getMessage = (msg) => {
   return "<empty>";
 };
 
+export const gatherModerateMessageInfo = (msg, triggerData) => {
+  const parts = [];
+  parts.push(`${msg.url}`);
+  parts.push(
+    `Reasons: ${Object.entries(triggerData.categories)
+      .filter((el) => el[1])
+      .map((el) => {
+        const category = el[0];
+        return `${category}: ${triggerData.category_scores[category]} > ${MOD_THRESHOLDS[category]}`;
+      })
+      .join(", ")}`
+  );
+  parts.push(`Content: ${msg.content}`);
+  return parts.join("\n");
+};
+
 export const getMsgInfo = (msg) => {
-  return `msg: ${getMessage(msg)} in ${msg.channel.name}, ${msg.guild.name} (${
-    msg.url
-  })`;
+  return `msg: ${getMessage(msg)} in ${msg?.channel.name || "<no channel>"}, ${
+    msg.guild.name || "<no guild>"
+  } (${msg.url || "<no url>"})`;
+};
+
+export const getGptReplyChain = async (msg, msgChain = [msg]) => {
+  if (!msg) {
+    return msgChain.filter((el) => el !== undefined);
+  }
+  if (msg.type === MessageType.Reply) {
+    const repliedToMessage = await msg.channel.messages
+      .fetch(msg.reference.messageId)
+      .catch((e) => {
+        console.error(
+          `Couldn't fetch reply message for ${getMsgInfo(msg)}:`,
+          e
+        );
+      });
+    msgChain.push(repliedToMessage);
+    await getGptReplyChain(repliedToMessage, msgChain);
+  }
+
+  return msgChain.filter((el) => el !== undefined);
+};
+
+export const getGptMessagesContents = async (msgChain) => {
+  const list = msgChain.reverse();
+  return Promise.all(
+    list.map(async (el) => {
+      const msgData = await getTextMessageContent(el, false, false, false);
+      return {
+        msg: msgData.text,
+        username: el.author.username,
+        originalMessage: msgData.originalMessage,
+      };
+    })
+  );
+};
+
+export const splitGptDialogues = (msgChain) => {
+  const result = [];
+  msgChain.some((msg) => {
+    if (msg.content === "---") {
+      return true;
+    } else {
+      if (msg.content !== "~") {
+        result.push(msg);
+      }
+      return false;
+    }
+  });
+
+  return result;
 };
 
 // preferring embed description text
@@ -165,14 +232,26 @@ export const getTextMessageContent = async (
             const channel = await msg.client.channels._cache.get(
               link.channelId
             );
-            const message = await channel.messages.fetch(link.messageId);
-            const messageContent = await getTextMessageContent(
-              message,
-              isTranslating,
-              silentAttachments,
-              true
-            );
-            parts.push(messageContent.text);
+            if (!channel) {
+              continue;
+            }
+            const message = await channel.messages
+              .fetch(link.messageId)
+              .catch((e) => {
+                console.error(
+                  `Couldn't fetch message for channel ${channel?.name}:`,
+                  e
+                );
+              });
+            if (message) {
+              const messageContent = await getTextMessageContent(
+                message,
+                isTranslating,
+                silentAttachments,
+                true
+              );
+              parts.push(messageContent.text);
+            }
           } else {
             messageText = messageText.replace(url, "");
           }
@@ -247,8 +326,6 @@ export const getTextMessageContent = async (
       parts.push(text);
     } else {
       const imageUrl = parseAttachmentUrl(msg);
-
-      console.log(`translating image`);
 
       if (imageUrl !== undefined) {
         try {
@@ -358,7 +435,7 @@ export const printTLInfo = (countContainer, timeMs, metaData) => {
           countContainer.limit
         } | `
       : "") +
-    `TL time: ${((timeMs || 0) / 1000).toFixed(0)}s` +
+    `TL time: ${((timeMs || 0) / S_MS).toFixed(0)}s` +
     (metaData ? ` | ${metaData.pt}pt, ${metaData.ct}ct` : "")
   );
 };
@@ -381,7 +458,7 @@ export function formatTL(text) {
       trimmedText = trimmedText.slice(1).trim();
       return "[Summary] " + trimmedText;
     case "chat":
-      trimmedText = trimmedText.slice(5).trim();
+      trimmedText = trimmedText.slice("chat:".length).trim();
       return "[Chat] " + trimmedText;
     case "tl":
       return "[TL] " + trimmedText;
@@ -409,13 +486,11 @@ export const textIsRelayTL = (trimmedText) => {
     firstWord &&
     (trimmedText.indexOf(":") === firstWord[0].length ||
       trimmedText.indexOf(";") === firstWord[0].length) &&
-    firstWord[0].length <= 3 &&
+    firstWord[0].length <= MAX_TL_TAG_LENGTH &&
     !firstWord[0].includes("http")
   ) {
     return true;
-  } else if (trimmedText.indexOf(">") === 0) {
-    return true;
   } else {
-    return false;
+    return trimmedText.indexOf(">") === 0;
   }
 };

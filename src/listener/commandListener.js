@@ -11,7 +11,7 @@ import { GptlCommand } from "./commands/gptlCommand.js";
 import { SameReactCommand } from "./commands/sameReactCommand.js";
 import { BotMentionedCommand } from "./commands/botMentionedCommand.js";
 import { ModerateCommand } from "./commands/moderateCommand.js";
-import { getMessage, getMsgInfo } from "../utils/stringUtils.js";
+import { getMsgInfo } from "../utils/stringUtils.js";
 import { CreatorMentionedCommand } from "./commands/creatorMentionedCommand.js";
 
 export class CommandListener {
@@ -98,9 +98,9 @@ export class CommandListener {
           console.log(`deleting ${processData.reason}`);
           command.executeDelete(msg, this.client).catch((e) => {
             console.error(
-              `Couldn't execute delete command ${command.name} for ${getMessage(
+              `Couldn't execute delete command ${command.name} for ${getMsgInfo(
                 msg
-              )} in ${msg.channel.name}, ${msg.guild.name}: ${e}`
+              )}: ${e}`
             );
           });
         }

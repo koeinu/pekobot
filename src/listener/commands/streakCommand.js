@@ -2,16 +2,13 @@ import { AbstractCommand } from "../abstractCommand.js";
 
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 
-import { H_M_S, S_MS } from "../../utils/constants.js";
+import { H_M_S, S_MS, STREAK_TIMEOUT } from "../../utils/constants.js";
 import {
   MIKO_ALLOWED_RNG_GPT,
   PEKO_ALLOWED_RNG,
 } from "../../utils/ids/channels.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
-
-const STREAK_TIMEOUT = 2000; //ms
-
-const pickRandomTriggerValue = () => Math.round(Math.random() * 3 + 4);
+import { pickRandomTriggerValue } from "../../utils/utils.js";
 
 export class StreakCommand extends AbstractCommand {
   constructor(settings) {

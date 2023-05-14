@@ -163,8 +163,13 @@ async function fetchAllMessages(client, channel) {
   // Create message pointer
   let message = await channel.messages
     .fetch({ limit: 1 })
-    .then((messagePage) => (messagePage.size === 1 ? messagePage.at(0) : null));
-  messages.push(message);
+    .then((messagePage) => (messagePage.size === 1 ? messagePage.at(0) : null))
+    .catch((e) => {
+      console.error(`Couldn't fetch messages for channel ${channel?.name}:`, e);
+    });
+  if (message) {
+    messages.push(message);
+  }
 
   while (message) {
     await channel.messages
@@ -175,6 +180,12 @@ async function fetchAllMessages(client, channel) {
         // Update our message pointer to be last message in page of messages
         message =
           0 < messagePage.size ? messagePage.at(messagePage.size - 1) : null;
+      })
+      .catch((e) => {
+        console.error(
+          `Couldn't fetch messages for channel ${channel?.name} before message ${message.id}, ${message.content}:`,
+          e
+        );
       });
   }
 

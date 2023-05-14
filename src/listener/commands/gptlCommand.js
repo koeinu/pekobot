@@ -48,9 +48,14 @@ export class GptlCommand extends AbstractCommand {
 
     let replyMessage = msg;
     if (msg.type === MessageType.Reply) {
-      const repliedTo = await msg.channel.messages.fetch(
-        msg.reference.messageId
-      );
+      const repliedTo = await msg.channel.messages
+        .fetch(msg.reference.messageId)
+        .catch((e) => {
+          console.error(
+            `Couldn't fetch reply message for ${getMsgInfo(msg)}:`,
+            e
+          );
+        });
       replyMessage = repliedTo;
       data = await getTextMessageContent(repliedTo, true, true, false);
     }

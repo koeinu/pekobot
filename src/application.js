@@ -200,7 +200,10 @@ export class Application {
           }
         }
       } catch (error) {
-        console.error(error);
+        console.error(
+          `Execute error for ${commandName}:`,
+          error.message || error
+        );
         if (error.message) {
           replyEmbedMessage(
             interaction,

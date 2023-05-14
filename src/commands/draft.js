@@ -11,11 +11,12 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
+import { MOD_PERMS } from "../utils/constants.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("gptdraft")
-    .setDefaultMemberPermissions(16)
+    .setDefaultMemberPermissions(MOD_PERMS)
     .setDescription("Revise and send messages on behalf of bot")
     .addSubcommand((sc) =>
       sc
