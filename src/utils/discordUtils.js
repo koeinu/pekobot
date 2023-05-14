@@ -303,26 +303,29 @@ export async function sleep(fn, sleepTime, ...args) {
 export async function fetchMessage(discordClient, targetData) {
   let guild = await discordClient.guilds.cache.get(targetData.guildId);
   if (!guild) {
-    guild = await discordClient.guilds.fetch(targetData.guildId);
+    guild = await discordClient.guilds.fetch(targetData.guildId).catch((e) => {
+      console.log(`Unknown guild:`, e);
+    });
   }
   if (!guild) {
-    console.error("No guild ", targetData.guildId);
     return undefined;
   }
   let channel = await guild.channels.cache.get(targetData.channelId);
   if (!channel) {
-    channel = await guild.channels.fetch(targetData.channelId);
+    channel = await guild.channels.fetch(targetData.channelId).catch((e) => {
+      console.log(`Unknown channel:`, e);
+    });
   }
   if (!channel) {
-    console.error("No channel ", targetData.channelId);
     return undefined;
   }
   let message = await channel.messages.cache.get(targetData.messageId);
   if (!message) {
-    message = await channel.messages.fetch(targetData.messageId);
+    message = await channel.messages.fetch(targetData.messageId).catch((e) => {
+      console.log(`Unknown message:`, e);
+    });
   }
   if (!message) {
-    console.error("No message ", targetData.messageId);
     return undefined;
   }
 
