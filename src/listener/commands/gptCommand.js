@@ -66,8 +66,20 @@ const splitMessages = (msgChain) => {
       return false;
     }
   });
-  return result;
+  const finalResult = [];
+  result.some((msg) => {
+    if (calculateCumulativeLength(finalResult) > 2000) {
+      return true;
+    }
+    finalResult.push(msg);
+    return false;
+  });
+
+  return finalResult;
 };
+
+const calculateCumulativeLength = (msgs) =>
+  msgs.reduce((amount, curr) => amount + curr.content.length, 0);
 
 export class GptCommand extends AbstractCommand {
   constructor(settings) {
@@ -98,6 +110,10 @@ export class GptCommand extends AbstractCommand {
   }
   async execute(msg) {
     const rpMode = RP_CHANNELS.includes(msg.channel.id);
+    const rpSettings =
+      rpMode && this.settings.extendedRp
+        ? this.settings.extendedRp[msg.channel.name]
+        : undefined;
     if (rpMode) {
       if (msg.content === "---") {
         return Promise.resolve();
@@ -127,7 +143,7 @@ export class GptCommand extends AbstractCommand {
     }
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
-    const replyChain = rpMode
+    const replyChain = rpSettings
       ? splitMessages(
           (await fetchMessages(msg.channel, undefined, undefined, 50)).reverse()
         )
