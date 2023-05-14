@@ -22,17 +22,17 @@ export const generateCommands = async (
       console.log(JSON.stringify(commands.map((el) => el.name)));
       console.log("---------------------------------------------");
 
-      // const data = await rest
-      //   .put(Routes.applicationGuildCommands(settings.appId, guildId), {
-      //     body: commands,
-      //   })
-      //   .catch((e) => {
-      //     console.error(`Guild id: ${guildId}:`, e);
-      //   });
-      //
-      // console.log(
-      //   `Successfully reloaded ${data.length} application (/) commands.`
-      // );
+      const data = await rest
+        .put(Routes.applicationGuildCommands(settings.appId, guildId), {
+          body: commands,
+        })
+        .catch((e) => {
+          console.error(`Guild id: ${guildId}:`, e);
+        });
+
+      console.log(
+        `Successfully reloaded ${data.length} application (/) commands.`
+      );
     } catch (error) {
       console.error(error);
     }
