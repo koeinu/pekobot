@@ -134,7 +134,7 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
     });
 };
 
-export const getYoutubeVideoInfo = async (videoIdOrUrl) => {
+export const getYoutubeVideoInfo = async (videoIdOrUrl, isTranslating) => {
   console.log("parsing video url:", videoIdOrUrl);
   const videoId = parseVideoId(videoIdOrUrl) || videoIdOrUrl;
   console.log("video id:", videoId);
@@ -149,10 +149,19 @@ export const getYoutubeVideoInfo = async (videoIdOrUrl) => {
       const video = items[0];
       const snippet = video?.snippet;
       if (snippet) {
-        return [
-          `{Video title:} '${snippet.title}'.`,
-          `{Video description:} '${snippet.description.split("\n\n")[0]}'.`,
-        ].join("\n");
+        if (isTranslating) {
+          return [
+            "---Title---",
+            `'${snippet.title}'.`,
+            "---Description---",
+            `'${snippet.description.split("\n\n")[0]}'.`,
+          ].join("\n");
+        } else {
+          return [
+            `{Video title:} '${snippet.title}'.`,
+            `{Video description:} '${snippet.description.split("\n\n")[0]}'.`,
+          ].join("\n");
+        }
       }
       return undefined;
     });

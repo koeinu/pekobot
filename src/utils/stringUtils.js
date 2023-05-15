@@ -297,7 +297,7 @@ export const getTextMessageContent = async (
           parsedUrl.includes("youtube") ||
           parsedUrl.includes("youtu.be")
         ) {
-          const info = await getYoutubeVideoInfo(parsedUrl);
+          const info = await getYoutubeVideoInfo(parsedUrl, isTranslating);
           if (info) {
             const partsToMerge = silentAttachments
               ? [info]
