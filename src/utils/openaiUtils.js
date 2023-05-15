@@ -261,7 +261,7 @@ export const gpt = async (
     .add(() => {
       return api.sendMessage(str, {
         systemMessage,
-        ...completionParams,
+        completionParams,
       });
     })
     .catch((e) => {

@@ -122,6 +122,9 @@ export class GptCommand extends AbstractCommand {
         ].join("\n"),
         this.settings,
         ""
+        // {
+        //   temperature: 1,
+        // }
       )
         .then((data) => {
           const response = data.text;

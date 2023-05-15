@@ -27,10 +27,24 @@ if (!INACTIVE) {
     originalConsoleLog(...args);
   };
   console.error = (...args) => {
+    if (
+      args.some((arg) =>
+        arg.includes("The Fetch API is an experimental feature")
+      )
+    ) {
+      return;
+    }
     bot.sendError(...args);
     originalConsoleError(...args);
   };
   console.warn = (...args) => {
+    if (
+      args.some((arg) =>
+        arg.includes("The Fetch API is an experimental feature")
+      )
+    ) {
+      return;
+    }
     bot.sendWarning(...args);
     originalConsoleWarn(...args);
   };
