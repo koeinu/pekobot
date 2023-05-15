@@ -129,10 +129,10 @@ export class GptCommand extends AbstractCommand {
         .then((data) => {
           const response = data.text;
           if (response) {
-            // if (this.settings.inactive) {
-            //   console.log("gpt inactive mode, doing nothing", response);
-            //   return Promise.resolve();
-            // }
+            if (this.settings.inactive) {
+              console.log("gpt inactive mode, doing nothing", response);
+              return Promise.resolve();
+            }
             return reply(msg, response, undefined, false, false);
           }
           return Promise.resolve();
@@ -141,10 +141,10 @@ export class GptCommand extends AbstractCommand {
           console.error(
             `Couldn't GPT reply ${msg.content} in ${msg.channel}: ${e}`
           );
-          // if (this.settings.inactive) {
-          //   console.log("gpt error inactive mode, doing nothing");
-          //   return Promise.resolve();
-          // }
+          if (this.settings.inactive) {
+            console.log("gpt error inactive mode, doing nothing");
+            return Promise.resolve();
+          }
           return reply(
             msg,
             `Beep boop, couldn't reply.. Likely my GPT capacity was overloaded! Please try again!`,

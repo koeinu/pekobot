@@ -82,10 +82,10 @@ export class GptlCommand extends AbstractCommand {
         if (tlData.text) {
           const toSend = formatTLText(tlData.text, tlData.isGpt);
           // return reply(msg, toSend, undefined, false, false);
-          // if (this.settings.inactive) {
-          //   console.log("gptl inactive mode, doing nothing", toSend);
-          //   return Promise.resolve();
-          // }
+          if (this.settings.inactive) {
+            console.log("gptl inactive mode, doing nothing", toSend);
+            return Promise.resolve();
+          }
           return replyCustomEmbed(
             msg,
             undefined,
@@ -95,10 +95,10 @@ export class GptlCommand extends AbstractCommand {
             printTLInfo(data.countObject, tlData.time, tlData.metaData)
           );
         } else {
-          // if (this.settings.inactive) {
-          //   console.log("inactive mode, doing nothing");
-          //   return Promise.resolve();
-          // }
+          if (this.settings.inactive) {
+            console.log("inactive mode, doing nothing");
+            return Promise.resolve();
+          }
           return replyCustomEmbed(
             msg,
             undefined,

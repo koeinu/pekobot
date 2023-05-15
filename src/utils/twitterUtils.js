@@ -87,10 +87,10 @@ const sendTweetToChannels = async (
     .map((el) => el[1]);
 
   console.log("found channels to tweet to:", foundChannels);
-  // if (settings.inactive) {
-  //   console.log("inactive mode, doing nothing");
-  //   return;
-  // }
+  if (settings.inactive) {
+    console.log("inactive mode, doing nothing");
+    return;
+  }
   foundChannels.forEach((channel) => {
     console.log(`sending to ${channel.name}`);
     channel.send(finalText).catch((e) => {
