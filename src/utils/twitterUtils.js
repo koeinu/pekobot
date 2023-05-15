@@ -57,12 +57,12 @@ const TWITTER_RELAY_DATA = [
   },
   {
     src: "sakuramiko35",
-    feedIds: [TEST_MIKO_FEED, MIKO_TEST_MAIN, MIKO_TWEETS_FEED],
+    feedIds: [TEST_MIKO_FEED, MIKO_TWEETS_FEED],
     poemIds: [],
   },
   {
     src: "mikochisub",
-    feedIds: [TEST_MIKO_FEED, MIKO_TEST_MAIN, MIKO_TWEETS_FEED],
+    feedIds: [TEST_MIKO_FEED, MIKO_TWEETS_FEED],
     poemIds: [],
   },
 ];
