@@ -4,7 +4,7 @@ import puppeteer from "puppeteer-extra";
 // add stealth plugin and use defaults (all evasion techniques)
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import pup from "puppeteer";
-import { parseSingleAttachmentUrl } from "../utils/stringUtils.js";
+import { getMsgInfo, parseSingleAttachmentUrl } from "../utils/stringUtils.js";
 import { SlashCommandBuilder } from "discord.js";
 import {
   followUpCustomEmbed,
@@ -54,15 +54,6 @@ const processGeneratePuzzle = async (interaction) => {
     );
     const numberOfPieces = interaction.options._hoistedOptions[1].value;
     const pingTheRole = interaction.options._hoistedOptions[2]?.value || false;
-
-    console.warn(
-      `jigsaw at `,
-      interaction.guild.name,
-      ":",
-      url,
-      numberOfPieces,
-      pingTheRole
-    );
 
     await replyCustomEmbed(
       interaction,

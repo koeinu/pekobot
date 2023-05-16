@@ -12,6 +12,7 @@ import {
   TextInputStyle,
 } from "discord.js";
 import { MOD_PERMS } from "../utils/constants.js";
+import { getMsgInfo } from "../utils/stringUtils.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -42,14 +43,6 @@ export default {
         const id = options[0].value;
         const ch = interaction.client.channels.cache.get(interaction.channelId);
         const channelId = options.length > 1 ? options[1].value : undefined;
-        console.warn(
-          `gptdraft at `,
-          interaction.guild.name,
-          ":",
-          id,
-          ", send to ",
-          ch?.name
-        );
         const sendCh =
           channelId !== undefined
             ? interaction.client.channels.cache.get(channelId)

@@ -13,6 +13,7 @@ import {
   MAX_TL_TAG_LENGTH,
   S_MS,
 } from "./constants.js";
+import { getOptions } from "./discordUtils.js";
 
 dotenv.config();
 
@@ -127,15 +128,15 @@ export const parseHashtags = (text) => {
 
 const getMessage = (msg) => {
   if (!msg) {
-    return "<empty>";
+    return "...";
   }
   if (msg.content && msg.content.length > 0) {
     return msg.content;
   }
-  if (msg.embeds.length > 0) {
+  if (msg.embeds && msg.embeds.length > 0) {
     return msg.embeds[0].data.description;
   }
-  return "<empty>";
+  return "...";
 };
 
 export const gatherModerateMessageInfo = (msg, triggerData) => {
@@ -154,10 +155,23 @@ export const gatherModerateMessageInfo = (msg, triggerData) => {
   return parts.join("\n");
 };
 
+export const gatherSlashCommandInfo = (interaction) => {
+  const options = getOptions(interaction);
+  const values = options.map((el) => el.value);
+  const sc = interaction.options._subcommand;
+  const parts = [interaction.commandName];
+  if (sc) {
+    parts.push(sc);
+  }
+  parts.push(`at ${getMsgInfo(interaction)} |`);
+  parts.push(...values);
+  return parts;
+};
+
 export const getMsgInfo = (msg) => {
   return `msg: ${getMessage(msg)} in ${msg?.channel.name || "<no channel>"}, ${
-    msg.guild.name || "<no guild>"
-  } (${msg.url || "<no url>"})`;
+    msg?.guild.name || "<no guild>"
+  } (${msg?.url || "---"})`;
 };
 
 export const getGptReplyChain = async (msg, msgChain = [msg]) => {

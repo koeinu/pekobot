@@ -78,10 +78,6 @@ export default {
           CALENDAR_METADATA.find((el) => el.id === channelId)?.id || "custom";
 
         const videoId = parseVideoId(url) || url;
-        console.warn(
-          `adding calendar url ${videoId} at `,
-          interaction.guild.name
-        );
         const data = await getYoutubeLiveDetailsByVideoIds([videoId]);
 
         updateCalendarData(channelHandle, data);
@@ -100,10 +96,6 @@ export default {
           CALENDAR_METADATA.find((el) => el.id === channelId)?.id || "custom";
 
         const videoId = parseVideoId(url) || url;
-        console.warn(
-          `deleting calendar url ${videoId} at `,
-          interaction.guild.name
-        );
 
         const result = deleteCalendarData(channelHandle, [videoId]);
 

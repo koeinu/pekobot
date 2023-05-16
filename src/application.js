@@ -21,6 +21,7 @@ import { fileURLToPath } from "url";
 import { JSON_FILE_NAME, convertJsonToParsed } from "./model/bets.js";
 import { loadFile } from "./utils/fileUtils.js";
 import { getBotSettings } from "./model/botSettings.js";
+import { gatherSlashCommandInfo } from "./utils/stringUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = _path.dirname(__filename);
@@ -146,6 +147,7 @@ export class Application {
       }
 
       try {
+        console.warn(...gatherSlashCommandInfo(interaction));
         const result = await (command.default
           ? command.default
           : command

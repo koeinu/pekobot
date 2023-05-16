@@ -16,7 +16,7 @@ import {
   updateRelays,
 } from "../model/relay.js";
 
-import { formatTL } from "../utils/stringUtils.js";
+import { formatTL, getMsgInfo } from "../utils/stringUtils.js";
 
 import { SlashCommandBuilder } from "discord.js";
 
@@ -130,15 +130,6 @@ export default {
           ? await channel.messages.fetch(options[1].value)
           : undefined;
 
-        console.warn(
-          `relay salvage at `,
-          interaction.guild.name,
-          ":",
-          endMessage?.id,
-          ",",
-          endMessage?.id
-        );
-
         let messages = [
           startMessage,
           ...Array.from(
@@ -211,8 +202,6 @@ export default {
         const options = getOptions(interaction);
         const streamUrl = options.length > 0 ? options[0].value : undefined;
 
-        console.warn(`relay dump at `, interaction.guild.name, ":", streamUrl);
-
         const dumpingStartTime = new Date();
         const relayTexts = [];
         let firstTs = undefined;
@@ -273,12 +262,10 @@ export default {
         break;
       }
       case "clear": {
-        console.warn(`relay clear at `, interaction.guild.name);
         updateRelays([]);
         return await replyEmbedMessage(interaction, `Relay cleared.`);
       }
       case "info": {
-        console.warn(`relay info at `, interaction.guild.name);
         return await replyEmbedMessage(
           interaction,
           `Transcripts count: ${uniqueRelays.length}`
@@ -288,7 +275,6 @@ export default {
         const options = getOptions(interaction);
         const value = options[0].value;
         toggleRelays(value);
-        console.warn(`relay toggle at `, interaction.guild.name, ":", value);
         return await replyEmbedMessage(
           interaction,
           `Relaying is now ${value ? "enabled" : "disabled"}`

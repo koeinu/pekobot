@@ -391,7 +391,7 @@ export async function fetchMessages(
     const messages = await channel.messages.fetch(options).catch((e) => {
       console.error(`Couldn't fetch messages for channel ${channel?.name}:`, e);
     });
-    if (!messages) {
+    if (!messages || messages.size === 0) {
       return toReturn;
     }
     let values = Array.from(messages.values()).reverse();
