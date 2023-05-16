@@ -39,6 +39,9 @@ export class GptlCommand extends AbstractCommand {
   }
   async execute(msg) {
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
+    if (!(await this.rateLimitCheck(msg, undefined, false))) {
+      return Promise.resolve();
+    }
     let data = await getTextMessageContent(msg, true, true, false);
     const parsed = data.text.split(" ");
     const isCount = parsed.includes("count");

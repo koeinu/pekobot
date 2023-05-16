@@ -38,10 +38,10 @@ export class DeeplCommand extends AbstractCommand {
   }
 
   async execute(msg) {
-    if (!(await this.rateLimitPass(msg))) {
+    console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
+    if (!(await this.rateLimitCheck(msg, undefined, false))) {
       return Promise.resolve();
     }
-    console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
     let data = await getTextMessageContent(msg, true, true, false);
     const parsed = data.text.split(" ");
     const sourceLanguage = LANGUAGES.find((el) =>
@@ -76,6 +76,9 @@ export class DeeplCommand extends AbstractCommand {
     );
     if (this.settings.inactive) {
       console.log("deepl inactive mode, doing nothing", data.text);
+      return Promise.resolve();
+    }
+    if (!(await this.rateLimitPass(msg))) {
       return Promise.resolve();
     }
     return replyCustomEmbed(

@@ -89,6 +89,10 @@ export class GptCommand extends AbstractCommand {
     }
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
+    if (!(await this.rateLimitCheck(msg, undefined, false))) {
+      return Promise.resolve();
+    }
+
     const replyChain = rpSettings
       ? splitGptDialogues(
           (

@@ -26,9 +26,6 @@ export class CustomRateLimiter {
         }, this.interval);
       } else {
         this.entities[entityId] = { count: 0, ts: new Date().getTime() };
-        setTimeout(() => {
-          this.entities[entityId] = undefined;
-        }, this.interval);
       }
       return { result: false };
     } else {
