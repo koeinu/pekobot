@@ -101,9 +101,17 @@ export class AbstractCommand {
           )}, info: ${getMsgInfo(msg)}`
         );
         if (this.rateLimiter.alertUser !== AlertUserMode.Silent) {
-          await msg.react("<:PekoDerp:709152458978492477>").catch((e) => {
-            console.error(`Couldn't derp-react: ${e}`);
-          });
+          await msg
+            .react("<:PekoDerp:709152458978492477>")
+            .catch(() => {
+              // do nothing yet
+            })
+            .then(() => {
+              return msg.react("<:MikoDerp:752665343129944176>");
+            })
+            .catch((e) => {
+              console.error(`Couldn't derp-react: ${e}`);
+            });
           if (this.rateLimiter.alertUser === AlertUserMode.Normal) {
             await sleep(() => {}, S_MS);
             await msg.author
