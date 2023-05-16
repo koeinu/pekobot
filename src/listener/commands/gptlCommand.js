@@ -38,9 +38,6 @@ export class GptlCommand extends AbstractCommand {
     this.intercept = true;
   }
   async execute(msg) {
-    if (!(await this.rateLimitPass(msg))) {
-      return Promise.resolve();
-    }
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
     let data = await getTextMessageContent(msg, true, true, false);
     const parsed = data.text.split(" ");
@@ -78,12 +75,15 @@ export class GptlCommand extends AbstractCommand {
         msg,
         this.settings,
         true
-      ).then((tlData) => {
+      ).then(async (tlData) => {
         if (tlData.text) {
           const toSend = formatTLText(tlData.text, tlData.isGpt);
           // return reply(msg, toSend, undefined, false, false);
           if (this.settings.inactive) {
             console.log("gptl inactive mode, doing nothing", toSend);
+            return Promise.resolve();
+          }
+          if (!(await this.rateLimitPass(msg))) {
             return Promise.resolve();
           }
           return replyCustomEmbed(

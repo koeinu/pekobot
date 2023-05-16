@@ -87,9 +87,6 @@ export class GptCommand extends AbstractCommand {
         return Promise.resolve();
       }
     }
-    if (!(await this.rateLimitPass(msg))) {
-      return Promise.resolve();
-    }
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
 
     const replyChain = rpSettings
@@ -126,11 +123,14 @@ export class GptCommand extends AbstractCommand {
         //   temperature: 1,
         // }
       )
-        .then((data) => {
+        .then(async (data) => {
           const response = data.text;
           if (response) {
             if (this.settings.inactive) {
               console.log("gpt inactive mode, doing nothing", response);
+              return Promise.resolve();
+            }
+            if (!(await this.rateLimitPass(msg))) {
               return Promise.resolve();
             }
             return reply(msg, response, undefined, false, false);

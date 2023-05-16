@@ -61,7 +61,8 @@ export class AbstractCommand {
       );
     }
     const trigger = this.triggerer.take(
-      customHandle ? customHandle : msg.author.id
+      customHandle ? customHandle : msg.author.id,
+      false
     );
     console.log(`Trigger check for ${getMsgInfo(msg)}: ${trigger.result}`);
     if (trigger.result) {
@@ -71,6 +72,47 @@ export class AbstractCommand {
   }
 
   async rateLimitPass(msg, customHandle = undefined) {
+    const limited = this.rateLimitCheck(msg, customHandle, true);
+    if (limited.result) {
+      console.debug(
+        `Limit hit for ${this.rateLimiter.commandName}, cd ${formatMSToHMS(
+          limited.ts
+        )}, info: ${getMsgInfo(msg)}`
+      );
+      if (this.rateLimiter.alertUser !== AlertUserMode.Silent) {
+        await msg
+          .react("<:PekoDerp:709152458978492477>")
+          .catch(() => {
+            // do nothing yet
+          })
+          .then(() => {
+            return msg.react("<:MikoDerp:752665343129944176>");
+          })
+          .catch((e) => {
+            console.error(`Couldn't derp-react: ${e}`);
+          });
+        if (this.rateLimiter.alertUser === AlertUserMode.Normal) {
+          await sleep(() => {}, S_MS);
+          await msg.author
+            .send(
+              `${
+                this.rateLimiter.commandName
+              } user rate limit reached.. Try again after ${formatMSToHMS(
+                limited.ts
+              )}!`
+            )
+            .catch((e) => {
+              console.error(`Couldn't alert the rate limit to the user: ${e}`);
+            });
+        }
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  rateLimitCheck(msg, customHandle = undefined, doIncrease = false) {
     if (this.rateLimiter) {
       if (this.rateLimiter.ignoreRoles) {
         if (
@@ -78,7 +120,7 @@ export class AbstractCommand {
             msg.member.roles.cache.find((role) => role.name === privelegedRole)
           )
         ) {
-          return true;
+          return { result: false };
         }
       }
       if (this.rateLimiter.ignoreChannels) {
@@ -87,53 +129,16 @@ export class AbstractCommand {
             (okChannel) => msg.channel.id === okChannel
           )
         ) {
-          return true;
+          return { result: false };
         }
       }
-      const limited = this.rateLimiter.take(
-        customHandle ? customHandle : msg.author.id
+      return this.rateLimiter.take(
+        customHandle ? customHandle : msg.author.id,
+        doIncrease
       );
-      console.log(`Limit check for ${getMsgInfo(msg)}: ${limited.result}`);
-      if (limited.result) {
-        console.debug(
-          `Limit hit for ${this.rateLimiter.commandName}, cd ${formatMSToHMS(
-            limited.ts
-          )}, info: ${getMsgInfo(msg)}`
-        );
-        if (this.rateLimiter.alertUser !== AlertUserMode.Silent) {
-          await msg
-            .react("<:PekoDerp:709152458978492477>")
-            .catch(() => {
-              // do nothing yet
-            })
-            .then(() => {
-              return msg.react("<:MikoDerp:752665343129944176>");
-            })
-            .catch((e) => {
-              console.error(`Couldn't derp-react: ${e}`);
-            });
-          if (this.rateLimiter.alertUser === AlertUserMode.Normal) {
-            await sleep(() => {}, S_MS);
-            await msg.author
-              .send(
-                `${
-                  this.rateLimiter.commandName
-                } user rate limit reached.. Try again after ${formatMSToHMS(
-                  limited.ts
-                )}!`
-              )
-              .catch((e) => {
-                console.error(
-                  `Couldn't alert the rate limit to the user: ${e}`
-                );
-              });
-          }
-        }
-        return false;
-      }
     }
 
-    return true;
+    return { result: false };
   }
 
   shouldProcessMsg(msg) {

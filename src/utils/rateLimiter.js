@@ -17,40 +17,19 @@ export class CustomRateLimiter {
     this.alertUser = alertUser;
   }
 
-  take(entityId) {
+  take(entityId, doIncrease = true) {
     if (this.entities[entityId] === undefined) {
-      console.log(`rate++ ${entityId}: 0 / ${this.amount}`);
-      this.entities[entityId] = { count: 1, ts: new Date().getTime() };
-      setTimeout(() => {
-        this.entities[entityId] = undefined;
-      }, this.interval);
-      return { result: false };
-    } else {
-      if (this.entities[entityId].count > 0) {
-        console.log(
-          `rate++ ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
-        );
-      }
-      if (this.entities[entityId].count === this.amount) {
-        console.log(
-          `rate hit! ${entityId}: ${this.entities[entityId].count} / ${this.amount}`
-        );
-        return {
-          result: true,
-          ts: this.entities[entityId].ts + this.interval - new Date().getTime(),
-        };
+      if (doIncrease) {
+        this.entities[entityId] = { count: 1, ts: new Date().getTime() };
+        setTimeout(() => {
+          this.entities[entityId] = undefined;
+        }, this.interval);
       } else {
-        this.entities[entityId].count += 1;
-        return { result: false };
+        this.entities[entityId] = { count: 0, ts: new Date().getTime() };
+        setTimeout(() => {
+          this.entities[entityId] = undefined;
+        }, this.interval);
       }
-    }
-  }
-  check(entityId) {
-    if (this.entities[entityId] === undefined) {
-      this.entities[entityId] = { count: 0, ts: new Date().getTime() };
-      setTimeout(() => {
-        this.entities[entityId] = undefined;
-      }, this.interval);
       return { result: false };
     } else {
       if (this.entities[entityId].count === this.amount) {
@@ -59,6 +38,9 @@ export class CustomRateLimiter {
           ts: this.entities[entityId].ts + this.interval - new Date().getTime(),
         };
       } else {
+        if (doIncrease) {
+          this.entities[entityId].count += 1;
+        }
         return { result: false };
       }
     }
