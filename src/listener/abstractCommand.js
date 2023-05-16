@@ -62,7 +62,7 @@ export class AbstractCommand {
     }
     const trigger = this.triggerer.take(
       customHandle ? customHandle : msg.author.id,
-      false
+      true
     );
     console.log(`Trigger check for ${getMsgInfo(msg)}: ${trigger.result}`);
     if (trigger.result) {
