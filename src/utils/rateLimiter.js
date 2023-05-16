@@ -21,12 +21,12 @@ export class CustomRateLimiter {
     if (this.entities[entityId] === undefined) {
       if (doIncrease) {
         this.entities[entityId] = { count: 1, ts: new Date().getTime() };
-        setTimeout(() => {
-          this.entities[entityId] = undefined;
-        }, this.interval);
       } else {
         this.entities[entityId] = { count: 0, ts: new Date().getTime() };
       }
+      setTimeout(() => {
+        this.entities[entityId] = undefined;
+      }, this.interval);
       return { result: false };
     } else {
       if (this.entities[entityId].count === this.amount) {
