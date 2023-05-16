@@ -86,9 +86,14 @@ export class AbstractCommand {
         .react("<:PekoDerp:709152458978492477>")
         .catch(() => {
           // do nothing yet
+          return { error: true };
         })
-        .then(() => {
-          return msg.react("<:MikoDerp:752665343129944176>");
+        .then((data) => {
+          if (data && data.error) {
+            return msg.react("<:MikoDerp:752665343129944176>");
+          } else {
+            return Promise.resolve();
+          }
         })
         .catch((e) => {
           console.error(`Couldn't derp-react: ${e}`);
