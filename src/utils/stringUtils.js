@@ -157,7 +157,7 @@ export const gatherModerateMessageInfo = (msg, triggerData) => {
 
 export const gatherSlashCommandInfo = (interaction) => {
   const options = getOptions(interaction);
-  const values = options.map((el) => el.value);
+  const values = options.map((el) => JSON.stringify(el.value));
   const sc = interaction.options._subcommand;
   const parts = [interaction.commandName];
   if (sc) {
