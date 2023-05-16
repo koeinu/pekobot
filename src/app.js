@@ -19,6 +19,11 @@ dotenv.config();
 
 const INACTIVE = process.env.INACTIVE;
 
+const IGNORED_WARNINGS = [
+  "ExperimentalWarning: buffer.Blob is an experimental feature",
+  "The Fetch API is an experimental feature",
+];
+
 if (!INACTIVE) {
   const bot = new TelegramBotWrapper();
   console.log("Telegram bot started");
@@ -28,8 +33,8 @@ if (!INACTIVE) {
   };
   console.error = (...args) => {
     if (
-      args.some((arg) =>
-        arg.includes("The Fetch API is an experimental feature")
+      IGNORED_WARNINGS.some((warning) =>
+        args.some((arg) => arg.includes(warning))
       )
     ) {
       return;
@@ -39,8 +44,8 @@ if (!INACTIVE) {
   };
   console.warn = (...args) => {
     if (
-      args.some((arg) =>
-        arg.includes("The Fetch API is an experimental feature")
+      IGNORED_WARNINGS.some((warning) =>
+        args.some((arg) => arg.includes(warning))
       )
     ) {
       return;
