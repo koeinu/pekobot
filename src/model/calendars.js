@@ -73,3 +73,6 @@ export const getCalendarData = (channelId) => {
   const calendars = loadCalendarData(JSON_FILE_NAME);
   return calendars[channelId];
 };
+export const getAllCalendarData = (channelId) => {
+  return loadCalendarData(JSON_FILE_NAME);
+};

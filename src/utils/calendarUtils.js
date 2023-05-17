@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import generateIcs from "ics-service/generate-ics.js";
 import { getYoutubeLiveDetails } from "./youtubeUtils.js";
-import { getCalendarData, updateCalendarData } from "../model/calendars.js";
+import {
+  getAllCalendarData,
+  getCalendarData,
+  updateCalendarData,
+} from "../model/calendars.js";
 
 dotenv.config();
 const ICS_DATA = process.env.ICS_DATA;
@@ -76,4 +80,25 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
     data.map((el) => el.data),
     feedUrl
   );
+};
+
+export const createCalendarRoute = () => {
+  const calendarData = getAllCalendarData();
+  const aboutRoute = (req, res) => {
+    const body = `
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+${JSON.stringify(calendarData)}
+</body>
+</html>
+`;
+
+    res.writeHead(200, "ok", { "content-type": "text/html" });
+    res.end(body);
+  };
+  return aboutRoute;
 };

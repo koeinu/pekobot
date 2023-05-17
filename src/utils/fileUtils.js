@@ -1,4 +1,5 @@
 import fs from "fs";
+import { originalConsoleLog } from "../telegramLogger.js";
 
 export const JSON_DIR_NAME = "data/json";
 
@@ -12,7 +13,7 @@ export const loadFile = (fileName) => {
     let rawdata = fs.readFileSync(formFilePath(fileName));
     return JSON.parse(rawdata.toString());
   } catch (err) {
-    console.log(err);
+    originalConsoleLog(err);
     return undefined;
   }
 };
