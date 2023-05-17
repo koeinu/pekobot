@@ -34,6 +34,7 @@ export const getBotSettings = (botName) => {
     streakData: storage[botName].streakData,
     extendedRp: storage[botName].extendedRp,
     speechInstructions: storage[botName].speechInstructions,
+    trivia: storage[botName].trivia,
     isSimplified: storage[botName].isSimplified,
     inactive: storage[botName].inactive,
   };

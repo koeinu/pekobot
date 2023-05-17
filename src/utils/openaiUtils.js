@@ -103,6 +103,12 @@ export const messageContextArray = (msg, settings) => {
       if (settings.speechInstructions) {
         parts.push("{Speech instructions:}", ...settings.speechInstructions);
       }
+      if (settings.trivia) {
+        parts.push(
+          `{Trivia about ${settings.inspiration}:}`,
+          ...settings.trivia
+        );
+      }
     }
   }
 
