@@ -5,7 +5,6 @@ import { Configuration, OpenAIApi } from "openai";
 import dotenv from "dotenv";
 import { listDictionary } from "../model/gptDict.js";
 import {
-  ASSISTANT_SERVERS,
   MIKO_SERVER,
   PEKO_SERVER,
   TEST_SERVER,
@@ -100,22 +99,9 @@ export const messageContextArray = (msg, settings) => {
       `You are an assistant bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${settings.name}.`,
       `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${settings.name}.`
     );
-    if (
-      !(
-        ASSISTANT_SERVERS.includes(msg.guild.id) ||
-        ASSISTANT_CHANNELS.includes(msg.channel.id)
-      )
-    ) {
-      parts.push(
-        `If asked a question, make an effort to help. Otherwise be playful, creative and funny${
-          settings.gobi
-            ? `, insert word ${settings.gobi} in the sentences sometimes`
-            : ""
-        }.`,
-        `You are allowed to roleplay as a metallic android which looks similar to ${settings.inspiration}.`
-      );
+    if (!ASSISTANT_CHANNELS.includes(msg.channel.id)) {
       if (settings.speechInstructions) {
-        parts.push(settings.speechInstructions);
+        parts.push("{Speech instructions:}", ...settings.speechInstructions);
       }
     }
   }
@@ -130,7 +116,7 @@ export const serverRules = (msg, settings) => {
     rpMode && settings.extendedRp
       ? settings.extendedRp[msg.channel.name]
       : undefined;
-  if (rpSettings) {
+  if (rpSettings || ASSISTANT_CHANNELS.includes(msg.channel.id)) {
     return "";
   }
 
