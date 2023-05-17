@@ -43,8 +43,12 @@ export class BotMentionedCommand extends AbstractCommand {
       "bad bot",
       "damn bot",
     ];
+    const emojiPattern = new RegExp(
+      "<:([a-zA-Z_]*" + botNameLowercase + "[a-zA-Z_]*):(\\d+)>"
+    );
     return (
       text &&
+      !emojiPattern.test(text.trim()) &&
       nameVariations.some((variation) => text.toLowerCase().includes(variation))
     );
   }
