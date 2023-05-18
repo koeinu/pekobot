@@ -21,6 +21,7 @@ import {
   DDF_CONSULTING,
   MIKO_ALLOWED_RNG_GPT,
   MIKO_BOT_SPAM_CHANNEL,
+  MIKODANYE_CHANNEL,
   PEKO_ALLOWED_GPT,
   PEKO_GPT,
   PEKO_GPT_OK_CHANNEL,
@@ -49,6 +50,7 @@ export class GptCommand extends AbstractCommand {
       ...TEST_ENABLED_CHANNELS,
       ...RP_CHANNELS,
       MIKO_BOT_SPAM_CHANNEL,
+      MIKODANYE_CHANNEL,
     ];
     this.consultingChanels = [
       ...RP_CHANNELS,
