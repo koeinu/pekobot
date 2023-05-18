@@ -1,13 +1,17 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import { catchTweets } from "../../utils/twitterUtils.js";
-import { PEKO_STREAM, TEST_MAIN } from "../../utils/ids/channels.js";
+import {
+  PEKO_MEMBER_STREAM,
+  PEKO_STREAM,
+  TEST_MAIN,
+} from "../../utils/ids/channels.js";
 import { getMsgInfo } from "../../utils/stringUtils.js";
 
 export class CatchPoemCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
     this.name = "poem";
-    this.triggerChannels = [PEKO_STREAM, TEST_MAIN];
+    this.triggerChannels = [PEKO_MEMBER_STREAM, PEKO_STREAM, TEST_MAIN];
     this.intercept = true;
   }
   async execute(msg) {

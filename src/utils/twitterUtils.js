@@ -7,8 +7,8 @@ import { ETwitterStreamEvent, TwitterApi } from "twitter-api-v2";
 
 import dotenv from "dotenv";
 import {
-  MIKO_TEST_MAIN,
   MIKO_TWEETS_FEED,
+  PEKO_MEMBER_STREAM,
   PEKO_PEKORA_FEED,
   PEKO_STREAM,
   TEST_INA_FEED,
@@ -23,6 +23,7 @@ import {
 dotenv.config();
 
 const BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
+const MEMBER_MODE = process.env.MEMBER_MODE;
 
 console.log(`twitter token: ${BEARER_TOKEN}`);
 
@@ -33,12 +34,12 @@ const TWITTER_RELAY_DATA = [
   {
     src: "usadapekora",
     feedIds: [TEST_PEKORA_FEED, PEKO_PEKORA_FEED],
-    poemIds: [TEST_POEM_FEED, PEKO_STREAM],
+    poemIds: [TEST_POEM_FEED, MEMBER_MODE ? PEKO_MEMBER_STREAM : PEKO_STREAM],
   },
   {
     src: "uraakapeko",
     feedIds: [TEST_PEKORA_FEED, PEKO_PEKORA_FEED],
-    poemIds: [TEST_PEKORA_POEM, PEKO_STREAM],
+    poemIds: [TEST_PEKORA_POEM, MEMBER_MODE ? PEKO_MEMBER_STREAM : PEKO_STREAM],
   },
   {
     src: "koeinu",

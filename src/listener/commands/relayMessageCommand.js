@@ -15,16 +15,17 @@ import {
   SNAXXX_STREAM,
 } from "../../utils/ids/channels.js";
 import { RELAY_AUTHORS } from "../../utils/ids/users.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+const MEMBER_MODE = process.env.MEMBER_MODE;
 
 export class RelayMessageCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
     this.name = "relay";
     this.allowedChannels = [SNAXXX_STREAM];
-    this.targetChannels = [
-      //PEKO_STREAM
-      PEKO_MEMBER_STREAM,
-    ];
+    this.targetChannels = [MEMBER_MODE ? PEKO_MEMBER_STREAM : PEKO_STREAM];
     this.intercept = true;
   }
   async execute(msg, discordClient) {
