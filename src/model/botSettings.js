@@ -55,6 +55,5 @@ export const createUploadSettingsRoute = (req, res, next) => {
     res.sendStatus(200);
     console.log("Uploaded!");
     next();
-    process.exit();
   });
 };
