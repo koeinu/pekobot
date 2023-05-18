@@ -9,7 +9,11 @@ import { fetchMessage } from "../../utils/discordUtils.js";
 
 import { addRelay, loadRelays, updateRelays } from "../../model/relay.js";
 
-import { PEKO_STREAM, SNAXXX_STREAM } from "../../utils/ids/channels.js";
+import {
+  PEKO_MEMBER_STREAM,
+  PEKO_STREAM,
+  SNAXXX_STREAM,
+} from "../../utils/ids/channels.js";
 import { RELAY_AUTHORS } from "../../utils/ids/users.js";
 
 export class RelayMessageCommand extends AbstractCommand {
@@ -17,7 +21,10 @@ export class RelayMessageCommand extends AbstractCommand {
     super(settings);
     this.name = "relay";
     this.allowedChannels = [SNAXXX_STREAM];
-    this.targetChannels = [PEKO_STREAM];
+    this.targetChannels = [
+      //PEKO_STREAM
+      PEKO_MEMBER_STREAM,
+    ];
     this.intercept = true;
   }
   async execute(msg, discordClient) {
