@@ -141,7 +141,16 @@ export class GptCommand extends AbstractCommand {
             if (!(await this.rateLimitPass(msg))) {
               return Promise.resolve();
             }
-            return reply(msg, response, undefined, false, false);
+            return reply(
+              msg,
+              response.replaceAll(
+                "[mikostare]",
+                "<:Mikodanye:871396980243451944>"
+              ),
+              undefined,
+              false,
+              false
+            );
           }
           return Promise.resolve();
         })

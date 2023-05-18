@@ -101,12 +101,7 @@ export const messageContextArray = (msg, settings) => {
     );
     if (!ASSISTANT_CHANNELS.includes(msg.channel.id)) {
       if (settings.speechInstructions) {
-        parts.push(
-          "{Speech instructions:}",
-          ...settings.speechInstructions.map((el) =>
-            el.replaceAll("[mikostare]", "<:Mikodanye:871396980243451944>")
-          )
-        );
+        parts.push("{Speech instructions:}", ...settings.speechInstructions);
       }
       if (settings.trivia) {
         parts.push(
