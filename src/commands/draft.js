@@ -47,7 +47,7 @@ export default {
           channelId !== undefined
             ? interaction.client.channels.cache.get(channelId)
             : undefined;
-        const msg = await ch.messages.cache.get(id);
+        const msg = await ch.messages.fetch(id);
         if (!msg) {
           return await replyEmbedMessage(
             interaction,
