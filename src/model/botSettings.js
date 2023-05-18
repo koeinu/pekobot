@@ -1,5 +1,7 @@
 import { formFilePath, loadFile, saveFile } from "../utils/fileUtils.js";
 import fs from "node:fs";
+import { sleep } from "../utils/discordUtils.js";
+import { S_MS } from "../utils/constants.js";
 
 const JSON_FILE_NAME = "settings.json";
 const INITIAL_FILE = {};
@@ -50,10 +52,13 @@ export const createUploadSettingsRoute = (req, res, next) => {
     "bytes"
   );
   req.pipe(fs.createWriteStream(formFilePath(JSON_FILE_NAME)));
-  req.on("end", () => {
+  req.on("end", async () => {
     // Done reading!
     res.sendStatus(200);
     console.log("Uploaded!");
     next();
+
+    await sleep(() => {}, S_MS);
+    process.exit();
   });
 };
