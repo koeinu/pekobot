@@ -29,6 +29,7 @@ import {
   writeLog,
   writeWarning,
 } from "./model/logs.js";
+import { createUploadSettingsRoute } from "./model/botSettings.js";
 
 dotenv.config();
 
@@ -106,6 +107,7 @@ if (!INACTIVE) {
         expressApp.use("/warn", createLogsRoute(WARNINGS_FILENAME));
         expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
         expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
+        expressApp.put("/upload", createUploadSettingsRoute);
       }
 
       expressApp.listen(3000);

@@ -1,4 +1,5 @@
-import { loadFile, saveFile } from "../utils/fileUtils.js";
+import { formFilePath, loadFile, saveFile } from "../utils/fileUtils.js";
+import fs from "node:fs";
 
 const JSON_FILE_NAME = "settings.json";
 const INITIAL_FILE = {};
@@ -38,4 +39,21 @@ export const getBotSettings = (botName) => {
     isSimplified: storage[botName].isSimplified,
     inactive: storage[botName].inactive,
   };
+};
+
+export const createUploadSettingsRoute = (req, res, next) => {
+  console.log(
+    "Now uploading",
+    req.url,
+    ": ",
+    req.get("content-length"),
+    "bytes"
+  );
+  req.pipe(fs.createWriteStream(formFilePath(JSON_FILE_NAME)));
+  req.on("end", () => {
+    // Done reading!
+    res.sendStatus(200);
+    console.log("Uploaded!");
+    next();
+  });
 };
