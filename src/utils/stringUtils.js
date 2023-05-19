@@ -163,6 +163,7 @@ export const gatherSlashCommandInfo = (interaction) => {
   if (sc) {
     parts.push(sc);
   }
+  parts.push(`by ${interaction.author.username}`);
   parts.push(`at ${getMsgInfo(interaction)} |`);
   parts.push(...values);
   return parts;
