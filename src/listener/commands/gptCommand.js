@@ -141,16 +141,15 @@ export class GptCommand extends AbstractCommand {
             if (!(await this.rateLimitPass(msg))) {
               return Promise.resolve();
             }
-            return reply(
-              msg,
-              response.replaceAll(
+            let finalResponse = response;
+            if (this.settings.name.toLowerCase().includes("mikodanye")) {
+              finalResponse = response.replaceAll(
                 "[mikostare]",
                 "<:Mikodanye:871396980243451944>"
-              ),
-              undefined,
-              false,
-              false
-            );
+              );
+              finalResponse = finalResponse.replace(/\bnya+\b/g, "nye");
+            }
+            return reply(msg, finalResponse, undefined, false, false);
           }
           return Promise.resolve();
         })
