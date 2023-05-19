@@ -163,7 +163,6 @@ export const gatherSlashCommandInfo = (interaction) => {
   if (sc) {
     parts.push(sc);
   }
-  console.log("slash command interaction:", interaction);
   parts.push(`at ${getMsgInfo(interaction)} |`);
   parts.push(...values);
   return parts;
