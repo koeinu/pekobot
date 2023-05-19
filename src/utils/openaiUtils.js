@@ -55,7 +55,7 @@ export const moderateMessage = async (msg) => {
     input: msg.content,
     model: "text-moderation-latest",
   });
-  console.log(`Moderation result: ${JSON.stringify(result.data?.results)}`);
+  // console.log(`Moderation result: ${JSON.stringify(result.data?.results)}`);
   if (result.data?.results) {
     if (result.data.results.length > 0) {
       const data = result.data.results[0];

@@ -33,20 +33,13 @@ export const prepareCalendarDataFromChannelId = async (
     idsToUpdate.push(
       ...cachedCalendarData
         .filter((el) => {
-          const result =
+          return (
             (cacheTimeout !== undefined
               ? Number.parseInt(el.ts) + Number.parseInt(cacheTimeout) <
                 currentTs
               : true) &&
-            (!el.actualEndTime || !el.parsedDuration);
-          console.log(
-            `${el.data.title}: ${
-              Number.parseInt(el.ts) + Number.parseInt(cacheTimeout)
-            } < ${currentTs}, ${el.actualEndTime}, ${
-              el.parsedDuration
-            }: ${result}`
+            (!el.actualEndTime || !el.parsedDuration)
           );
-          return result;
         })
         .map((el) => el.data.uid)
     );
