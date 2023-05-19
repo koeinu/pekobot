@@ -105,7 +105,7 @@ export const messageContextArray = (msg, settings) => {
       }
       if (settings.trivia) {
         parts.push(
-          `{Trivia about ${settings.inspiration}:}`,
+          `{Information about ${settings.inspiration} and other various trivia:}`,
           ...settings.trivia
         );
       }
