@@ -144,7 +144,7 @@ export class GptCommand extends AbstractCommand {
             let finalResponse = response;
             if (this.settings.name.toLowerCase().includes("mikodanye")) {
               finalResponse = response.replace(
-                /(([\[:<])+)mikostare(([\]:>])+)/g,
+                /(([\[:<])+)([Mm])ikostare(([\]:>])+)/g,
                 "<:Mikodanye:871396980243451944>"
               );
               finalResponse = finalResponse.replace(/\bnya+\b/g, "nye");
