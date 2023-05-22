@@ -5,10 +5,13 @@ import ical from "ical";
 
 dotenv.config();
 const API_KEY = process.env.API_KEY;
+const ASMR_CHANNELS = process.env.ASMR_CHANNELS || [];
 
 const PREDICTED_DURATION = { hours: 2 };
 
 export const parseVideoId = (url) => {
+  // noinspection RegExpRedundantEscape
+  // eslint-disable-next-line no-useless-escape
   let regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
   let match = url.match(regExp);
   return match && match.length >= 3 ? match[2] : false;
@@ -20,29 +23,8 @@ const config = {
   },
 };
 
-export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
-  if (channelId === "custom") {
-    return getYoutubeLiveDetailsByVideoIds(additionalIds);
-  }
-  if (channelId === "asmr") {
-    return await axios
-      .get("https://sarisia.cc/holodule-ics/holodule-all.ics", config)
-      .then((resp) => {
-        const cal = resp.data;
-        const data = ical.parseICS(cal);
-        const ids = Object.values(data)
-          .filter((calendarData) => {
-            return calendarData.summary.toLowerCase().includes(channelId);
-          })
-          .map((calendarData) => {
-            return calendarData.uid;
-          });
-        return getYoutubeLiveDetailsByVideoIds([
-          ...new Set([...ids, ...additionalIds]),
-        ]);
-      });
-  }
-  return await axios
+const getChannelVideoIds = async (channelId) => {
+  return axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`,
       config
@@ -57,10 +39,39 @@ export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
     })
     .then((resp) => {
       return resp.data.items.map((el) => el.snippet.resourceId.videoId);
-    })
-    .then((ids) =>
-      getYoutubeLiveDetailsByVideoIds([...new Set([...ids, ...additionalIds])])
-    );
+    });
+};
+
+export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
+  if (channelId === "custom") {
+    return getYoutubeLiveDetailsByVideoIds(additionalIds);
+  }
+  if (channelId === "asmr") {
+    const knownAsmrIds = (
+      await Promise.all(
+        ASMR_CHANNELS.map(async (el) => await getChannelVideoIds(el))
+      )
+    ).flat();
+    return await axios
+      .get("https://sarisia.cc/holodule-ics/holodule-all.ics", config)
+      .then((resp) => {
+        const cal = resp.data;
+        const data = ical.parseICS(cal);
+        const ids = Object.values(data)
+          .filter((calendarData) => {
+            return calendarData.summary.toLowerCase().includes(channelId);
+          })
+          .map((calendarData) => {
+            return calendarData.uid;
+          });
+        return getYoutubeLiveDetailsByVideoIds([
+          ...new Set([...ids, ...additionalIds, ...knownAsmrIds]),
+        ]);
+      });
+  }
+  return await getChannelVideoIds(channelId).then((ids) =>
+    getYoutubeLiveDetailsByVideoIds([...new Set([...ids, ...additionalIds])])
+  );
 };
 
 export const getYoutubeLiveDetailsByVideoIds = (ids) => {
