@@ -57,7 +57,7 @@ export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
   if (channelId === "asmr") {
     const knownAsmrIds = (
       await Promise.all(
-        ASMR_CHANNELS.map(async (el) => await getChannelVideoIds(el), "asmr")
+        ASMR_CHANNELS.map(async (el) => await getChannelVideoIds(el, "asmr"))
       )
     ).flat();
     return await axios
