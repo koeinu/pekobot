@@ -5,7 +5,9 @@ import ical from "ical";
 
 dotenv.config();
 const API_KEY = process.env.API_KEY;
-const ASMR_CHANNELS = process.env.ASMR_CHANNELS || [];
+const ASMR_CHANNELS = process.env.ASMR_CHANNELS
+  ? process.env.ASMR_CHANNELS.split(";")
+  : [];
 
 const PREDICTED_DURATION = { hours: 2 };
 
