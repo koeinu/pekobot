@@ -25,7 +25,7 @@ const config = {
   },
 };
 
-const getChannelVideoIds = async (channelId) => {
+const getChannelVideoIds = async (channelId, filterKeyword = undefined) => {
   return axios
     .get(
       `https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`,
@@ -40,7 +40,13 @@ const getChannelVideoIds = async (channelId) => {
       );
     })
     .then((resp) => {
-      return resp.data.items.map((el) => el.snippet.resourceId.videoId);
+      return resp.data.items
+        .filter(
+          (el) =>
+            !filterKeyword ||
+            el.snippet.title.toLowerCase().includes(filterKeyword)
+        )
+        .map((el) => el.snippet.resourceId.videoId);
     });
 };
 
@@ -51,7 +57,7 @@ export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
   if (channelId === "asmr") {
     const knownAsmrIds = (
       await Promise.all(
-        ASMR_CHANNELS.map(async (el) => await getChannelVideoIds(el))
+        ASMR_CHANNELS.map(async (el) => await getChannelVideoIds(el), "asmr")
       )
     ).flat();
     return await axios
