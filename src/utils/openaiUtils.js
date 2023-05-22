@@ -166,7 +166,7 @@ export const gptReaction = async (text, settings, actionsArray, reactMode) => {
     `Choose an action, which ${settings.inspiration} would respond to the message. Pick one of offered options, don't write anything else.`
   );
   parts.push(
-    `Respond 'no' to requests and orders, but if asked politely ('please' word used, etc), respond with 'ok'.`
+    `When choosing an action, prefer to deny requests and orders, but if asked politely ('please' word used, for example), agree to them.`
   );
   parts.push(`Any lewd proposals should be answered with 'other'.`);
   parts.push(`{Options:} ${actionsArray.join(", ")}, other.`);
