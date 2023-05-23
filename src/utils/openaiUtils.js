@@ -167,7 +167,7 @@ export const gptReaction = async (text, settings, actionsArray, reactMode) => {
   );
   parts.push(`You can only pick one of the offered action options.`);
   parts.push(
-    `Prefer to deny direct requests and orders. But if you're being asked politely, agree.`
+    `Prefer to deny direct requests and orders, unless asked very politely (for example, "please" word was used).`
   );
   parts.push(`Any lewd proposals should be answered with 'other'.`);
   parts.push(`{Options:} ${actionsArray.join(", ")}, other.`);
