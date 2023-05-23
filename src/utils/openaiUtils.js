@@ -163,10 +163,11 @@ export const gptReaction = async (text, settings, actionsArray, reactMode) => {
   }
   const parts = [];
   parts.push(
-    `Choose an action, which ${settings.inspiration} would respond to the message. Pick one of offered options, don't write anything else.`
+    `Choose an action, which ${settings.inspiration} would respond to the message with.`
   );
+  parts.push(`You can only pick one of the offered action options.`);
   parts.push(
-    `When choosing an action, prefer to deny requests and orders, but if asked politely ('please' word used, for example), agree to them.`
+    `Prefer to deny requests and orders unless you're being asked very politely, agree. Example: "please behave" instead of just "behave".`
   );
   parts.push(`Any lewd proposals should be answered with 'other'.`);
   parts.push(`{Options:} ${actionsArray.join(", ")}, other.`);
@@ -178,24 +179,17 @@ export const gptMood = async (text, settings, moodsArray, reactMode) => {
   const parts = [];
   if (reactMode) {
     parts.push(
-      `Choose one of the the moods ${settings.inspiration} would react with to the message, choose one among the options.`
+      `Choose one of the the moods ${settings.inspiration} would react with to the message with.`
     );
-    parts.push(
-      `{Conditions:} If there is no good option, respond with 'other'.`
-    );
-    parts.push(
-      `Any message about love, marriage or lewd things should be responded with 'blush'.`
-    );
-    parts.push(`{Options:} ${moodsArray.join(", ")}, other.`);
   } else {
-    parts.push(
-      `{Conditions:} If there is no good option, respond with 'other'.`
-    );
-    parts.push(
-      "Determine the mood of the message, choose one among the options."
-    );
-    parts.push(`{Options:} ${moodsArray.join(", ")}, other.`);
+    parts.push(`Determine the mood of a message.`);
   }
+  parts.push(`You can only pick one of the offered mood options.`);
+  parts.push(`If there is no good option, respond with 'other'.`);
+  parts.push(
+    `Any message about love, marriage or lewd things should be responded with 'blush'.`
+  );
+  parts.push(`{Options:} ${moodsArray.join(", ")}, other.`);
   parts.push(`The message: "${text}."`);
 
   return gpt(parts.join(`\n`), settings, "");
