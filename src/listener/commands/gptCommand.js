@@ -31,6 +31,7 @@ import {
   TEST_GPT_OK_CHANNEL,
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
+import { BANNED_USERS } from "../../utils/ids/users.js";
 
 export class GptCommand extends AbstractCommand {
   constructor(settings) {
@@ -60,6 +61,7 @@ export class GptCommand extends AbstractCommand {
       PEKO_GPT,
     ];
     this.intercept = true;
+    this.bannedUsers = BANNED_USERS;
   }
   async execute(msg) {
     const rpMode = RP_CHANNELS.includes(msg.channel.id);

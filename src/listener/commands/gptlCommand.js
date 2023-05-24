@@ -21,6 +21,7 @@ import {
   PEKO_SERVER,
   TEST_SERVER,
 } from "../../utils/ids/guilds.js";
+import { BANNED_USERS } from "../../utils/ids/users.js";
 
 export class GptlCommand extends AbstractCommand {
   constructor(settings) {
@@ -36,6 +37,7 @@ export class GptlCommand extends AbstractCommand {
       AlertUserMode.Normal
     );
     this.intercept = true;
+    this.bannedUsers = BANNED_USERS;
   }
   async execute(msg) {
     console.warn(`${this.name} triggered, ${getMsgInfo(msg)}`);
