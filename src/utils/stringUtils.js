@@ -375,7 +375,14 @@ export const getTextMessageContent = async (
     });
   }
 
-  return { countObject, text: parts.join("\n"), originalMessage: msg };
+  const emojiPattern = /^<:\w+:\d+>$/;
+  return {
+    countObject,
+    text: parts
+      .map((el) => (isTranslating ? el : el.replace(emojiPattern, "")))
+      .join("\n"),
+    originalMessage: msg,
+  };
 };
 
 export const formatTLText = (text, isGpt) => {
