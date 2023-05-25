@@ -192,7 +192,7 @@ const onStreamTweet = async (tweet, botApps) => {
   stopCatchingTweets();
 };
 
-export const connectToStream = async (botApps) => {
+export const connectToStream = async (botApps, startConnectingCallback) => {
   const rules = await client.v2.streamRules();
   console.log("rules:", rules.data);
   const usersToRelay = TWITTER_RELAY_DATA.map((el) => el.src);
@@ -247,6 +247,44 @@ export const connectToStream = async (botApps) => {
       console.error(`Tweet relay failed: ${e}`);
     })
   );
+  stream.on(ETwitterStreamEvent.DataError, (error) => {
+    console.error("Twitter data error:", error.message);
+  });
+  stream.on(ETwitterStreamEvent.Error, (error) => {
+    console.error("Twitter error:", error.message || error.error || error);
+  });
+  stream.on(ETwitterStreamEvent.Connected, () => {
+    console.error("Twitter stream connected");
+  });
+  stream.on(ETwitterStreamEvent.ConnectionLost, () => {
+    console.error("Twitter connection lost");
+  });
+  stream.on(ETwitterStreamEvent.ConnectionError, (error) => {
+    console.error("Twitter connection error:", error.message);
+  });
+  stream.on(ETwitterStreamEvent.TweetParseError, (error) => {
+    console.error("Twitter tweet parse error:", error.message);
+  });
+  stream.on(ETwitterStreamEvent.ConnectionClosed, () => {
+    console.error("Twitter connection error");
+  });
+  stream.on(ETwitterStreamEvent.DataKeepAlive, () => {
+    console.warn("Twitter data keep alive");
+  });
+  stream.on(ETwitterStreamEvent.ReconnectAttempt, (tries) => {
+    console.error("Twitter reconnecting, attempts:", tries);
+  });
+  stream.on(ETwitterStreamEvent.ReconnectError, (tries) => {
+    console.error("Twitter reconnect error, attempts:", tries);
+  });
+  stream.on(ETwitterStreamEvent.ReconnectLimitExceeded, () => {
+    console.error("Twitter reconnect limit exceeded");
+    stream.destroy();
+    startConnectingCallback();
+  });
+  stream.on(ETwitterStreamEvent.Reconnected, () => {
+    console.error("Twitter stream reconnected");
+  });
 };
 
 const formatTweet = async (

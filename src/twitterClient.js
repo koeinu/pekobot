@@ -13,7 +13,7 @@ export class TwitterClient {
   async keepConnectingToStreamFeed() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      await connectToStream(this.apps)
+      await connectToStream(this.apps, this.keepConnectingToStreamFeed)
         .then(() => {
           console.log("Connected to twitter feed");
           this.connectedToStreamFeed = true;
