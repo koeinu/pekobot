@@ -268,9 +268,9 @@ export const connectToStream = async (botApps, startConnectingCallback) => {
   stream.on(ETwitterStreamEvent.ConnectionClosed, () => {
     console.error("Twitter connection error");
   });
-  stream.on(ETwitterStreamEvent.DataKeepAlive, () => {
-    console.warn("Twitter data keep alive");
-  });
+  // stream.on(ETwitterStreamEvent.DataKeepAlive, () => {
+  //   console.warn("Twitter data keep alive");
+  // });
   stream.on(ETwitterStreamEvent.ReconnectAttempt, (tries) => {
     console.error("Twitter reconnecting, attempts:", tries);
   });
