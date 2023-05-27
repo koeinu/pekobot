@@ -77,6 +77,7 @@ const sendTweetToChannels = async (
   channels,
   settings
 ) => {
+  console.warn("finding channels to tweet to:", channels);
   const foundChannels = channels
     .reduce((array, channelToSend) => {
       const fc = discordClient.channels.cache.filter(
@@ -87,7 +88,10 @@ const sendTweetToChannels = async (
     }, [])
     .map((el) => el[1]);
 
-  console.log("found channels to tweet to:", foundChannels);
+  console.warn(
+    "found channels to tweet to:",
+    foundChannels.map((el) => el.name)
+  );
   if (settings.inactive) {
     console.log("inactive mode, doing nothing");
     return;
