@@ -49,7 +49,9 @@ export class CommandListener {
       if (match) {
         const processData = command.shouldProcessMsg(msg);
         if (processData.result) {
-          console.log(`executing ${processData.reason}`);
+          if (!processData.silent) {
+            console.log(`executing ${processData.reason}`);
+          }
           commandIntercepted = commandIntercepted || command.intercept;
           await command.execute(msg, this.client).catch((e) => {
             console.error(

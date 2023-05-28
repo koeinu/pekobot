@@ -262,6 +262,7 @@ export class AbstractCommand {
     // if no guilds, channels or probability is set, the name is allowed to be executed by default
     return {
       result: true,
+      silent: true,
       reason: `${this.name}, default (${getMsgInfo(msg)})`,
     };
   }
