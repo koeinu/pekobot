@@ -68,7 +68,9 @@ export class ApiUtils {
       console.log(`cached translation: ${tlCache[text]}`);
       return tlCache[text];
     }
-    let textToTranslate = text.trim();
+    let textToTranslate = text
+      .trim()
+      .replace(/([あいうえおアイウエオｱｲｳｴｵ])\1\1+/gi, "$1$1"); // replace 3+ same characters with 2
     const startTime = new Date();
     let response = undefined;
     let metadata = undefined;
