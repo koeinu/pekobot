@@ -155,11 +155,11 @@ const onStreamTweet = async (tweet, botApps) => {
   const feedChannels = userRelayData?.feedIds || [];
   const poemChannels = userRelayData?.poemIds || [];
   if (referencedTweet && referencedUsername) {
-    console.log(
+    console.warn(
       `Got a retweet ${referencedTweet.data.text} from ${referencedUsername}, feed channels: ${feedChannels}, poem channels: ${poemChannels}`
     );
   } else {
-    console.log(
+    console.warn(
       `Got a tweet ${tweet.data.text} from ${userName}, feed channels: ${feedChannels}, poem channels: ${poemChannels}`
     );
   }
