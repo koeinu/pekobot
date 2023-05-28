@@ -71,7 +71,7 @@ export class ApiUtils {
     let textToTranslate = text
       .trim()
       .replace(
-        /([あいうえおアイウエオｱｲｳｴｵぁぃぅぇぉァィゥェォｧｪｩｪｫ])\1\1+/gi,
+        /([あいうえおアイウエオｱｲｳｴｵぁぃぅぇぉァィゥェォｧｨｩｪｫ])\1\1+/gi,
         "$1$1"
       ); // replace 3+ same characters with 2
     const startTime = new Date();
