@@ -181,9 +181,14 @@ const onStreamTweet = async (tweet, botApps) => {
     );
 
     // for the poems, catch only non-retweets, and only when asked
-    if (!catchingPoem || tweet.data.text.indexOf("RT") === 0) {
+    if (
+      !catchingPoem ||
+      tweet.data.text.indexOf("RT") === 0 ||
+      poemChannels.length === 0
+    ) {
       continue;
     }
+    stopCatchingTweets();
 
     await sendTweetToChannels(
       botApp.client,
@@ -192,8 +197,6 @@ const onStreamTweet = async (tweet, botApps) => {
       botApp.settings
     );
   }
-
-  stopCatchingTweets();
 };
 
 export const connectToStream = async (botApps, startConnectingCallback) => {
