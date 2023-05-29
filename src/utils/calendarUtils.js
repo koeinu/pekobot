@@ -45,7 +45,7 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
-  console.log(`IDs to update: ${idsToUpdate.join(", ")}`);
+  // console.log(`IDs to update: ${idsToUpdate.join(", ")}`);
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
