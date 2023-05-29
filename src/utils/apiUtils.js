@@ -83,7 +83,13 @@ export class ApiUtils {
         let responseData = { text: undefined };
         await gptGetLanguage(textToTranslate, settings)
           .then((response) => {
-            if (response && response.text.toLowerCase().includes("eng")) {
+            const notTranslatedKeywords = ["eng", "unknown", "undetermined"];
+            if (
+              response &&
+              notTranslatedKeywords.some((w) =>
+                response.text.toLowerCase().includes(w)
+              )
+            ) {
               console.debug(
                 `Not translating, as the text is already in English: ${textToTranslate}`
               );
