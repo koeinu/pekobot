@@ -436,6 +436,10 @@ export const getCurrentMonthName = () => {
 
 function extractMessageTags(str) {
   const regex = /[[](START|END)[\]]/g;
+  const foundExtracted = str.match(/\[START\](.*?)\[END\]/g);
+  if (foundExtracted) {
+    return foundExtracted[0].replace(regex, "").trim();
+  }
   return str.replace(regex, "").trim();
 }
 
