@@ -13,7 +13,13 @@ import { getBotSettings } from "./model/botSettings.js";
 dotenv.config();
 
 const disabledCommands = {
-  "584977240358518784": ["calendar", "youtube", "relay", "gptdraft"], // miko
+  "584977240358518784": [
+    "calendar",
+    "youtube",
+    "relay",
+    "gptdraft",
+    "custom_roles",
+  ], // miko
   "999666683176308807": [
     "calendar",
     "jigsaw",
@@ -21,6 +27,7 @@ const disabledCommands = {
     "gptDict",
     "youtube",
     "gptdraft",
+    "custom_roles",
   ], // snaxxx
   "1061909810943115337": [], // ts
   "683140640166510717": ["calendar"], // peko

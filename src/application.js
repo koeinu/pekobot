@@ -31,14 +31,17 @@ export class Application {
     this.settings = getBotSettings(botName);
 
     this.ready = false;
-
+    const intents = [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.MessageContent,
+    ];
+    if (botName === "peko-bot") {
+      intents.push(GatewayIntentBits.GuildMembers);
+    }
     this.client = new Client({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.MessageContent,
-      ],
+      intents,
     });
 
     this.client.commands = new Collection();

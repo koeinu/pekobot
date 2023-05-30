@@ -12,7 +12,6 @@ import {
   TextInputStyle,
 } from "discord.js";
 import { MOD_PERMS } from "../utils/constants.js";
-import { getMsgInfo } from "../utils/stringUtils.js";
 
 export default {
   data: new SlashCommandBuilder()
