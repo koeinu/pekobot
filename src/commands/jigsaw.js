@@ -40,7 +40,10 @@ export default {
 };
 
 const getUserInfo = (interaction) => {
-  return { id: interaction.user.id, userName: interaction.user.username };
+  return {
+    id: interaction.user.id,
+    userName: interaction.nickname || interaction.user.username,
+  };
 };
 
 let isReplied = false;

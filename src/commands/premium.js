@@ -16,6 +16,7 @@ import {
   assignPremiumMember,
   getCustomRoleUsers,
   loadPremiumData,
+  removePremiumMember,
   setupPremiumRole,
 } from "../model/premium.js";
 
@@ -50,6 +51,16 @@ export default {
         )
     )
     .addSubcommand((sc) =>
+      sc
+        .setName("remove")
+        .setDescription("Remove a Custom Role")
+        .addUserOption((option) =>
+          option
+            .setName("user")
+            .setDescription("User to assign a Custom Role to")
+        )
+    )
+    .addSubcommand((sc) =>
       sc.setName("list").setDescription("Lists users with Custom Role")
     )
     .addSubcommand((sc) =>
@@ -78,10 +89,34 @@ export default {
         const foundRole = await interaction.guild.roles.fetch(role);
 
         assignPremiumMember(interaction.guildId, user, role);
+        await foundUser.roles.add(foundRole);
 
         await replyEmbedMessage(
           interaction,
           `Saving ${foundRole} custom role for ${foundUser}`,
+          false,
+          false
+        );
+        break;
+      }
+      case "remove": {
+        const options = getOptions(interaction);
+        const user = options[0].value;
+
+        const foundRoleId = removePremiumMember(interaction.guildId, user);
+
+        const foundRole =
+          foundRoleId >= 0
+            ? await interaction.guild.roles.fetch(foundRoleId)
+            : undefined;
+        const foundUser = await interaction.guild.members.fetch(user);
+        if (foundRole) {
+          await foundUser.roles.remove(foundRole);
+        }
+
+        await replyEmbedMessage(
+          interaction,
+          `Removing custom role from ${foundUser}`,
           false,
           false
         );

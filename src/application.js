@@ -22,6 +22,7 @@ import { JSON_FILE_NAME, convertJsonToParsed } from "./model/bets.js";
 import { loadFile } from "./utils/fileUtils.js";
 import { getBotSettings } from "./model/botSettings.js";
 import { gatherSlashCommandInfo } from "./utils/stringUtils.js";
+import { loadAllPremiumData, loadPremiumData } from "./model/premium.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = _path.dirname(__filename);
@@ -88,6 +89,44 @@ export class Application {
 
     this.client.once(Events.ClientReady, (c) => {
       console.log(`Logged in as ${c.user.tag}`);
+
+      if (c.user.tag.includes("peko-bot")) {
+        const premiumData = loadAllPremiumData();
+        Object.entries(premiumData).forEach(async ([guildId, data]) => {
+          const guild = this.client.guilds.cache.get(guildId);
+          const customRoleUsers = data.userData;
+          for (let i = 0; i < customRoleUsers.length; i++) {
+            const foundUser = await guild.members.fetch(
+              customRoleUsers[i].userId
+            );
+            const foundRole = await guild.roles.fetch(
+              customRoleUsers[i].roleId
+            );
+            const isDignitary = !!foundUser.roles.cache.find(
+              (el) => el.id === premiumData[guildId].premiumRoleId
+            );
+            const hasCustomRole = !!foundUser.roles.cache.find(
+              (el) => el.id === customRoleUsers[i].roleId
+            );
+
+            if (hasCustomRole && !isDignitary) {
+              console.warn(
+                `Removing role ${foundRole.name} from ${
+                  foundUser.nickname || foundUser.user.username
+                }`
+              );
+              await foundUser.roles.remove(foundRole);
+            } else if (!hasCustomRole && isDignitary) {
+              console.warn(
+                `Assigning role ${foundRole.name} to ${
+                  foundUser.nickname || foundUser.user.username
+                }`
+              );
+              await foundUser.roles.add(foundRole);
+            }
+          }
+        });
+      }
     });
     this.client.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.isModalSubmit()) {
