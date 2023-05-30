@@ -4,7 +4,7 @@ import puppeteer from "puppeteer-extra";
 // add stealth plugin and use defaults (all evasion techniques)
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import pup from "puppeteer";
-import { getMsgInfo, parseSingleAttachmentUrl } from "../utils/stringUtils.js";
+import { parseSingleAttachmentUrl } from "../utils/stringUtils.js";
 import { SlashCommandBuilder } from "discord.js";
 import {
   followUpCustomEmbed,

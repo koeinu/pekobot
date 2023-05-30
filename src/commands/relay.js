@@ -16,7 +16,7 @@ import {
   updateRelays,
 } from "../model/relay.js";
 
-import { formatTL, getMsgInfo } from "../utils/stringUtils.js";
+import { formatTL } from "../utils/stringUtils.js";
 
 import { SlashCommandBuilder } from "discord.js";
 

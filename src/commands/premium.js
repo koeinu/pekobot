@@ -4,13 +4,7 @@ import {
   replyEmbedMessage,
 } from "../utils/discordUtils.js";
 
-import {
-  ActionRowBuilder,
-  ModalBuilder,
-  SlashCommandBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-} from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { MOD_PERMS } from "../utils/constants.js";
 import {
   assignPremiumMember,
