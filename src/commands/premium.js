@@ -35,6 +35,7 @@ export default {
             .setDescription(
               "Role that is being referenced as a sign of a premium member"
             )
+            .setRequired(true)
         )
     )
     .addSubcommand((sc) =>
@@ -45,9 +46,13 @@ export default {
           option
             .setName("user")
             .setDescription("User to assign a Custom Role to")
+            .setRequired(true)
         )
         .addRoleOption((option) =>
-          option.setName("custom_role").setDescription("Custom Premium Role")
+          option
+            .setName("custom_role")
+            .setDescription("Custom Premium Role")
+            .setRequired(true)
         )
     )
     .addSubcommand((sc) =>
@@ -58,6 +63,7 @@ export default {
           option
             .setName("user")
             .setDescription("User to assign a Custom Role to")
+            .setRequired(true)
         )
     )
     .addSubcommand((sc) =>
