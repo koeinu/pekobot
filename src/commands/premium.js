@@ -62,9 +62,6 @@ export default {
     )
     .addSubcommand((sc) =>
       sc.setName("list").setDescription("Lists users with Custom Role")
-    )
-    .addSubcommand((sc) =>
-      sc.setName("list_premium").setDescription("Lists users with Premium Role")
     ),
   async execute(interaction) {
     checkPermissions(interaction);
