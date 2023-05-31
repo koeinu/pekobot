@@ -110,14 +110,14 @@ export class Application {
             );
 
             if (hasCustomRole && !isDignitary) {
-              console.warn(
+              console.error(
                 `Removing role ${foundRole.name} from ${
                   foundUser.nickname || foundUser.user.username
                 }`
               );
               await foundUser.roles.remove(foundRole);
             } else if (!hasCustomRole && isDignitary) {
-              console.warn(
+              console.error(
                 `Assigning role ${foundRole.name} to ${
                   foundUser.nickname || foundUser.user.username
                 }`
