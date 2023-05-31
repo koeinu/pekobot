@@ -169,8 +169,8 @@ export const gatherSlashCommandInfo = (interaction) => {
 };
 
 export const getMsgInfo = (msg) => {
-  return `msg: ${getMessage(msg)} in ${msg?.channel.name || "<no channel>"}, ${
-    msg?.guild.name || "<no guild>"
+  return `msg: ${getMessage(msg)} in ${msg?.channel?.name || "<no channel>"}, ${
+    msg?.guild?.name || "<no guild>"
   } (${msg?.url || "---"})`;
 };
 
