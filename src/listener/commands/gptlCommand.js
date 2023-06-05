@@ -15,19 +15,13 @@ import { MessageType } from "discord.js";
 import { getCounter } from "../../model/counter.js";
 import { ApiUtils } from "../../utils/apiUtils.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
-import {
-  DDF_SERVER,
-  MIKO_SERVER,
-  PEKO_SERVER,
-  TEST_SERVER,
-} from "../../utils/ids/guilds.js";
 import { BANNED_USERS } from "../../utils/ids/users.js";
 
 export class GptlCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
     this.name = "gptl";
-    this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER, MIKO_SERVER];
+    // this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER, MIKO_SERVER];
     this.rateLimiter = new CustomRateLimiter(
       "GPT translations",
       1,
