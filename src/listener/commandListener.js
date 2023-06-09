@@ -46,6 +46,9 @@ export class CommandListener {
     this.client = client;
   }
   async processMessage(msg) {
+    if (msg.author.username === this.settings.name) {
+      return Promise.resolve();
+    }
     if (msg.system || msg.author.bot) {
       if (obtainedMessages.includes(msg.id)) {
         return Promise.resolve();
