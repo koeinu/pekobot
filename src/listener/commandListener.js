@@ -21,6 +21,7 @@ import {
   stopCatchingTweets,
   TWITTER_RELAY_DATA,
 } from "../utils/twitterUtils.js";
+import { MIKO_SERVER, PEKO_SERVER, TEST_SERVER } from "../utils/ids/guilds.js";
 
 const obtainedMessages = [];
 
@@ -53,6 +54,10 @@ export class CommandListener {
       if (obtainedMessages.includes(msg.id)) {
         return Promise.resolve();
       }
+      if (![PEKO_SERVER, MIKO_SERVER, TEST_SERVER].includes(msg.guild.id)) {
+        return Promise.resolve();
+      }
+
       obtainedMessages.push(msg.id);
       const urls = (extractUrls(msg.content) || []).filter((el) =>
         el.includes("twitter.com")
