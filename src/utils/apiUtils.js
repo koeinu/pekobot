@@ -5,7 +5,7 @@ import { ImageAnnotatorClient } from "@google-cloud/vision";
 import dotenv from "dotenv";
 import { SENTENCE_ENDERS } from "./constants.js";
 import { gptGetLanguage, gptl } from "./openaiUtils.js";
-import { trimBrackets } from "./stringUtils.js";
+import { getMsgInfo, trimBrackets } from "./stringUtils.js";
 import extractUrls from "extract-urls";
 
 dotenv.config();
@@ -71,7 +71,7 @@ export class ApiUtils {
     let textToTranslate = text
       .trim()
       .replace(
-        /([あいうえおアイウエオｱｲｳｴｵぁぃぅぇぉァィゥェォｧｨｩｪｫ])\1\1+/gi,
+        /([！あいうえおアイウエオｱｲｳｴｵぁぃぅぇぉァィゥェォｧｨｩｪｫ])\1\1+/gi,
         "$1$1"
       ); // replace 3+ same characters with 2
     const startTime = new Date();
@@ -134,6 +134,7 @@ export class ApiUtils {
         }
       }
       if (response.length > 1000) {
+        console.error(`${getMsgInfo(msg)}, Too long gptl message: ${response}`);
         if (!isFallback) {
           return ApiUtils.GetTranslation(
             text,
