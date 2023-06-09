@@ -63,7 +63,10 @@ export class GptlCommand extends AbstractCommand {
       });
     }
 
-    if (data.text.length > 0) {
+    if (
+      data.text.length > 0 &&
+      !data.text.match(/^[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~\d]*$/g)
+    ) {
       msg.channel.sendTyping().catch((e) => {
         console.error(`Couldn't send typing: ${e}`);
       });

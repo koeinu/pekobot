@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
 import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
-import { getTweetChainTextParts } from "./twitterUtils.js";
 import { getYoutubeVideoInfo } from "./youtubeUtils.js";
 import { MessageType } from "discord.js";
 import { MOD_THRESHOLDS } from "./openaiUtils.js";
@@ -13,7 +12,7 @@ import {
   MAX_TL_TAG_LENGTH,
   S_MS,
 } from "./constants.js";
-import { getOptions } from "./discordUtils.js";
+import { getOptions, sleep } from "./discordUtils.js";
 
 dotenv.config();
 
@@ -234,6 +233,7 @@ export const getTextMessageContent = async (
   const parts = [];
   let countObject = undefined;
   let parsedLinks = false;
+  let hasTwitterLink = false;
   let messageText = extractCommandMessage(msg.content);
 
   if (!recursionFlag) {
@@ -290,23 +290,8 @@ export const getTextMessageContent = async (
     if (urls && urls.length > 0) {
       for (let parsedUrl of urls) {
         if (parsedUrl.includes("twitter.com")) {
-          const tweetId = parsedUrl.match(/status\/[\d]+/g)[0].split("/")[1];
-
-          const tweetPartsObjects = await getTweetChainTextParts(tweetId);
-          const partsToMerge = silentAttachments
-            ? [tweetPartsObjects.map((el) => el.text).join("\n---\n")]
-            : [
-                tweetPartsObjects.length > 1
-                  ? "{Tweet conversation:}"
-                  : "{Tweet attachment:}",
-                tweetPartsObjects
-                  .map((el) => `${el.userData.name} tweeted: '${el.text}'.`)
-                  .join("\n"),
-              ];
-
-          messageText = messageText.replace(parsedUrl, partsToMerge.join("\n"));
-
-          parsedLinks = true;
+          hasTwitterLink = true;
+          messageText = messageText.replace(parsedUrl, "");
         } else if (
           parsedUrl.includes("youtube") ||
           parsedUrl.includes("youtu.be")
@@ -363,16 +348,25 @@ export const getTextMessageContent = async (
     }
   }
 
+  let updatedMsg = msg;
   if (!parsedLinks) {
-    msg.embeds.forEach((embed) => {
-      const embedContent = embed.description;
-      if (embedContent && embedContent.length > 0) {
-        if (!silentAttachments) {
-          parts.push("Embedded attachment:");
-        }
-        parts.push(embedContent);
+    if (hasTwitterLink) {
+      let i = 0;
+      while (updatedMsg.embeds.length === 0 && i++ < 10) {
+        await sleep(() => {}, 1000);
+        updatedMsg = await updatedMsg.channel.messages.fetch(updatedMsg.id);
       }
-    });
+
+      updatedMsg.embeds.forEach((embed) => {
+        const embedContent = embed.description;
+        if (embedContent && embedContent.length > 0) {
+          if (!silentAttachments) {
+            parts.push("Embedded attachment:");
+          }
+          parts.push(embedContent);
+        }
+      });
+    }
   }
 
   const emojiPattern = /^<:\w+:\d+>$/;

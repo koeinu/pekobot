@@ -42,17 +42,9 @@ export const sendToChannels = async (discordClient, text, channels) => {
     .map((el) => el[1]);
 
   foundChannels.forEach((channel) => {
-    channel
-      .send(text)
-      .then((msg) => {
-        console.log("ok!");
-        msg.react("☑️").catch((e) => {
-          console.error(`Couldn't react: ${e}`);
-        });
-      })
-      .catch((e) => {
-        console.error(`Couldn't send text to ${channel.name}, ${e}`);
-      });
+    channel.send(text).catch((e) => {
+      console.error(`Couldn't send text to ${channel.name}, ${e}`);
+    });
   });
 };
 

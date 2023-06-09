@@ -11,8 +11,18 @@ import { GptlCommand } from "./commands/gptlCommand.js";
 import { SameReactCommand } from "./commands/sameReactCommand.js";
 import { BotMentionedCommand } from "./commands/botMentionedCommand.js";
 import { ModerateCommand } from "./commands/moderateCommand.js";
-import { getMsgInfo } from "../utils/stringUtils.js";
+import { formatTLText, getMsgInfo } from "../utils/stringUtils.js";
 import { CreatorMentionedCommand } from "./commands/creatorMentionedCommand.js";
+import { ApiUtils } from "../utils/apiUtils.js";
+import { sendToChannels, sleep } from "../utils/discordUtils.js";
+import extractUrls from "extract-urls";
+import {
+  catchingPoem,
+  stopCatchingTweets,
+  TWITTER_RELAY_DATA,
+} from "../utils/twitterUtils.js";
+
+const obtainedMessages = [];
 
 export class CommandListener {
   constructor(client, settings) {
@@ -37,6 +47,72 @@ export class CommandListener {
   }
   async processMessage(msg) {
     if (msg.system || msg.author.bot) {
+      if (obtainedMessages.includes(msg.id)) {
+        return Promise.resolve();
+      }
+      obtainedMessages.push(msg.id);
+      const urls = (extractUrls(msg.content) || []).filter((el) =>
+        el.includes("twitter.com")
+      );
+      console.log(urls);
+      if (urls.length > 0) {
+        let url = urls[0].split(")")[0];
+        // let's translate this tweet
+        const userIds = url.match(
+          /(?<=twitter.com\/)([a-zA-Z0-9]*)(?=\/status)/g
+        );
+        if (userIds && userIds[0]) {
+          const relayData = TWITTER_RELAY_DATA.find(
+            (el) => el.src === userIds[0]
+          );
+          if (relayData) {
+            const isCatchingPoem = catchingPoem;
+            let updatedMsg = msg;
+            let i = 0;
+            while (updatedMsg.embeds.length === 0 && i++ < 10) {
+              await sleep(() => {}, 1000);
+              updatedMsg = await updatedMsg.channel.messages.fetch(
+                updatedMsg.id
+              );
+            }
+            const parts = [];
+
+            const embedContent = updatedMsg.embeds[0].description;
+            if (embedContent && embedContent.length > 0) {
+              parts.push(embedContent);
+            }
+
+            const textToTranslate =
+              parts.length > 0 ? parts.join("\n") : updatedMsg.content;
+
+            return ApiUtils.GetTranslation(
+              textToTranslate,
+              undefined,
+              msg,
+              this.settings,
+              true
+            ).then(async (tlData) => {
+              if (tlData.translated && tlData.text) {
+                const toSend = formatTLText(tlData.text, tlData.isGpt);
+                await sendToChannels(
+                  this.client,
+                  `${relayData.src} tweeted!\n${url}\n${toSend}`,
+                  relayData.feedIds
+                );
+                if (isCatchingPoem && relayData.poemIds.length > 0) {
+                  stopCatchingTweets();
+                  await sendToChannels(
+                    this.client,
+                    `${relayData.src} wrote a poem!\n${url}\n${toSend}`,
+                    relayData.poemIds
+                  );
+                }
+              }
+              return Promise.resolve();
+            });
+          }
+        }
+      }
       return Promise.resolve();
     }
 

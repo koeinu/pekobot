@@ -28,9 +28,9 @@ const MEMBER_MODE = process.env.MEMBER_MODE;
 console.log(`twitter token: ${BEARER_TOKEN}`);
 
 export const client = new TwitterApi(BEARER_TOKEN);
-let catchingPoem = false;
+export let catchingPoem = false;
 
-const TWITTER_RELAY_DATA = [
+export const TWITTER_RELAY_DATA = [
   {
     src: "usadapekora",
     feedIds: [TEST_PEKORA_FEED, PEKO_PEKORA_FEED],
@@ -346,7 +346,7 @@ export const catchTweets = () => {
   timeoutId = setTimeout(stopCatchingTweets, CATCH_TWEET_TIMEOUT);
 };
 
-const stopCatchingTweets = () => {
+export const stopCatchingTweets = () => {
   catchingPoem = false;
   console.log("stopped catching tweets");
   interruptTweetsCatchingTimeout();

@@ -5,9 +5,9 @@ import { H_M_S, S_MS } from "./utils/constants.js";
 export class TwitterClient {
   init(apps) {
     this.apps = apps;
-    this.keepConnectingToStreamFeed().catch((e) => {
-      console.error(`Critical error when connecting to twitter feed!: ${e}`);
-    });
+    // this.keepConnectingToStreamFeed().catch((e) => {
+    //   console.error(`Critical error when connecting to twitter feed!: ${e}`);
+    // });
   }
 
   async keepConnectingToStreamFeed() {

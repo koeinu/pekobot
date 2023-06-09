@@ -175,7 +175,7 @@ export class ApiUtils {
       text: response,
       metaData: metadata,
       isGpt: isGptResult,
-      translated: response === textToTranslate,
+      translated: response !== textToTranslate,
     };
 
     console.debug(`final translation:`, toReturn);
