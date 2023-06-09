@@ -134,6 +134,18 @@ export class ApiUtils {
         }
       }
       if (response.length > 1000) {
+        const patterns = response.match(/(\w+\s*)\1+/g);
+        patterns.forEach((p) => {
+          const spaceSeparated = p.split(" ")[0];
+          const firstLetters = p.slice(0, 5);
+          const toReplace =
+            spaceSeparated.length < firstLetters.length
+              ? spaceSeparated
+              : firstLetters;
+          response = response.replaceAll(p, toReplace);
+        });
+      }
+      if (response.length > 1000) {
         console.error(`${getMsgInfo(msg)}, Too long gptl message: ${response}`);
         if (!isFallback) {
           return ApiUtils.GetTranslation(
