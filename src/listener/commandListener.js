@@ -14,7 +14,7 @@ import { ModerateCommand } from "./commands/moderateCommand.js";
 import { formatTLText, getMsgInfo } from "../utils/stringUtils.js";
 import { CreatorMentionedCommand } from "./commands/creatorMentionedCommand.js";
 import { ApiUtils } from "../utils/apiUtils.js";
-import { sendToChannels, sleep } from "../utils/discordUtils.js";
+import { reply, sendToChannels, sleep } from "../utils/discordUtils.js";
 import extractUrls from "extract-urls";
 import {
   catchingPoem,
@@ -61,6 +61,13 @@ export class CommandListener {
       if (urls.length > 0) {
         let url = urls[0].split(")")[0];
         // let's translate this tweet
+        const tweetMode = msg.content.includes(" retweeted")
+          ? "retweeted"
+          : msg.content.includes(" quoted")
+          ? "tweeted"
+          : msg.content.includes(" tweeted")
+          ? "tweeted"
+          : "tweeted";
         const userIds = url.match(
           /(?<=twitter.com\/)([a-zA-Z0-9]*)(?=\/status)/g
         );
@@ -97,11 +104,7 @@ export class CommandListener {
             ).then(async (tlData) => {
               if (tlData.translated && tlData.text) {
                 const toSend = formatTLText(tlData.text, tlData.isGpt);
-                await sendToChannels(
-                  this.client,
-                  `${relayData.src} tweeted!\n${url}\n${toSend}`,
-                  relayData.feedIds
-                );
+                await reply(updatedMsg, toSend);
                 if (isCatchingPoem && relayData.poemIds.length > 0) {
                   stopCatchingTweets();
                   await sendToChannels(
