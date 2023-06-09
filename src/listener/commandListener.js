@@ -61,13 +61,6 @@ export class CommandListener {
       if (urls.length > 0) {
         let url = urls[0].split(")")[0];
         // let's translate this tweet
-        const tweetMode = msg.content.includes(" retweeted")
-          ? "retweeted"
-          : msg.content.includes(" quoted")
-          ? "tweeted"
-          : msg.content.includes(" tweeted")
-          ? "tweeted"
-          : "tweeted";
         const userIds = url.match(
           /(?<=twitter.com\/)([a-zA-Z0-9]*)(?=\/status)/g
         );
