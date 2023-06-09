@@ -133,6 +133,18 @@ export class ApiUtils {
           throw `Both deepl and gptl failed miserably.`;
         }
       }
+      if (response.length > 1000) {
+        if (!isFallback) {
+          return ApiUtils.GetTranslation(
+            text,
+            source,
+            msg,
+            settings,
+            false,
+            true
+          );
+        }
+      }
     }
 
     if (!isGpt || !response) {
