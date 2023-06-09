@@ -95,9 +95,11 @@ export class CommandListener {
               this.settings,
               true
             ).then(async (tlData) => {
-              if (tlData.translated && tlData.text) {
+              if (tlData.text) {
                 const toSend = formatTLText(tlData.text, tlData.isGpt);
-                await reply(updatedMsg, toSend);
+                if (tlData.translated) {
+                  await reply(updatedMsg, toSend);
+                }
                 if (isCatchingPoem && relayData.poemIds.length > 0) {
                   stopCatchingTweets();
                   await sendToChannels(
