@@ -22,6 +22,7 @@ import {
   TWITTER_RELAY_DATA,
 } from "../utils/twitterUtils.js";
 import { MIKO_SERVER, PEKO_SERVER, TEST_SERVER } from "../utils/ids/guilds.js";
+import { Gpt4Command } from "./commands/gpt4Command.js";
 
 export class CommandListener {
   constructor(client, settings) {
@@ -32,6 +33,7 @@ export class CommandListener {
       new RelayMessageCommand(settings), // high priority, intercepts
       new GptlCommand(settings), // intercepts
       new DeeplCommand(settings), // intercepts
+      new Gpt4Command(settings), // intercepts
       new GptCommand(settings), // intercepts
       new ModerateCommand(settings), // doesn't intercept
       new CatchPoemCommand(settings), // intercepts

@@ -253,9 +253,10 @@ export const gpt = async (
     .catch((e) => {
       throw e;
     });
-  let result = res.text;
+  let result = res.text || res;
   if (
     result &&
+    settings.name &&
     result.toLowerCase().indexOf(settings.name.toLowerCase()) === 0
   ) {
     result = result.slice(9).trim();

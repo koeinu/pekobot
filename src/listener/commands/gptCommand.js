@@ -36,6 +36,7 @@ import { BANNED_USERS } from "../../utils/ids/users.js";
 export class GptCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
+    this.completionSettings = undefined;
     this.name = "gpt";
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
@@ -128,10 +129,8 @@ export class GptCommand extends AbstractCommand {
           gptPrompt,
         ].join("\n"),
         this.settings,
-        ""
-        // {
-        //   temperature: 1,
-        // }
+        "",
+        this.completionSettings
       )
         .then(async (data) => {
           const response = data.text;
