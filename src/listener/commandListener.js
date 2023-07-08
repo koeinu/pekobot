@@ -70,7 +70,6 @@ export class CommandListener {
       const urls = (extractUrls(msg.content) || []).filter((el) =>
         el.includes("twitter.com")
       );
-      console.log(urls);
       if (urls.length > 0) {
         let url = urls[0].split(")")[0];
         // let's translate this tweet

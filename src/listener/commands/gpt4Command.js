@@ -13,7 +13,11 @@ export class Gpt4Command extends GptCommand {
     super(settings);
     this.completionSettings = { model: "gpt-4" };
     this.name = "gpt4";
-    this.allowedChannels = [...TEST_ENABLED_CHANNELS, ...RP_CHANNELS];
+    this.allowedChannels = [
+      ...TEST_ENABLED_CHANNELS,
+      TEST_ASSISTANT,
+      ...RP_CHANNELS,
+    ];
     this.consultingChanels = [...RP_CHANNELS, TEST_ASSISTANT, DDF_CONSULTING];
     this.intercept = true;
   }
