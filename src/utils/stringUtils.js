@@ -57,6 +57,8 @@ export const formChainGPTPrompt = async (
         const finalName =
           rpSettings && extractedName === settings.name
             ? rpSettings.nickname
+            : rpSettings && extractedName === "hermit.purple"
+            ? "Alex"
             : extractedName;
 
         return extractedText && extractedText.length > 0
@@ -69,8 +71,9 @@ export const formChainGPTPrompt = async (
   const reversedMsgs = msgs.reverse();
   for (let m of reversedMsgs) {
     if (
-      finalMsgArray.map((el) => el).join("\n").length <
-      GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
+      finalMsgArray.map((el) => el).join("\n").length < rpSettings
+        ? GPT_INFORMATIVE_CONTENT_LIMIT_CHAR * 2
+        : GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
     ) {
       finalMsgArray.push(m);
     }
