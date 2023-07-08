@@ -8,6 +8,8 @@ import { StreakCommand } from "./commands/streakCommand.js";
 import { CatchPoemCommand } from "./commands/catchPoemCommand.js";
 import { GptCommand } from "./commands/gptCommand.js";
 import { GptlCommand } from "./commands/gptlCommand.js";
+import { Gpt4Command } from "./commands/gpt4Command.js";
+import { Gptl4Command } from "./commands/gptl4Command.js";
 import { SameReactCommand } from "./commands/sameReactCommand.js";
 import { BotMentionedCommand } from "./commands/botMentionedCommand.js";
 import { ModerateCommand } from "./commands/moderateCommand.js";
@@ -22,7 +24,6 @@ import {
   TWITTER_RELAY_DATA,
 } from "../utils/twitterUtils.js";
 import { MIKO_SERVER, PEKO_SERVER, TEST_SERVER } from "../utils/ids/guilds.js";
-import { Gpt4Command } from "./commands/gpt4Command.js";
 
 export class CommandListener {
   constructor(client, settings) {
@@ -31,6 +32,7 @@ export class CommandListener {
       new CreatorMentionedCommand(settings), // ...
       new LinkFilterCommand(settings), // top priority, intercepts
       new RelayMessageCommand(settings), // high priority, intercepts
+      new Gptl4Command(settings), // intercepts
       new GptlCommand(settings), // intercepts
       new DeeplCommand(settings), // intercepts
       new Gpt4Command(settings), // intercepts

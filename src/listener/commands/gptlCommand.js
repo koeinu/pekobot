@@ -21,6 +21,7 @@ export class GptlCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
     this.name = "gptl";
+    this.isGpt4 = false;
     // this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER, MIKO_SERVER];
     this.rateLimiter = new CustomRateLimiter(
       "GPT translations",
@@ -76,7 +77,9 @@ export class GptlCommand extends AbstractCommand {
         undefined,
         msg,
         this.settings,
-        true
+        true,
+        false,
+        this.isGpt4
       ).then(async (tlData) => {
         if (tlData.text) {
           const toSend = formatTLText(tlData.text, tlData.isGpt);

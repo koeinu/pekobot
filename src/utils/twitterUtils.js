@@ -325,8 +325,7 @@ const formatTweet = async (
       undefined,
       settings,
       true,
-      false,
-      username === "usadapekora" || username === "uraakapeko"
+      false
     );
 
     let fmtText;
