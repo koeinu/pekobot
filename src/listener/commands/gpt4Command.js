@@ -30,7 +30,7 @@ export class Gpt4Command extends GptCommand {
       repliedToMessage.author.username === this.settings.name
     ) {
       return !(
-        (repliedToMessage.embeds && repliedToMessage.embeds.length > 0) ||
+        // (repliedToMessage.embeds && repliedToMessage.embeds.length > 0) ||
         isFormattedTl(repliedToMessage.content)
       );
     }
