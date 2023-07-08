@@ -182,7 +182,10 @@ export class GptCommand extends AbstractCommand {
       repliedToMessage &&
       repliedToMessage.author.username === this.settings.name
     ) {
-      return !isFormattedTl(repliedToMessage.content);
+      return !(
+        (repliedToMessage.embeds && repliedToMessage.embeds.length > 0) ||
+        isFormattedTl(repliedToMessage.content)
+      );
     }
     return (
       msg.content.indexOf("~gpt") === 0 ||
