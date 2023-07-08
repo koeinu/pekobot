@@ -61,8 +61,13 @@ export const formChainGPTPrompt = async (
             ? "Alex"
             : extractedName;
 
-        return extractedText && extractedText.length > 0
-          ? `${finalName}: ${extractedText}`
+        const finalText =
+          extractedText && rpSettings
+            ? extractedText.replaceAll("Hermit", "Alex")
+            : extractedText;
+
+        return finalText && finalText.length > 0
+          ? `${finalName}: ${finalText}`
           : undefined;
       })
     )
