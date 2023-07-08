@@ -203,7 +203,7 @@ export const gptGetLanguage = async (text, settings) => {
 
   return gpt(parts.join(`\n`), settings, "", GPTL_PARAMS);
 };
-export const gptl = async (msg, settings, text) => {
+export const gptl = async (msg, settings, text, isGpt4) => {
   const dict = listDictionary(msg ? msg.guild.id : undefined);
   const entries = Object.entries(dict).map((el) => ({
     src: el[0],
@@ -234,7 +234,11 @@ export const gptl = async (msg, settings, text) => {
   }
   parts.push(`[START]${textWithoutHashtags}[END]`);
 
-  return gpt(parts.join(`\n`), settings, "", GPTL_PARAMS);
+  const params = { ...GPTL_PARAMS };
+  if (isGpt4) {
+    params.model = "gpt-4";
+  }
+  return gpt(parts.join(`\n`), settings, "", params);
 };
 // throws
 export const gpt = async (

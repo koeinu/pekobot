@@ -184,7 +184,8 @@ const onStreamTweet = async (tweet, botApps) => {
     if (
       !catchingPoem ||
       tweet.data.text.indexOf("RT") === 0 ||
-      poemChannels.length === 0
+      poemChannels.length === 0 ||
+      !translatedData.poemText
     ) {
       continue;
     }
@@ -307,33 +308,37 @@ const formatTweet = async (
       ? getUserTweetLink(refTweet, refUsername)
       : undefined;
 
-  let targetText =
-    refTweet && tweet.data.text.indexOf("RT") === 0
-      ? refTweet.data.text
-      : tweet.data.text;
+  const isRetweet = tweet.data.text.indexOf("RT") === 0;
+  let targetText = isRetweet ? refTweet.data.text : tweet.data.text;
 
-  let tlData = await ApiUtils.GetTranslation(
-    targetText,
-    undefined,
-    undefined,
-    settings,
-    true
-  );
+  const targetUrl = refUrl && isRetweet ? refUrl : url;
 
-  const targetUrl =
-    refUrl && tweet.data.text.indexOf("RT") === 0 ? refUrl : url;
-  let fmtText;
-  fmtText = formatNewline(targetUrl, formatTLText(tlData.text, tlData.isGpt));
+  if (isRetweet) {
+    return {
+      poemText: undefined,
+      usualText: `${username} retweeted ${refUsername}!\n${targetUrl}`,
+    };
+  } else {
+    let tlData = await ApiUtils.GetTranslation(
+      targetText,
+      undefined,
+      undefined,
+      settings,
+      true,
+      false,
+      true
+    );
 
-  return {
-    poemText: `${username} wrote a poem!\n${fmtText}`,
-    usualText:
-      refUrl && tweet.data.text.indexOf("RT") === 0
-        ? `${username} retweeted ${refUsername}!\n${fmtText}`
-        : refUrl
+    let fmtText;
+    fmtText = formatNewline(targetUrl, formatTLText(tlData.text, tlData.isGpt));
+
+    return {
+      poemText: `${username} wrote a poem!\n${fmtText}`,
+      usualText: refUrl
         ? `${username} quoted ${refUsername}!\n${fmtText}`
         : `${username} tweeted!\n${fmtText}`,
-  };
+    };
+  }
 };
 
 let timeoutId = undefined;

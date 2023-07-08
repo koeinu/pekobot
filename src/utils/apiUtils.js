@@ -62,7 +62,8 @@ export class ApiUtils {
     msg = undefined,
     settings,
     isGpt = false,
-    isFallback = false
+    isFallback = false,
+    isGpt4 = false
   ) {
     if (tlCache[text] && tlCache[text].isGpt === isGpt) {
       console.log(`cached translation: ${tlCache[text]}`);
@@ -98,7 +99,7 @@ export class ApiUtils {
                 data: response.data,
               });
             } else {
-              return gptl(msg, settings, textToTranslate);
+              return gptl(msg, settings, textToTranslate, isGpt4);
             }
           })
           .then((res) => {
@@ -127,7 +128,8 @@ export class ApiUtils {
             msg,
             settings,
             false,
-            true
+            true,
+            isGpt4
           );
         } else {
           throw `Both deepl and gptl failed miserably.`;
@@ -154,7 +156,8 @@ export class ApiUtils {
             msg,
             settings,
             false,
-            true
+            true,
+            isGpt4
           );
         }
       }
@@ -178,7 +181,8 @@ export class ApiUtils {
             msg,
             settings,
             true,
-            true
+            true,
+            isGpt4
           );
         } else {
           throw `Both deepl and gptl failed miserably.`;
