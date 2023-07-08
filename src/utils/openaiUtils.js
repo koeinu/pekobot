@@ -243,6 +243,7 @@ export const gpt = async (
   systemMessage,
   completionParams = {}
 ) => {
+  console.log("completion params:", completionParams);
   const res = await queue
     .add(() => {
       return api.sendMessage(str, {
