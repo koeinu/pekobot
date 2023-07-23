@@ -10,8 +10,8 @@ import { getMsgInfo } from "../../utils/stringUtils.js";
 import { MESSAGE_TIMEOUT } from "../../utils/constants.js";
 
 export class LinkFilterCommand extends AbstractCommand {
-  constructor() {
-    super();
+  constructor(settings) {
+    super(settings);
     this.name = "linkFilter";
     this.allowedGuilds = [PEKO_SERVER];
     this.intercept = false;
