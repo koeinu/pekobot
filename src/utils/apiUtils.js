@@ -65,7 +65,11 @@ export class ApiUtils {
     isFallback = false,
     isGpt4 = false
   ) {
-    if (tlCache[text] && tlCache[text].isGpt === isGpt) {
+    if (
+      tlCache[text] &&
+      tlCache[text].isGpt === isGpt &&
+      tlCache[text].isGpt4 === isGpt4
+    ) {
       console.log(`cached translation: ${tlCache[text]}`);
       return tlCache[text];
     }
@@ -204,6 +208,7 @@ export class ApiUtils {
       text: response,
       metaData: metadata,
       isGpt: isGptResult,
+      isGpt4: isGpt4,
       translated: response !== textToTranslate,
     };
 

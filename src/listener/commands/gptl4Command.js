@@ -1,6 +1,7 @@
 import { MessageType } from "discord.js";
 import { GptlCommand } from "./gptlCommand.js";
 import { TEST_SERVER } from "../../utils/ids/guilds.js";
+import { ADMINS } from "../../utils/ids/users.js";
 
 export class Gptl4Command extends GptlCommand {
   constructor(settings) {
@@ -8,6 +9,7 @@ export class Gptl4Command extends GptlCommand {
     this.name = "gptl4";
     this.isGpt4 = true;
     this.allowedGuilds = [TEST_SERVER];
+    this.triggerUsers = [ADMINS];
     this.intercept = true;
   }
   async commandMatch(msg) {

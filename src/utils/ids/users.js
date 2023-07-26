@@ -9,3 +9,8 @@ export const BANNED_USERS = [
   "212991535686352896", // simp
   "267468195995189249", // mario
 ];
+export const ADMINS = [
+  "184334990614593537", // hermit
+  "292290025553395713", // reus
+  "252637972325728256", // okureh
+];
