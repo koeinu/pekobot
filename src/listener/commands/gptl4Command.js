@@ -9,7 +9,7 @@ export class Gptl4Command extends GptlCommand {
     this.name = "gptl4";
     this.isGpt4 = true;
     this.allowedGuilds = [TEST_SERVER];
-    this.triggerUsers = [ADMINS];
+    this.triggerUsers = [...ADMINS];
     this.intercept = true;
   }
   async commandMatch(msg) {
