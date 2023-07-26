@@ -70,7 +70,7 @@ export class ApiUtils {
       tlCache[text].isGpt === isGpt &&
       tlCache[text].isGpt4 === isGpt4
     ) {
-      console.log(`cached translation: ${tlCache[text]}`);
+      console.log(`cached translation`, tlCache[text]);
       return tlCache[text];
     }
     let textToTranslate = text
