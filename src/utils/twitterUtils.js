@@ -325,7 +325,8 @@ const formatTweet = async (
       undefined,
       settings,
       true,
-      false
+      false,
+      true
     );
 
     let fmtText;
