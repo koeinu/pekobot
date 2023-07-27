@@ -26,7 +26,7 @@ export default {
     .addIntegerOption((option) =>
       option
         .setMinValue(10)
-        .setMaxValue(500)
+        .setMaxValue(1200)
         .setRequired(true)
         .setName("pieces")
         .setDescription("Amount of pieces")
