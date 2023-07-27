@@ -1,12 +1,14 @@
 import { MessageType } from "discord.js";
 import { isFormattedTl } from "../../utils/stringUtils.js";
 import {
-  DDF_CONSULTING,
   RP_CHANNELS,
   TEST_ASSISTANT,
   TEST_ENABLED_CHANNELS,
 } from "../../utils/ids/channels.js";
 import { GptCommand } from "./gptCommand.js";
+import { ADMINS } from "../../utils/ids/users.js";
+import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
+import { H_M_S, S_MS } from "../../utils/constants.js";
 
 export class Gpt4Command extends GptCommand {
   constructor(settings) {
@@ -15,10 +17,19 @@ export class Gpt4Command extends GptCommand {
     this.name = "gpt4";
     this.allowedChannels = [
       ...TEST_ENABLED_CHANNELS,
-      TEST_ASSISTANT,
       ...RP_CHANNELS,
+      TEST_ASSISTANT,
     ];
-    this.consultingChanels = [...RP_CHANNELS, TEST_ASSISTANT, DDF_CONSULTING];
+    this.rateLimiter = new CustomRateLimiter(
+      "GPT4",
+      1,
+      S_MS * H_M_S * 5,
+      ["Mod", this.settings.name],
+      [],
+      AlertUserMode.Emote
+    );
+    this.consultingChanels = [...RP_CHANNELS];
+    this.triggerUsers = ADMINS;
     this.intercept = true;
   }
   async commandMatch(msg) {
