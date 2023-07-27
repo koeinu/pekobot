@@ -43,7 +43,7 @@ export class GptCommand extends AbstractCommand {
       1,
       S_MS * H_M_S * 3,
       ["Mod", this.settings.name],
-      [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL],
+      [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL, MIKODANYE_CHANNEL],
       AlertUserMode.Emote
     );
     this.allowedChannels = [
