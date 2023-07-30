@@ -23,9 +23,9 @@ export class CustomRateLimiter {
     if (this.entities[entityId] === undefined) {
       if (doIncrease) {
         this.entities[entityId] = { count: 1, ts: new Date().getTime() };
-        console.debug(
-          `rate start for ${this.commandName}, entityId: ${entityId}, cd ${this.interval}`
-        );
+        // console.debug(
+        //   `rate start for ${this.commandName}, entityId: ${entityId}, cd ${this.interval}`
+        // );
         setTimeout(() => {
           this.entities[entityId] = undefined;
         }, this.interval);
