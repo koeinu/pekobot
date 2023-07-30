@@ -67,7 +67,10 @@ export const getYoutubeLiveDetails = async (channelId, additionalIds) => {
         const data = ical.parseICS(cal);
         const ids = Object.values(data)
           .filter((calendarData) => {
-            return calendarData.summary.toLowerCase().includes(channelId);
+            return (
+              calendarData.summary &&
+              calendarData.summary.toLowerCase().includes(channelId)
+            );
           })
           .map((calendarData) => {
             return calendarData.uid;
