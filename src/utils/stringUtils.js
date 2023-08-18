@@ -76,9 +76,7 @@ export const formChainGPTPrompt = async (
   const reversedMsgs = msgs.reverse();
   for (let m of reversedMsgs) {
     if (
-      finalMsgArray.map((el) => el).join("\n").length < rpSettings
-        ? GPT_INFORMATIVE_CONTENT_LIMIT_CHAR * 1.5
-        : GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
+      finalMsgArray.map((el) => el).join("\n").length < GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
     ) {
       finalMsgArray.push(m);
     }
