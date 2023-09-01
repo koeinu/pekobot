@@ -76,7 +76,8 @@ export const formChainGPTPrompt = async (
   const reversedMsgs = msgs.reverse();
   for (let m of reversedMsgs) {
     if (
-      finalMsgArray.map((el) => el).join("\n").length < GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
+      finalMsgArray.map((el) => el).join("\n").length <
+      GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
     ) {
       finalMsgArray.push(m);
     }
@@ -240,6 +241,7 @@ export const getTextMessageContent = async (
   let countObject = undefined;
   let parsedLinks = false;
   let hasTwitterLink = false;
+  let isPlainLink = false;
   let messageText = extractCommandMessage(msg.content);
 
   if (!recursionFlag) {
@@ -294,24 +296,28 @@ export const getTextMessageContent = async (
 
   if (messageText && messageText.length > 0) {
     if (urls && urls.length > 0) {
-      for (let parsedUrl of urls) {
-        if (parsedUrl.includes("twitter.com")) {
-          hasTwitterLink = true;
-          messageText = messageText.replace(parsedUrl, "");
-        } else if (
-          parsedUrl.includes("youtube") ||
-          parsedUrl.includes("youtu.be")
-        ) {
-          const info = await getYoutubeVideoInfo(parsedUrl, isTranslating);
-          if (info) {
-            const partsToMerge = silentAttachments
-              ? [info]
-              : ["{Video attachment:}", info];
-            parsedLinks = true;
-            messageText = messageText.replace(
-              parsedUrl,
-              partsToMerge.join("\n")
-            );
+      if (urls.length === 1 && urls[0].length * 2 > messageText.length) {
+        isPlainLink = true;
+      } else {
+        for (let parsedUrl of urls) {
+          if (parsedUrl.includes("twitter.com")) {
+            hasTwitterLink = true;
+            messageText = messageText.replace(parsedUrl, "");
+          } else if (
+            parsedUrl.includes("youtube") ||
+            parsedUrl.includes("youtu.be")
+          ) {
+            const info = await getYoutubeVideoInfo(parsedUrl, isTranslating);
+            if (info) {
+              const partsToMerge = silentAttachments
+                ? [info]
+                : ["{Video attachment:}", info];
+              parsedLinks = true;
+              messageText = messageText.replace(
+                parsedUrl,
+                partsToMerge.join("\n")
+              );
+            }
           }
         }
       }
@@ -356,7 +362,7 @@ export const getTextMessageContent = async (
 
   let updatedMsg = msg;
   if (!parsedLinks) {
-    if (hasTwitterLink) {
+    if (hasTwitterLink || isPlainLink) {
       let i = 0;
       while (updatedMsg.embeds.length === 0 && i++ < 10) {
         await sleep(() => {}, 1000);
