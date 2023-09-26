@@ -139,7 +139,7 @@ export class ApiUtils {
           throw `Both deepl and gptl failed miserably.`;
         }
       }
-      if (response.length > 1000) {
+      if (response.length > 1990) {
         const patterns = response.match(/(\w+\s*)\1+/g);
         patterns.forEach((p) => {
           const spaceSeparated = p.split(" ")[0];
@@ -151,7 +151,7 @@ export class ApiUtils {
           response = response.replaceAll(p, toReplace);
         });
       }
-      if (response.length > 1000) {
+      if (response.length > 1990) {
         console.error(`${getMsgInfo(msg)}, Too long gptl message: ${response}`);
         if (!isFallback) {
           return ApiUtils.GetTranslation(
