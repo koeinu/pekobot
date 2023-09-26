@@ -5,8 +5,8 @@ import {
   PEKO_COLOR,
 } from "./constants.js";
 
-import { EmbedBuilder } from "@discordjs/builders";
 import { getMsgInfo } from "./stringUtils.js";
+import { EmbedBuilder } from "discord.js";
 
 export const getOptions = (interaction) =>
   interaction.options?._hoistedOptions || [];
