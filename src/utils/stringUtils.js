@@ -100,7 +100,7 @@ export const extractCommandMessage = (str) => {
     return "";
   }
   if (str.indexOf("~") === 0) {
-    const command = str.match(/~[a-z]*/);
+    const command = str.match(/~[a-z4]*/);
     if (command.length > 0) {
       return str.slice(command[0].length).trim();
     }
