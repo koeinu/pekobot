@@ -13,7 +13,7 @@ import { H_M_S, S_MS } from "../../utils/constants.js";
 export class Gpt4Command extends GptCommand {
   constructor(settings) {
     super(settings);
-    this.completionSettings = { model: "gpt-4" };
+    this.completionSettings = { model: "gpt-4-1106-preview" };
     this.name = "gpt4";
     this.allowedChannels = [
       ...TEST_ENABLED_CHANNELS,

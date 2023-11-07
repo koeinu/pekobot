@@ -236,7 +236,7 @@ export const gptl = async (msg, settings, text, isGpt4) => {
 
   const params = { ...GPTL_PARAMS };
   if (isGpt4) {
-    params.model = "gpt-4";
+    params.model = "gpt-4-1106-preview";
   }
   return gpt(parts.join(`\n`), settings, "", params);
 };
