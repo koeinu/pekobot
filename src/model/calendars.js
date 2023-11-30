@@ -1,4 +1,7 @@
-import { loadFile, saveFile } from "../utils/fileUtils.js";
+import { formFilePath, loadFile, saveFile } from "../utils/fileUtils.js";
+import fs from "node:fs";
+import { sleep } from "../utils/discordUtils.js";
+import { S_MS } from "../utils/constants.js";
 
 const JSON_FILE_NAME = "calendars.json";
 const INITIAL_FILE = {};
@@ -75,4 +78,24 @@ export const getCalendarData = (channelId) => {
 };
 export const getAllCalendarData = () => {
   return loadCalendarData(JSON_FILE_NAME);
+};
+
+export const createUploadCalendarsRoute = (req, res, next) => {
+  console.log(
+    "Now uploading calendars",
+    req.url,
+    ": ",
+    req.get("content-length"),
+    "bytes"
+  );
+  req.pipe(fs.createWriteStream(formFilePath(JSON_FILE_NAME)));
+  req.on("end", async () => {
+    // Done reading!
+    res.sendStatus(200);
+    console.log("Uploaded!");
+    next();
+
+    await sleep(() => {}, S_MS);
+    process.exit();
+  });
 };
