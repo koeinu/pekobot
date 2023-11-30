@@ -17,6 +17,7 @@
   "dependencies": {
     "@google-cloud/translate": "^8.0.2",
     "@google-cloud/vision": "^4.0.2",
+    "@mapbox/node-pre-gyp": "^1.0.11",
     "axios": "^1.6.2",
     "chatgpt": "^5.2.5",
     "deepl": "^1.0.13",
