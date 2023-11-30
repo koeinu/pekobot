@@ -66,5 +66,5 @@
     "node",
     "glitch"
   ],
-  "nodeVersion": "20.6.1"
+  "nodeVersion": "18.16.0"
 }
