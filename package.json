@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
+    "install": "npm install --build-from-resource",
     "test": "node src/test.js",
     "test_ical": "node src/test_ical.js",
     "testjigsaw": "node src/testjigsaw.js",
