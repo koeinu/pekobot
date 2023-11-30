@@ -24,10 +24,6 @@ import {
   ERRORS_FILENAME,
   LOGS_FILENAME,
   WARNINGS_FILENAME,
-  writeDebug,
-  writeError,
-  writeLog,
-  writeWarning,
 } from "./model/logs.js";
 import { createUploadSettingsRoute } from "./model/botSettings.js";
 
@@ -45,7 +41,7 @@ if (!INACTIVE) {
   console.log("Telegram bot started");
 
   console.log = (...args) => {
-    writeLog(...args);
+    // writeLog(...args);
     originalConsoleLog(...args);
   };
   console.error = (...args) => {
@@ -56,7 +52,7 @@ if (!INACTIVE) {
     ) {
       return;
     }
-    writeError(...args);
+    // writeError(...args);
     bot.sendError(...args);
     originalConsoleError(...args);
   };
@@ -68,12 +64,12 @@ if (!INACTIVE) {
     ) {
       return;
     }
-    writeWarning(...args);
+    // writeWarning(...args);
     bot.sendWarning(...args);
     originalConsoleWarn(...args);
   };
   console.debug = (...args) => {
-    writeDebug(...args);
+    // writeDebug(...args);
     bot.sendDebug(...args);
     originalConsoleDebug(...args);
   };
@@ -102,14 +98,14 @@ if (!INACTIVE) {
           "/ics/" + meta.handle,
           aboutRoute(meta.handle, "/ics/" + meta.handle + "/feed")
         );
-        expressApp.use("/cal", createCalendarRoute());
-        expressApp.use("/log", createLogsRoute(LOGS_FILENAME));
-        expressApp.use("/warn", createLogsRoute(WARNINGS_FILENAME));
-        expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
-        expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
-        expressApp.put("/upload", createUploadSettingsRoute);
-        expressApp.put("/uploadCalendars", createUploadSettingsRoute);
       }
+      expressApp.use("/cal", createCalendarRoute());
+      expressApp.use("/log", createLogsRoute(LOGS_FILENAME));
+      expressApp.use("/warn", createLogsRoute(WARNINGS_FILENAME));
+      expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
+      expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
+      expressApp.put("/upload", createUploadSettingsRoute);
+      expressApp.put("/uploadCalendars", createUploadSettingsRoute);
 
       expressApp.listen(3000);
     } catch (e) {
