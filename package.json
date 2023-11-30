@@ -32,7 +32,7 @@
     "node-telegram-bot-api": "^0.61.0",
     "openai": "^3.3.0",
     "p-queue": "^7.3.4",
-    "puppeteer": "5.1.0",
+    "puppeteer": "21.5.2",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "syllable": "^5.0.1",
