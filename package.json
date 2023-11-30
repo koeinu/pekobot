@@ -55,7 +55,7 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": "18.6.0"
+    "node": "18.16.0"
   },
   "license": "MIT",
   "keywords": [
