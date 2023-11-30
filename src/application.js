@@ -91,41 +91,43 @@ export class Application {
       console.log(`Logged in as ${c.user.tag}`);
 
       if (c.user.tag.includes("peko-bot")) {
-        const premiumData = loadAllPremiumData();
-        Object.entries(premiumData).forEach(async ([guildId, data]) => {
-          const guild = this.client.guilds.cache.get(guildId);
-          const customRoleUsers = data.userData;
-          for (let i = 0; i < customRoleUsers.length; i++) {
-            const foundUser = await guild.members.fetch(
-              customRoleUsers[i].userId
-            );
-            const foundRole = await guild.roles.fetch(
-              customRoleUsers[i].roleId
-            );
-            const isDignitary = !!foundUser.roles.cache.find(
-              (el) => el.id === premiumData[guildId].premiumRoleId
-            );
-            const hasCustomRole = !!foundUser.roles.cache.find(
-              (el) => el.id === customRoleUsers[i].roleId
-            );
+        setInterval(() => {
+          const premiumData = loadAllPremiumData();
+          Object.entries(premiumData).forEach(async ([guildId, data]) => {
+            const guild = this.client.guilds.cache.get(guildId);
+            const customRoleUsers = data.userData;
+            for (let i = 0; i < customRoleUsers.length; i++) {
+              const foundUser = await guild.members.fetch(
+                customRoleUsers[i].userId
+              );
+              const foundRole = await guild.roles.fetch(
+                customRoleUsers[i].roleId
+              );
+              const isDignitary = !!foundUser.roles.cache.find(
+                (el) => el.id === premiumData[guildId].premiumRoleId
+              );
+              const hasCustomRole = !!foundUser.roles.cache.find(
+                (el) => el.id === customRoleUsers[i].roleId
+              );
 
-            if (hasCustomRole && !isDignitary) {
-              console.error(
-                `Removing role ${foundRole.name} from ${
-                  foundUser.nickname || foundUser.user.username
-                }`
-              );
-              await foundUser.roles.remove(foundRole);
-            } else if (!hasCustomRole && isDignitary) {
-              console.error(
-                `Assigning role ${foundRole.name} to ${
-                  foundUser.nickname || foundUser.user.username
-                }`
-              );
-              await foundUser.roles.add(foundRole);
+              if (hasCustomRole && !isDignitary) {
+                console.error(
+                  `Removing role ${foundRole.name} from ${
+                    foundUser.nickname || foundUser.user.username
+                  }`
+                );
+                await foundUser.roles.remove(foundRole);
+              } else if (!hasCustomRole && isDignitary) {
+                console.error(
+                  `Assigning role ${foundRole.name} to ${
+                    foundUser.nickname || foundUser.user.username
+                  }`
+                );
+                await foundUser.roles.add(foundRole);
+              }
             }
-          }
-        });
+          });
+        }, 1000 * 60 * 60 * 6);
       }
     });
     this.client.on(Events.InteractionCreate, async (interaction) => {
