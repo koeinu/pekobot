@@ -111,7 +111,7 @@ if (!INACTIVE) {
         expressApp.put("/uploadCalendar", createUploadSettingsRoute);
       }
 
-      expressApp.listen(8166);
+      expressApp.listen(3000);
     } catch (e) {
       console.error(`Couldn't create calendar:`, e);
     }
