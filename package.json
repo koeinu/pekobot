@@ -35,6 +35,7 @@
     "image-to-base64": "^2.2.0",
     "isomorphic-fetch": "^3.0.0",
     "node-cron": "^3.0.3",
+    "node-gyp": "^10.0.1",
     "node-gyp-build": "^4.7.1",
     "node-html-parser": "^6.1.11",
     "node-telegram-bot-api": "^0.64.0",
