@@ -122,7 +122,6 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   const startPage = "https://jigsawexplorer.com/create-a-custom-jigsaw-puzzle";
 
   const browser = await puppeteer.launch({
-    headless: "new",
     executablePath: pup.executablePath(),
     args: ["--no-sandbox"],
   });
