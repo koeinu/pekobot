@@ -101,14 +101,14 @@ if (!INACTIVE) {
           "/ics/" + meta.handle,
           aboutRoute(meta.handle, "/ics/" + meta.handle + "/feed")
         );
-        expressApp.use("/cal", createCalendarRoute());
-        expressApp.use("/log", createLogsRoute(LOGS_FILENAME));
-        expressApp.use("/warn", createLogsRoute(WARNINGS_FILENAME));
-        expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
-        expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
-        expressApp.put("/upload", createUploadSettingsRoute);
-        expressApp.put("/uploadCalendars", createUploadSettingsRoute);
       }
+      expressApp.use("/cal", createCalendarRoute());
+      expressApp.use("/log", createLogsRoute(LOGS_FILENAME));
+      expressApp.use("/warn", createLogsRoute(WARNINGS_FILENAME));
+      expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
+      expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
+      expressApp.put("/upload", createUploadSettingsRoute);
+      expressApp.put("/uploadCalendars", createUploadSettingsRoute);
 
       expressApp.listen(3000);
     } catch (e) {
