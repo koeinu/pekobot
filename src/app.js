@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+import express from "express";
+import aboutRoute from "ics-service/about.js";
+import feedRoute from "ics-service/feed.js";
 import { Application } from "./application.js";
 import {
   originalConsoleDebug,
@@ -7,11 +11,6 @@ import {
   TelegramBotWrapper,
 } from "./telegramLogger.js";
 import { cronTask } from "./resetCounterCronJob.js";
-
-import dotenv from "dotenv";
-import express from "express";
-import aboutRoute from "ics-service/about.js";
-import feedRoute from "ics-service/feed.js";
 import {
   CALENDAR_METADATA,
   createCalendarRoute,
