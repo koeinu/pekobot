@@ -48,12 +48,11 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": "18.16.0"
+    "node": "16.14.2"
   },
   "license": "MIT",
   "keywords": [
     "node",
     "glitch"
-  ],
-  "nodeVersion": "18.16.0"
+  ]
 }

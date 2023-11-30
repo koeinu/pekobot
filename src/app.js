@@ -108,7 +108,7 @@ if (!INACTIVE) {
         expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
         expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
         expressApp.put("/upload", createUploadSettingsRoute);
-        expressApp.put("/uploadCalendar", createUploadSettingsRoute);
+        expressApp.put("/uploadCalendars", createUploadSettingsRoute);
       }
 
       expressApp.listen(3000);
