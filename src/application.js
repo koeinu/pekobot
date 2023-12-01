@@ -50,6 +50,9 @@ export class Application {
         });
       }
     }
+    this.client.on(Events.ClientReady, () => {
+      console.log("logged in as", this.settings.name);
+    });
 
     this.client.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.isModalSubmit()) {

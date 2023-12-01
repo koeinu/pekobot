@@ -9,8 +9,6 @@ dotenv.config();
 const INACTIVE = process.env.INACTIVE;
 
 if (!INACTIVE) {
-  console.error("Logging override complete (a restart happened?)");
-
   const expressApp = express();
   const init = async () => {
     try {
@@ -22,7 +20,7 @@ if (!INACTIVE) {
       expressApp.put("/upload", createUploadSettingsRoute);
       expressApp.put("/uploadCalendars", createUploadSettingsRoute);
 
-      expressApp.listen(3000);
+      expressApp.listen(3001);
     } catch (e) {
       console.error(`Couldn't create calendar:`, e);
     }

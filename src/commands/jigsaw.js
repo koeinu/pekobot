@@ -118,15 +118,29 @@ const processGeneratePuzzle = async (interaction) => {
   }
 };
 
-export const makeWholePuzzle = async (username, imageUrl, nop) => {
-  const startPage = "https://jigsawexplorer.com/create-a-custom-jigsaw-puzzle";
+let browser;
+let page;
 
-  const browser = await puppeteer.launch({
+const launchBrowser = async () => {
+  browser = await puppeteer.launch({
     executablePath: pup.executablePath(),
     args: ["--no-sandbox"],
   });
-  const page = await browser.newPage();
+  page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
+  console.log("browser started");
+};
+
+launchBrowser().catch((e) => {
+  console.error(`Couldn't start browser:`, e);
+});
+
+export const makeWholePuzzle = async (username, imageUrl, nop) => {
+  if (!browser || !page) {
+    throw "Puppeteer is not ready, please try in a minute";
+  }
+  const startPage = "https://jigsawexplorer.com/create-a-custom-jigsaw-puzzle";
+
   await page.goto(startPage, { waitUntil: "domcontentloaded" });
 
   // url input, class=create-url, name=image-url
@@ -184,8 +198,6 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
       `Failed to make multiplayer puzzle link: ${e}. Unsuccessful link: ${toReturn}`
     );
   }
-
-  await browser.close();
 
   return {
     status: isSuccessful,
