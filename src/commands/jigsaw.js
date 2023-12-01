@@ -123,6 +123,7 @@ let page;
 
 const launchBrowser = async () => {
   browser = await puppeteer.launch({
+    headless: true,
     executablePath: pup.executablePath(),
     args: ["--no-sandbox"],
   });
