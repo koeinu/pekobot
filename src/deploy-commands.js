@@ -6,32 +6,15 @@ import {
   makeSimpleBetCommands,
 } from "./commands/commandGenerators/bet.js";
 
-import { convertJsonToParsed, JSON_FILE_NAME } from "./model/bets.js";
 import fs from "node:fs";
 import { getBotSettings } from "./model/botSettings.js";
 
 dotenv.config();
 
 const disabledCommands = {
-  "584977240358518784": [
-    "calendar",
-    "youtube",
-    "relay",
-    "gptdraft",
-    "custom_roles",
-  ], // miko
-  "999666683176308807": [
-    "calendar",
-    "jigsaw",
-    "betedit",
-    "gptDict",
-    "youtube",
-    "gptdraft",
-    "custom_roles",
-  ], // snaxxx
+  "584977240358518784": [], // miko
   "1061909810943115337": [], // ts
-  "683140640166510717": ["calendar"], // peko
-  "1088005181171580949": [], // ts2
+  "683140640166510717": [], // peko
 };
 
 export const makeCmds = async (settings) => {
@@ -89,13 +72,7 @@ const processCommannds = (commandsData) => {
   return Promise.all(returnPromises);
 };
 
-makeCmds(getBotSettings("peko-bot"))
-  .then(processCommannds)
-  .catch((e) => {
-    console.log(`Commands generate failed: ${e}`);
-  });
-
-makeCmds(getBotSettings("Mikodanye"))
+makeCmds(getBotSettings("jigsaw-bot"))
   .then(processCommannds)
   .catch((e) => {
     console.log(`Commands generate failed: ${e}`);

@@ -6,25 +6,9 @@ import {
   originalConsoleWarn,
   TelegramBotWrapper,
 } from "./telegramLogger.js";
-import { cronTask } from "./resetCounterCronJob.js";
 
 import dotenv from "dotenv";
 import express from "express";
-import aboutRoute from "ics-service/about.js";
-import feedRoute from "ics-service/feed.js";
-import {
-  CALENDAR_METADATA,
-  createCalendarRoute,
-  getCalendar,
-} from "./utils/calendarUtils.js";
-import { TwitterClient } from "./twitterClient.js";
-import {
-  createLogsRoute,
-  DEBUGS_FILENAME,
-  ERRORS_FILENAME,
-  LOGS_FILENAME,
-  WARNINGS_FILENAME,
-} from "./model/logs.js";
 import { createUploadSettingsRoute } from "./model/botSettings.js";
 
 dotenv.config();
@@ -78,32 +62,11 @@ if (!INACTIVE) {
   const expressApp = express();
   const init = async () => {
     try {
-      const pekoBot = new Application("peko-bot");
-      const mikoBot = new Application("Mikodanye");
-
-      const twitterClient = new TwitterClient();
-      twitterClient.init([pekoBot, mikoBot]);
+      const bot = new Application("jigsaw-bot");
     } catch (e) {
       console.error(`Couldn't initialize discord bots:`, e);
     }
     try {
-      for (let meta of CALENDAR_METADATA) {
-        expressApp.use(
-          "/ics/" + meta.handle + "/feed",
-          feedRoute(async (feedUrl) => {
-            return getCalendar(feedUrl, meta.handle, meta.id);
-          })
-        );
-        expressApp.use(
-          "/ics/" + meta.handle,
-          aboutRoute(meta.handle, "/ics/" + meta.handle + "/feed")
-        );
-      }
-      expressApp.use("/cal", createCalendarRoute());
-      expressApp.use("/log", createLogsRoute(LOGS_FILENAME));
-      expressApp.use("/warn", createLogsRoute(WARNINGS_FILENAME));
-      expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
-      expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
       expressApp.put("/upload", createUploadSettingsRoute);
       expressApp.put("/uploadCalendars", createUploadSettingsRoute);
 
