@@ -157,14 +157,7 @@ export class Application {
       return;
     }
 
-    msg = await fillMessage(msg);
-    if (!msg) {
-      return;
-    }
-
-    this.listener.processMessage(msg).catch((e) => {
-      console.error(`onMessage error: ${msg.content}, ${e}`);
-    });
+    await fillMessage(msg);
   }
 
   async onMessageEdit(oldMessage, newMessage) {
@@ -178,13 +171,6 @@ export class Application {
     }
 
     newMessage = await fillMessage(newMessage);
-    if (!newMessage) {
-      return;
-    }
-
-    this.listener.processMessageUpdate(oldMessage, newMessage).catch((e) => {
-      console.error(`onUpdateMessage error: ${oldMessage.content}, ${e}`);
-    });
   }
   async onMessageDelete(msg) {
     if (!this.ready) {
