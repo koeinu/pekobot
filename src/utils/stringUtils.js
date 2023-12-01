@@ -398,10 +398,6 @@ export const formatTLText = (text, isGpt) => {
   return isGpt ? `**TL:** ${text}` : `**DeepL:** ${text}`;
 };
 
-export const parseSingleAttachmentUrl = (option) => {
-  return option.attachment.url;
-};
-
 export const parseAttachmentUrl = (msg) => {
   const attachments = msg.attachments;
   return attachments.size > 0 ? [...attachments][0][1].url : undefined;
