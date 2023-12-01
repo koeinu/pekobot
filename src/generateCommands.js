@@ -29,10 +29,11 @@ export const generateCommands = async (
         .catch((e) => {
           console.error(`Guild id: ${guildId}:`, e);
         });
-
-      console.log(
-        `Successfully reloaded ${data.length} application (/) commands.`
-      );
+      if (data) {
+        console.log(
+          `Successfully reloaded ${data.length} application (/) commands.`
+        );
+      }
     } catch (error) {
       console.error(error);
     }

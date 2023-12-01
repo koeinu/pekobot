@@ -21,42 +21,40 @@ const IGNORED_WARNINGS = [
 ];
 
 if (!INACTIVE) {
-  const bot = new TelegramBotWrapper();
-  console.log("Telegram bot started");
-
-  console.log = (...args) => {
-    // writeLog(...args);
-    originalConsoleLog(...args);
-  };
-  console.error = (...args) => {
-    if (
-      IGNORED_WARNINGS.some((warning) =>
-        args.some((arg) => typeof arg === "string" && arg.includes(warning))
-      )
-    ) {
-      return;
-    }
-    // writeError(...args);
-    bot.sendError(...args);
-    originalConsoleError(...args);
-  };
-  console.warn = (...args) => {
-    if (
-      IGNORED_WARNINGS.some((warning) =>
-        args.some((arg) => typeof arg === "string" && arg.includes(warning))
-      )
-    ) {
-      return;
-    }
-    // writeWarning(...args);
-    bot.sendWarning(...args);
-    originalConsoleWarn(...args);
-  };
-  console.debug = (...args) => {
-    // writeDebug(...args);
-    bot.sendDebug(...args);
-    originalConsoleDebug(...args);
-  };
+  // const bot = new TelegramBotWrapper();
+  // console.log = (...args) => {
+  //   // writeLog(...args);
+  //   originalConsoleLog(...args);
+  // };
+  // console.error = (...args) => {
+  //   if (
+  //     IGNORED_WARNINGS.some((warning) =>
+  //       args.some((arg) => typeof arg === "string" && arg.includes(warning))
+  //     )
+  //   ) {
+  //     return;
+  //   }
+  //   // writeError(...args);
+  //   bot.sendError(...args);
+  //   originalConsoleError(...args);
+  // };
+  // console.warn = (...args) => {
+  //   if (
+  //     IGNORED_WARNINGS.some((warning) =>
+  //       args.some((arg) => typeof arg === "string" && arg.includes(warning))
+  //     )
+  //   ) {
+  //     return;
+  //   }
+  //   // writeWarning(...args);
+  //   bot.sendWarning(...args);
+  //   originalConsoleWarn(...args);
+  // };
+  // console.debug = (...args) => {
+  //   // writeDebug(...args);
+  //   bot.sendDebug(...args);
+  //   originalConsoleDebug(...args);
+  // };
   console.error("Logging override complete (a restart happened?)");
 
   const expressApp = express();
