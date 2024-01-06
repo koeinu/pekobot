@@ -1,4 +1,8 @@
-import { MAX_BET_LENGTH, PEKO_COLOR } from "../utils/constants.js";
+import {
+  MAX_BET_LENGTH,
+  MAX_CHOICES_DISCORD,
+  PEKO_COLOR,
+} from "../utils/constants.js";
 
 import { loadFile, saveFile } from "../utils/fileUtils.js";
 
@@ -198,8 +202,8 @@ export const parseBetChoices = (betCategories, betContents) => {
       return trimmedChoice;
     });
 
-    if (contents.length > 25) {
-      throw "The amount of choices can't be more than 25. It's a restriction from Discord side.";
+    if (contents.length > MAX_CHOICES_DISCORD) {
+      throw `You are trying to add ${contents.length} in one of categories. The amount of choices can't be more than 25. It's a restriction from Discord side.`;
     }
 
     return {
