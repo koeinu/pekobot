@@ -10,6 +10,7 @@ import {
 import { printBetResult, printUnbet } from "../../utils/stringUtils.js";
 
 import { SlashCommandBuilder } from "discord.js";
+import { MAX_BET_LENGTH } from "../../utils/constants.js";
 
 const getBaseCommand = () => {
   return new SlashCommandBuilder()
@@ -56,7 +57,7 @@ export const makeSimpleBetCommands = () => {
             .setName("value")
             .setDescription("Your bet")
             .setRequired(true)
-            .setMaxLength(20)
+            .setMaxLength(MAX_BET_LENGTH)
             .setMinLength(1)
         )
     ),
