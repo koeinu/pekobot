@@ -192,13 +192,19 @@ export const parseBetChoices = (betCategories, betContents) => {
 
   return categoryContents.map((content, index) => {
     const categoryName = categoryNames[index];
+    const contents = content.split(",").map((choice) => {
+      const trimmedChoice = choice.trim();
+      validateString(trimmedChoice);
+      return trimmedChoice;
+    });
+
+    if (contents.length > 25) {
+      throw "The amount of choices can't be more than 25. It's a restriction from Discord side.";
+    }
+
     return {
       name: categoryName,
-      content: content.split(",").map((choice) => {
-        const trimmedChoice = choice.trim();
-        validateString(trimmedChoice);
-        return trimmedChoice;
-      }),
+      content: contents,
     };
   });
 };
