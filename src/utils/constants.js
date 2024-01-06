@@ -64,7 +64,7 @@ export const LANGUAGES = [
   "UK",
   "ZH",
 ];
-export const MAX_BET_LENGTH = 50;
+export const MAX_BET_LENGTH = 32;
 export const MAX_CATEGORY_LENGTH = 40;
 export const GPT_TOKENS_LIMIT_TOKEN = 4096;
 export const GPT_PROMPT_LIMIT_TOKEN = 3600;
