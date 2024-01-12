@@ -338,8 +338,6 @@ export const printBettersPlainText = (fileName, guildId) => {
       } else {
         toReturn.push("No bets");
       }
-      toReturn.push("---");
-      toReturn.push(`Betting is ${bet.bettingAllowed ? "open" : "closed"}.`);
     } else {
       const printCategoryContent = (category) => {
         const categoryLines = [];
@@ -375,14 +373,15 @@ export const printBettersPlainText = (fileName, guildId) => {
         intermediateArrays.map((el) => el.join("\n")).join("\n---\n")
       );
     }
+    const title = bet.description
+      ? "Results for `" + bet.description + "` " + "betting:"
+      : "Bet results:";
 
-    return `${
-      bet.description
-        ? "Results for `" + bet.description + "` " + "betting:"
-        : "Bet results:"
-    }\n${toReturn.join("\n")}\nBetting is currently ${
+    const betState = `Betting is currently ${
       bet.bettingAllowed ? "open" : "closed"
-    }.`;
+    }`;
+    const resultsArray = [title, "---", ...toReturn, "---", betState];
+    return resultsArray.join("\n");
   } else {
     return ["No current bet"];
   }
