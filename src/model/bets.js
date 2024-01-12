@@ -329,7 +329,6 @@ export const printBettersPlainText = (fileName, guildId) => {
   if (bet) {
     const toReturn = [];
     if (bet.betType === 0) {
-      toReturn.push(bet.description);
       if (bet.betters.length > 0) {
         bet.betters.forEach((el) => {
           const userName = getBetterName(el, false); // no pings for plain texts
