@@ -36,7 +36,7 @@ import { BANNED_USERS } from "../../utils/ids/users.js";
 export class GptCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
-    this.completionSettings = undefined;
+    this.completionSettings = { model: "gpt-4o" };
     this.name = "gpt";
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
