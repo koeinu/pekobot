@@ -151,7 +151,7 @@ export class ApiUtils {
           response = response.replaceAll(p, toReplace);
         });
       }
-      if (response.length > 1990) {
+      if (response.length > 3500) {
         console.error(`${getMsgInfo(msg)}, Too long gptl message: ${response}`);
         if (!isFallback) {
           return ApiUtils.GetTranslation(
