@@ -5,6 +5,7 @@ import { Configuration, OpenAIApi } from "openai";
 import dotenv from "dotenv";
 import { listDictionary } from "../model/gptDict.js";
 import {
+  DDF_SERVER,
   MIKO_SERVER,
   PEKO_SERVER,
   TEST_SERVER,
@@ -99,7 +100,10 @@ export const messageContextArray = (msg, settings) => {
       `You are an assistant bot at a discord server named ${msg.guild.name}. Your creator is Hermit. Your name is ${settings.name}.`,
       `You are participating in a dialogue in a channel named ${msg.channel.name}. You need to write the next reply in this dialogue as ${settings.name}.`
     );
-    if (!ASSISTANT_CHANNELS.includes(msg.channel.id)) {
+    if (
+      !ASSISTANT_CHANNELS.includes(msg.channel.id) &&
+      msg.guild.id !== DDF_SERVER
+    ) {
       if (settings.speechInstructions) {
         parts.push("{Speech instructions:}", ...settings.speechInstructions);
       }
