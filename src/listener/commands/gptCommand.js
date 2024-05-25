@@ -18,6 +18,7 @@ import { fetchMessages, reply } from "../../utils/discordUtils.js";
 import { FETCH_CHUNK, H_M_S, S_MS } from "../../utils/constants.js";
 import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
+  DDF_ALLOWED_GPT,
   DDF_CONSULTING,
   MIKO_ALLOWED_RNG_GPT,
   MIKO_BOT_SPAM_CHANNEL,
@@ -40,7 +41,7 @@ export class GptCommand extends AbstractCommand {
     this.name = "gpt";
     this.rateLimiter = new CustomRateLimiter(
       "GPT",
-      1,
+      5,
       S_MS * H_M_S * 3,
       ["Mod", this.settings.name],
       [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL, MIKODANYE_CHANNEL],
@@ -51,6 +52,7 @@ export class GptCommand extends AbstractCommand {
       ...PEKO_ALLOWED_GPT,
       ...TEST_ENABLED_CHANNELS,
       ...RP_CHANNELS,
+      ...DDF_ALLOWED_GPT,
       MIKO_BOT_SPAM_CHANNEL,
       MIKODANYE_CHANNEL,
     ];

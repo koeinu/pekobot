@@ -25,7 +25,7 @@ export class GptlCommand extends AbstractCommand {
     // this.allowedGuilds = [TEST_SERVER, PEKO_SERVER, DDF_SERVER, MIKO_SERVER];
     this.rateLimiter = new CustomRateLimiter(
       "GPT translations",
-      1,
+      5,
       S_MS * H_M_S,
       ["Mod", this.settings.name],
       [],
