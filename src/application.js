@@ -116,7 +116,7 @@ export class Application {
     });
 
     this.client.once(Events.ClientReady, (c) => {
-      console.log(`Logged in as ${c.user.tag}`);
+      console.error(`Logged in as ${c.user.tag}`);
 
       if (c.user.tag.includes("peko-bot")) {
         setInterval(() => {
