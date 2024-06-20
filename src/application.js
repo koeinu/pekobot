@@ -1,6 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
+import {
+  Client,
+  Collection,
+  Events,
+  GatewayIntentBits,
+  ShardEvents,
+} from "discord.js";
 
 import {
   fetchMessage,
@@ -87,8 +93,26 @@ export class Application {
       });
     }
 
+    this.client.on(ShardEvents.Death, (e) => {
+      console.error(e);
+    });
+    this.client.on(ShardEvents.Disconnect, (e) => {
+      console.error(e);
+    });
+    this.client.on(ShardEvents.Reconnecting, (e) => {
+      console.error(e);
+    });
+    this.client.on(Events.Invalidated, (e) => {
+      console.error(e);
+    });
     this.client.on(Events.Error, (e) => {
       console.error(e);
+    });
+    this.client.on(Events.Warn, (e) => {
+      console.warn(e);
+    });
+    this.client.on(Events.Debug, (e) => {
+      console.debug(e);
     });
 
     this.client.once(Events.ClientReady, (c) => {
