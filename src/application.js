@@ -87,6 +87,10 @@ export class Application {
       });
     }
 
+    this.client.on(Events.Error, (e) => {
+      console.error(e);
+    });
+
     this.client.once(Events.ClientReady, (c) => {
       console.log(`Logged in as ${c.user.tag}`);
 
