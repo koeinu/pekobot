@@ -38,11 +38,12 @@ export class TelegramBotWrapper {
     if (this.bot) {
       const parts = str.match(/.{1,4000}/g);
       for (let part of parts) {
-        await this.bot.sendMessage(id, part).catch((e) => {
-          originalConsoleError("Telegram overflow", e);
+        await this.bot.sendMessage(id, part).catch(() => {
+          originalConsoleError("Telegram overflow");
         });
       }
     }
+    return str;
   }
 
   makeString(...args) {
@@ -56,25 +57,41 @@ export class TelegramBotWrapper {
 
   sendLog(...args) {
     if (this.bot) {
-      this.sendMessage(this.logsId, this.makeString(...args)).catch((e) => {
-        originalConsoleError(e);
-      });
+      this.sendMessage(this.logsId, this.makeString(...args))
+        .then((e) => {
+          originalConsoleLog(e);
+        })
+        .catch((e) => {
+          originalConsoleError(e);
+        });
     }
   }
   sendError(...args) {
-    this.sendMessage(this.errorsId, this.makeString(...args)).catch((e) => {
-      originalConsoleError(e);
-    });
+    this.sendMessage(this.errorsId, this.makeString(...args))
+      .then((e) => {
+        originalConsoleError(e);
+      })
+      .catch((e) => {
+        originalConsoleError(e);
+      });
   }
   sendWarning(...args) {
-    this.sendMessage(this.warningsId, this.makeString(...args)).catch((e) => {
-      originalConsoleError(e);
-    });
+    this.sendMessage(this.warningsId, this.makeString(...args))
+      .then((e) => {
+        originalConsoleWarn(e);
+      })
+      .catch((e) => {
+        originalConsoleError(e);
+      });
   }
   sendDebug(...args) {
-    this.sendMessage(this.debugId, this.makeString(...args)).catch((e) => {
-      originalConsoleError(e);
-    });
+    this.sendMessage(this.debugId, this.makeString(...args))
+      .then((e) => {
+        originalConsoleDebug(e);
+      })
+      .catch((e) => {
+        originalConsoleError(e);
+      });
   }
 }
 

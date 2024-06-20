@@ -93,18 +93,6 @@ export class Application {
       });
     }
 
-    this.client.on(ShardEvents.Death, (e) => {
-      console.error(e);
-    });
-    this.client.on(ShardEvents.Disconnect, (e) => {
-      console.error(e);
-    });
-    this.client.on(ShardEvents.Reconnecting, (e) => {
-      console.error(e);
-    });
-    this.client.on(Events.Invalidated, (e) => {
-      console.error(e);
-    });
     this.client.on(Events.Error, (e) => {
       console.error(e);
     });
@@ -112,7 +100,7 @@ export class Application {
       console.warn(e);
     });
     this.client.on(Events.Debug, (e) => {
-      console.debug(e);
+      console.log(e);
     });
 
     this.client.once(Events.ClientReady, (c) => {

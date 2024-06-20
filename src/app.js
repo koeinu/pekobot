@@ -54,7 +54,6 @@ if (!INACTIVE) {
     }
     // writeError(...args);
     bot.sendError(...args);
-    originalConsoleError(...args);
   };
   console.warn = (...args) => {
     if (
@@ -66,12 +65,10 @@ if (!INACTIVE) {
     }
     // writeWarning(...args);
     bot.sendWarning(...args);
-    originalConsoleWarn(...args);
   };
   console.debug = (...args) => {
     // writeDebug(...args);
     bot.sendDebug(...args);
-    originalConsoleDebug(...args);
   };
   console.error("Logging override complete (a restart happened?)");
 
