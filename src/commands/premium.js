@@ -127,9 +127,14 @@ export default {
         const customRoleUsers = getCustomRoleUsers(interaction.guildId);
         const foundUsers = [];
         for (let i = 0; i < customRoleUsers.length; i++) {
-          const foundUser = await interaction.guild.members.fetch(
-            customRoleUsers[i].userId
-          );
+          const foundUser = await interaction.guild.members
+            .fetch(customRoleUsers[i].userId)
+            .catch((e) => {
+              console.log(`Member ${customRoleUsers[i].userId} not found`);
+            });
+          if (!foundUser) {
+            continue;
+          }
           const foundRole = await interaction.guild.roles.fetch(
             customRoleUsers[i].roleId
           );

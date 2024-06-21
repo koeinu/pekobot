@@ -115,7 +115,9 @@ export class Application {
             for (let i = 0; i < customRoleUsers.length; i++) {
               const foundUser = await guild.members
                 .fetch(customRoleUsers[i].userId)
-                .catch((e) => {});
+                .catch((e) => {
+                  console.log(`Member ${customRoleUsers[i].userId} not found`);
+                });
               const foundRole = await guild.roles.fetch(
                 customRoleUsers[i].roleId
               );
