@@ -113,12 +113,15 @@ export class Application {
             const guild = this.client.guilds.cache.get(guildId);
             const customRoleUsers = data.userData;
             for (let i = 0; i < customRoleUsers.length; i++) {
-              const foundUser = await guild.members.fetch(
-                customRoleUsers[i].userId
-              );
+              const foundUser = await guild.members
+                .fetch(customRoleUsers[i].userId)
+                .catch((e) => {});
               const foundRole = await guild.roles.fetch(
                 customRoleUsers[i].roleId
               );
+              if (!foundUser) {
+                continue;
+              }
               const isDignitary = !!foundUser.roles.cache.find(
                 (el) => el.id === premiumData[guildId].premiumRoleId
               );
