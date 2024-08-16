@@ -27,7 +27,7 @@ export const prepareCalendarDataFromChannelId = async (
   cacheTimeout
 ) => {
   const cachedCalendarData = getCalendarData(channelId);
-  const idsToUpdate = [];
+  let idsToUpdate = [];
   if (cachedCalendarData) {
     const currentTs = new Date().getTime();
     idsToUpdate.push(
@@ -45,7 +45,11 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
-  console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
+  // console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
+
+  if (idsToUpdate.length > 50) {
+    idsToUpdate = idsToUpdate.slice(0, 50);
+  }
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
