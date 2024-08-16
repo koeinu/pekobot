@@ -33,23 +33,28 @@ export const prepareCalendarDataFromChannelId = async (
     idsToUpdate.push(
       ...cachedCalendarData
         .filter((el) => {
+          const rateLimitCheck =
+            cacheTimeout !== undefined
+              ? Number.parseInt(el.ts) + Number.parseInt(cacheTimeout) <
+                currentTs // не обновляемся чаще чем раз в 15 минут
+              : true;
+          const isPending = !el.actualEndTime || !el.parsedDuration;
+          const isNotExpired = el.actualStartTime
+            ? el.actualStartTime + 1000 * 60 * 60 * 24 * 7 > currentTs
+            : true;
           if (vtuberHandle === "sui") {
             // debugging
             console.log(
               `id: ${el.data.uid}, timeout: ${cacheTimeout}, ts: ${
                 el.ts
-              }, actualEnd: ${el.actualEndTime}, duration: ${JSON.stringify(
+              }, actualStart: ${el.actualStartTime}, actualEnd: ${
+                el.actualEndTime
+              }, duration: ${JSON.stringify(
                 el.parsedDuration
-              )}`
+              )}, rl: ${rateLimitCheck}, pend: ${isPending}, ex: ${isNotExpired}`
             );
           }
-          return (cacheTimeout !== undefined
-            ? Number.parseInt(el.ts) + Number.parseInt(cacheTimeout) < currentTs // не обновляемся чаще чем раз в 15 минут
-            : true) &&
-            (!el.actualEndTime || !el.parsedDuration) && // оставляем не начавшиеся + не завершившиеся энтри
-            el.actualStartTime
-            ? el.actualStartTime + 1000 * 60 * 60 * 24 * 7 > currentTs // убираем начавшиеся но не завершившиеся, протухшие энтри
-            : true;
+          return rateLimitCheck && isPending && isNotExpired;
         })
         .map((el) => el.data.uid)
     );
