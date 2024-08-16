@@ -45,14 +45,14 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
-  // console.log(`IDs to update: ${idsToUpdate.join(", ")}`);
+  console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
       return updateCalendarData(channelId, items);
     })
     .catch((e) => {
-      console.error(`Couldn't get calendar,`, e);
+      console.error(`Couldn't get calendar ${vtuberHandle},`, e);
     });
 };
 
@@ -63,7 +63,7 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
     ICS_TIMEOUT
   );
   if (!data) {
-    throw `Calendar can't be formed`;
+    throw `Calendar ${feedUrl} can't be formed`;
   }
   // console.log(
   //   `Serving ${data.length} entries for ${vtuberHandle}_${channelId}`

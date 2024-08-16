@@ -25,6 +25,7 @@ const config = {
   },
 };
 
+// https://content-youtube.googleapis.com/youtube/v3/channels?id=UCMwGHR0BTZuLsmjY_NT5Pwg&part=contentDetails&key=AIzaSyBeo4NGA__U6Xxy-aBE6yFm19pgq8TY-TM
 const getChannelVideoIds = async (channelId, filterKeyword = undefined) => {
   return axios
     .get(
