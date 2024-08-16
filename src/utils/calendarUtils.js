@@ -41,7 +41,7 @@ export const prepareCalendarDataFromChannelId = async (
           const isPending = !el.actualEndTime || !el.parsedDuration;
           // shorts don't have a start timestamp. the do have duration though. and they are short.
           const isExpired =
-            el.actualStartTime === undefined && el.parsedDuratio !== undefined;
+            el.actualStartTime === undefined && el.parsedDuration !== undefined;
           if (vtuberHandle === "sui") {
             // debugging
             console.log(
