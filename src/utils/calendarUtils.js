@@ -60,7 +60,16 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
-  console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
+  console.error(
+    `IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}, ${
+      idsToUpdate.length
+    } in total`
+  );
+
+  if (idsToUpdate.length > 30) {
+    console.error("(hotfix) trimming ids to perform a partial update");
+    idsToUpdate = idsToUpdate.slice(0, 30);
+  }
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
