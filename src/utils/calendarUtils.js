@@ -39,9 +39,8 @@ export const prepareCalendarDataFromChannelId = async (
                 currentTs // не обновляемся чаще чем раз в 15 минут
               : true;
           const isPending = !el.actualEndTime || !el.parsedDuration;
-          const isNotExpired = el.actualStartTime
-            ? el.actualStartTime + 1000 * 60 * 60 * 24 * 7 > currentTs
-            : true;
+          // shorts don't have a start timestamp. the do have duration though. and they are short.
+          const isExpired = !el.actualStartTime && el.parsedDuration;
           if (vtuberHandle === "sui") {
             // debugging
             console.log(
@@ -51,10 +50,10 @@ export const prepareCalendarDataFromChannelId = async (
                 el.actualEndTime
               }, duration: ${JSON.stringify(
                 el.parsedDuration
-              )}, rl: ${rateLimitCheck}, pend: ${isPending}, ex: ${isNotExpired}`
+              )}, rl: ${rateLimitCheck}, pend: ${isPending}, ex: ${isExpired}`
             );
           }
-          return rateLimitCheck && isPending && isNotExpired;
+          return rateLimitCheck && isPending && !isExpired;
         })
         .map((el) => el.data.uid)
     );
