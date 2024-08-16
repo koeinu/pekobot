@@ -33,6 +33,16 @@ export const prepareCalendarDataFromChannelId = async (
     idsToUpdate.push(
       ...cachedCalendarData
         .filter((el) => {
+          if (vtuberHandle === "sui") {
+            // debugging
+            console.log(
+              `id: ${el.data.uid}, timeout: ${cacheTimeout}, ts: ${
+                el.ts
+              }, actualEnd: ${el.actualEndTime}, duration: ${JSON.stringify(
+                el.parsedDuration
+              )}`
+            );
+          }
           return (cacheTimeout !== undefined
             ? Number.parseInt(el.ts) + Number.parseInt(cacheTimeout) < currentTs // не обновляемся чаще чем раз в 15 минут
             : true) &&
@@ -45,7 +55,7 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
-  // console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
+  console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
@@ -63,7 +73,7 @@ export const getCalendar = async (feedUrl, vtuberHandle, channelId) => {
     ICS_TIMEOUT
   );
   if (!data) {
-    throw `Calendar ${feedUrl} can't be formed`;
+    throw `Calendar ${vtuberHandle} can't be formed`;
   }
   // console.log(
   //   `Serving ${data.length} entries for ${vtuberHandle}_${channelId}`
