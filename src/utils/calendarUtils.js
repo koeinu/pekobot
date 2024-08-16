@@ -33,6 +33,12 @@ export const prepareCalendarDataFromChannelId = async (
     idsToUpdate.push(
       ...cachedCalendarData
         .filter((el) => {
+          if (vtuberHandle === "sui") {
+            // debugging
+            console.log(
+              `id: ${el.data.uid}, timeout: ${cacheTimeout}, ts: ${el.ts}, actualEnd: ${el.actualEndTime}, duration: ${el.parsedDuration}`
+            );
+          }
           return (
             (cacheTimeout !== undefined
               ? Number.parseInt(el.ts) + Number.parseInt(cacheTimeout) <
@@ -45,11 +51,7 @@ export const prepareCalendarDataFromChannelId = async (
     );
   }
 
-  // console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
-
-  if (idsToUpdate.length > 50) {
-    idsToUpdate = idsToUpdate.slice(0, 50);
-  }
+  console.error(`IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}`);
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
