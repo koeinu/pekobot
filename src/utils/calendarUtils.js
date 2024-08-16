@@ -36,7 +36,11 @@ export const prepareCalendarDataFromChannelId = async (
           if (vtuberHandle === "sui") {
             // debugging
             console.log(
-              `id: ${el.data.uid}, timeout: ${cacheTimeout}, ts: ${el.ts}, actualEnd: ${el.actualEndTime}, duration: ${el.parsedDuration}`
+              `id: ${el.data.uid}, timeout: ${cacheTimeout}, ts: ${
+                el.ts
+              }, actualEnd: ${el.actualEndTime}, duration: ${JSON.stringify(
+                el.parsedDuration
+              )}`
             );
           }
           return (
@@ -44,7 +48,8 @@ export const prepareCalendarDataFromChannelId = async (
               ? Number.parseInt(el.ts) + Number.parseInt(cacheTimeout) <
                 currentTs
               : true) &&
-            (!el.actualEndTime || !el.parsedDuration)
+            (!el.actualEndTime || !el.parsedDuration) &&
+            el.actualStartTime + 1000 * 60 * 60 * 24 * 7 > currentTs
           );
         })
         .map((el) => el.data.uid)
