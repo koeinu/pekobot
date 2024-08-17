@@ -141,7 +141,6 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
             .match(/\d+/g)
             .map((el) => Number.parseInt(el));
           return {
-            actualStartTime: lsd?.actualStartTime,
             actualEndTime: lsd?.actualEndTime,
             isLive: lsd !== undefined,
             parsedDuration,
@@ -157,6 +156,9 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
           };
         })
         .filter((el) => el !== undefined);
+    })
+    .catch((e) => {
+      console.error(`something went wrong: ${e}`);
     });
 };
 

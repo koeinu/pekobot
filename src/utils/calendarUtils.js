@@ -73,16 +73,16 @@ export const prepareCalendarDataFromChannelId = async (
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
-      // if (channelId === "asmr") {
-      //   const filteredItems = items.filter((el) =>
-      //     el.channelTitle !== undefined
-      //       ? !el.channelTitle.toLowerCase().includes("holostars")
-      //       : true
-      //   );
-      //
-      //   console.log(`items length: ${filteredItems.length}/${items.length}`);
-      //   return updateCalendarData(channelId, filteredItems);
-      // }
+      if (channelId === "asmr") {
+        const filteredItems = items.filter((el) =>
+          el.channelTitle !== undefined
+            ? !el.channelTitle.toLowerCase().includes("holostars")
+            : true
+        );
+
+        console.log(`items length: ${filteredItems.length}/${items.length}`);
+        return updateCalendarData(channelId, filteredItems);
+      }
       return updateCalendarData(channelId, items);
     })
     .catch((e) => {
