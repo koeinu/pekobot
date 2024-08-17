@@ -118,7 +118,7 @@ export const createCalendarRoute = () => {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-${JSON.stringify(calendarData, null, 2)}
+<pre>${JSON.stringify(calendarData, null, 2)}</pre>
 </body>
 </html>
 `;
