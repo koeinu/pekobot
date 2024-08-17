@@ -42,29 +42,29 @@ export const prepareCalendarDataFromChannelId = async (
           // shorts don't have a start timestamp. the do have duration though. and they are short.
           const isExpired =
             el.actualStartTime === undefined && el.parsedDuration !== undefined;
-          if (vtuberHandle === "sui") {
-            // debugging
-            console.log(
-              `id: ${el.data.uid}, timeout: ${cacheTimeout}, ts: ${
-                el.ts
-              }, actualStart: ${el.actualStartTime}, actualEnd: ${
-                el.actualEndTime
-              }, duration: ${JSON.stringify(
-                el.parsedDuration
-              )}, rl: ${rateLimitCheck}, pend: ${isPending}, ex: ${isExpired}`
-            );
-          }
+          // if (vtuberHandle === "sui") {
+          //   // debugging
+          //   console.log(
+          //     `id: ${el.data.uid}, timeout: ${cacheTimeout}, ts: ${
+          //       el.ts
+          //     }, actualStart: ${el.actualStartTime}, actualEnd: ${
+          //       el.actualEndTime
+          //     }, duration: ${JSON.stringify(
+          //       el.parsedDuration
+          //     )}, rl: ${rateLimitCheck}, pend: ${isPending}, ex: ${isExpired}`
+          //   );
+          // }
           return rateLimitCheck && isPending && !isExpired;
         })
         .map((el) => el.data.uid)
     );
   }
 
-  console.error(
-    `IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}, ${
-      idsToUpdate.length
-    } in total`
-  );
+  // console.error(
+  //   `IDs to update for ${vtuberHandle}: ${idsToUpdate.join(", ")}, ${
+  //     idsToUpdate.length
+  //   } in total`
+  // );
 
   if (idsToUpdate.length > 30) {
     console.error("(hotfix) trimming ids to perform a partial update");
@@ -73,6 +73,16 @@ export const prepareCalendarDataFromChannelId = async (
 
   return getYoutubeLiveDetails(channelId, idsToUpdate)
     .then((items) => {
+      if (channelId === "asmr") {
+        return updateCalendarData(
+          channelId,
+          items.filter((el) =>
+            el.channelTitle
+              ? !el.channelTitle.toLowerCase().includes("holostars")
+              : true
+          )
+        );
+      }
       return updateCalendarData(channelId, items);
     })
     .catch((e) => {

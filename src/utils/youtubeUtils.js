@@ -135,6 +135,7 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
           const uid = video.id;
           const url = `https://www.youtube.com/watch?v=${uid}`;
           const title = video.snippet.title;
+          const channelTitle = video.snippet.channelTitle;
           const description = `${url}\n\n---Description---\n\n${video.snippet.description}`;
           const start = startTime
             .match(/\d+/g)
@@ -149,6 +150,7 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
               duration,
               start,
               title,
+              channelTitle,
               url,
               uid,
             },
