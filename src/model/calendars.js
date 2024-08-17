@@ -33,8 +33,12 @@ export const updateCalendarData = (channelId, updatedEntries) => {
     const toUpdateEntry = toUpdateEntries.find(
       (el) => el.data.uid === entry.calendarData.uid
     );
+    if (entry.calendarData.channelTitle !== undefined) {
+      delete entry.calendarData.channelTitle;
+    }
     if (toUpdateEntry) {
       toUpdateEntry.ts = new Date().getTime();
+      toUpdateEntry.channelTitle = entry.channelTitle;
       toUpdateEntry.actualEndTime = entry.actualEndTime;
       toUpdateEntry.parsedDuration = entry.parsedDuration;
       toUpdateEntry.data = entry.calendarData;
@@ -42,6 +46,7 @@ export const updateCalendarData = (channelId, updatedEntries) => {
       calendars[channelId].push({
         ts: new Date().getTime(),
         channelId,
+        channelTitle: entry.channelTitle,
         parsedDuration: entry.parsedDuration,
         actualEndTime: entry.actualEndTime,
         data: entry.calendarData,
