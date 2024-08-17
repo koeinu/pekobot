@@ -144,12 +144,12 @@ export const getYoutubeLiveDetailsByVideoIds = (ids) => {
             actualEndTime: lsd?.actualEndTime,
             isLive: lsd !== undefined,
             parsedDuration,
+            channelTitle,
             calendarData: {
               description,
               duration,
               start,
               title,
-              channelTitle,
               url,
               uid,
             },
