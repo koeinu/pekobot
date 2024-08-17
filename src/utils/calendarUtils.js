@@ -75,7 +75,7 @@ export const prepareCalendarDataFromChannelId = async (
     .then((items) => {
       if (channelId === "asmr") {
         const filteredItems = items.filter((el) =>
-          el.channelTitle
+          el.channelTitle !== undefined
             ? !el.channelTitle.toLowerCase().includes("holostars")
             : true
         );
