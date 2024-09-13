@@ -113,7 +113,7 @@ const processGeneratePuzzle = async (interaction) => {
       result.multiplayerUrl || result.singlePlayerUrl,
       `${numberOfPieces} pieces`,
       !result.error && pingTheRole ? jigsawRole : undefined,
-      !result.error
+      result.error
     );
   } catch (e) {
     console.error(e);
@@ -181,16 +181,22 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   await page.goto(puzzleUrl, { timeout: 100000 });
 
   let imageParseError = false;
-  await page.waitForSelector("#jigex-msgbox-content", {
-    visible: true,
-    timeout: 5000,
-  });
-  const el = await page.$("#jigex-msgbox-content");
-  if (el) {
-    let value = await page.evaluate((el) => el.textContent, el);
-    if (value.indexOf("The custom jigsaw puzzle subject failed to load") >= 0) {
-      imageParseError = true;
+  try {
+    await page.waitForSelector("#jigex-msgbox-content", {
+      visible: true,
+      timeout: 5000,
+    });
+    const el = await page.$("#jigex-msgbox-content");
+    if (el) {
+      let value = await page.evaluate((el) => el.textContent, el);
+      if (
+        value.indexOf("The custom jigsaw puzzle subject failed to load") >= 0
+      ) {
+        imageParseError = true;
+      }
     }
+  } catch (e) {
+    // do nothing here as timeout is actually good outcome
   }
 
   if (imageParseError) {
