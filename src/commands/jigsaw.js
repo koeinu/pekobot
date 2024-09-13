@@ -58,14 +58,15 @@ const processGeneratePuzzle = async (interaction) => {
     const numberOfPieces = interaction.options._hoistedOptions[1].value;
     const pingTheRole = interaction.options._hoistedOptions[2]?.value || false;
 
-    // await replyCustomEmbed(
-    //   interaction,
-    //   "Puzzle is being generated",
-    //   "Please wait till the puzzle is created and converted to multiplayer. With the new way of things working, it may take up to 30 seconds.",
-    //   url,
-    //   undefined,
-    //   `${numberOfPieces} pieces`
-    // );
+    await replyCustomEmbed(
+      interaction,
+      "Puzzle is being generated",
+      "Please wait till the puzzle is created and converted to multiplayer. With the new way of things working, it may take up to 30 seconds.",
+      url,
+      undefined,
+      `${numberOfPieces} pieces`
+    );
+    isReplied = true;
 
     // error?, singlePlayerUrl, multiPlayerUrl?
     const result = await makeWholePuzzle(
@@ -73,8 +74,6 @@ const processGeneratePuzzle = async (interaction) => {
       url,
       numberOfPieces
     );
-
-    isReplied = true;
 
     const jigsawRole = interaction.guild.roles.cache.find(
       (role) => role.name === "Jigsaw Enjoyer" || role.name === "Jigsaw 35P"
@@ -128,19 +127,23 @@ const processGeneratePuzzle = async (interaction) => {
 export const makeWholePuzzle = async (username, imageUrl, nop) => {
   const startPage = "https://jigsawexplorer.com/create-a-custom-jigsaw-puzzle";
 
+  console.error(1);
   const browser = await puppeteer.launch({
     executablePath: pup.executablePath(),
     args: ["--no-sandbox"],
-    headless: "new",
+    headless: "true",
   });
+  console.error(2);
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   await page.goto(startPage, { waitUntil: "domcontentloaded" });
 
+  console.error(3);
   // url input, class=create-url, name=image-url
   await page.waitForSelector("input[name=image-url]");
   await page.type("input[name=image-url]", imageUrl);
 
+  console.error(4);
   // url input, class=create-url, name=puzzle-nop
   await page.type("input[name=puzzle-nop]", `${nop}`);
   await page.evaluate(() => {
@@ -150,6 +153,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
 
   // main result page
 
+  console.error(5);
   await page.waitForSelector("#short-link", { visible: true, timeout: 100000 });
   const sl = await page.$("#short-link");
   const puzzleUrl = await page.evaluate((sl) => sl.value, sl);
@@ -157,6 +161,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   console.log("intermediate link:", puzzleUrl);
   await page.goto(puzzleUrl, { timeout: 100000 });
 
+  console.error(6);
   let toReturnData = {
     error: undefined,
     singlePlayerUrl: puzzleUrl,
@@ -165,6 +170,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
 
   let isError = false;
 
+  console.error(7);
   try {
     await page.waitForSelector("#jigex-msgbox-content", {
       visible: true,
@@ -184,6 +190,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
     console.error(e);
   }
 
+  console.error(8);
   if (isError) {
     toReturnData.error = "jigex.com failed to parse the provided image";
     await browser.close();
