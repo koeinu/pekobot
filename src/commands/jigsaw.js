@@ -168,7 +168,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   try {
     await page.waitForSelector("#jigex-msgbox-content", {
       visible: true,
-      timeout: 100000,
+      timeout: 5000,
     });
 
     const el = await page.$("#jigex-msgbox-content");
