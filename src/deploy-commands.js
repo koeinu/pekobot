@@ -22,6 +22,7 @@ const disabledCommands = {
   ], // miko
   "999666683176308807": [
     "calendar",
+    "jigsaw",
     "betedit",
     "gptDict",
     "youtube",

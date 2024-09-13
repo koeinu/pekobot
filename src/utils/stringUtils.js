@@ -230,6 +230,10 @@ export const splitGptDialogues = (msgChain) => {
   return result;
 };
 
+export const parseSingleAttachmentUrl = (option) => {
+  return option.attachment.url;
+};
+
 // preferring embed description text
 export const getTextMessageContent = async (
   msg,

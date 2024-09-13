@@ -32,6 +32,9 @@
     "node-telegram-bot-api": "^0.61.0",
     "openai": "^3.3.0",
     "p-queue": "^7.3.4",
+    "puppeteer": "21.5.2",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "syllable": "^5.0.1",
     "twitter-api-v2": "^1.14.1"
   },
@@ -45,7 +48,7 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": "16.14.2"
+    "node": "20.17.0"
   },
   "license": "MIT",
   "keywords": [
