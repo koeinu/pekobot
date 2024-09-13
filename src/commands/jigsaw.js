@@ -102,7 +102,9 @@ const processGeneratePuzzle = async (interaction) => {
         : "Got some unknown error..! Please contact my creator Hermit, as some black magic happened at jigsaw website! ...again!";
     }
 
-    console.error(`Puzzle generation result: ${JSON.stringify(result)}`);
+    console.error(
+      `Puzzle generation result: ${JSON.stringify(result, null, 2)}`
+    );
 
     await followUpCustomEmbed(
       interaction,
@@ -116,7 +118,7 @@ const processGeneratePuzzle = async (interaction) => {
       result.multiplayerUrl || result.singlePlayerUrl,
       `${numberOfPieces} pieces`,
       !result.error && pingTheRole ? jigsawRole : undefined,
-      result.error
+      !!result.error
     );
   } catch (e) {
     console.error(e);
