@@ -1,12 +1,9 @@
 import fetch from "isomorphic-fetch";
 
 import dotenv from "dotenv";
-import { canIncreaseCounter, increaseCounter } from "../model/counter.js";
-import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
 import { getYoutubeVideoInfo } from "./youtubeUtils.js";
 import { MessageType } from "discord.js";
-import { MOD_THRESHOLDS } from "./openaiUtils.js";
 import {
   GPT_INFORMATIVE_CONTENT_LIMIT_CHAR,
   MAX_TL_TAG_LENGTH,
@@ -143,22 +140,6 @@ const getMessage = (msg) => {
     return msg.embeds[0].data.description;
   }
   return "...";
-};
-
-export const gatherModerateMessageInfo = (msg, triggerData) => {
-  const parts = [];
-  parts.push(`${msg.url}`);
-  parts.push(
-    `Reasons: ${Object.entries(triggerData.categories)
-      .filter((el) => el[1])
-      .map((el) => {
-        const category = el[0];
-        return `${category}: ${triggerData.category_scores[category]} > ${MOD_THRESHOLDS[category]}`;
-      })
-      .join(", ")}`
-  );
-  parts.push(`Content: ${msg.content}`);
-  return parts.join("\n");
 };
 
 export const gatherSlashCommandInfo = (interaction) => {
@@ -335,28 +316,6 @@ export const getTextMessageContent = async (
         parts.push("Text attachment:");
       }
       parts.push(text);
-    } else {
-      const imageUrl = parseAttachmentUrl(msg);
-
-      if (imageUrl !== undefined) {
-        try {
-          if (canIncreaseCounter("deepl")) {
-            msg.channel.sendTyping().catch((e) => {
-              console.error(`Couldn't send typing: ${e}`);
-            });
-
-            const text = await ApiUtils.OCRRequest(imageUrl, undefined, false);
-            console.log("parsed OCR text: ", text);
-            countObject = increaseCounter("deepl");
-            if (!silentAttachments) {
-              parts.push("Image attachment:");
-            }
-            parts.push(text);
-          }
-        } catch (errMsg) {
-          console.error(errMsg);
-        }
-      }
     }
   }
 
