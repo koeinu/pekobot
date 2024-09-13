@@ -97,7 +97,9 @@ const processGeneratePuzzle = async (interaction) => {
     } else {
       puzzleMessage = result.error
         ? result.error
-        : `Gomen! I couldn't make a multiplayer version! But here is your singleplayer link. Remember to set it to multiplayer. This message is not displayed publicly, so provide the link manually!`;
+        : result.singlePlayerUrl
+        ? `Gomen! I couldn't make a multiplayer version! But here is your singleplayer link. Remember to set it to multiplayer. This message is not displayed publicly, so provide the link manually!`
+        : "Got some unknown error..! Please contact my creator Hermit, as some black magic happened at jigsaw website! ...again!";
     }
     await followUpCustomEmbed(
       interaction,
@@ -110,8 +112,8 @@ const processGeneratePuzzle = async (interaction) => {
       url,
       result.multiplayerUrl || result.singlePlayerUrl,
       `${numberOfPieces} pieces`,
-      pingTheRole ? jigsawRole : undefined,
-      false
+      !result.error && pingTheRole ? jigsawRole : undefined,
+      !result.error
     );
   } catch (e) {
     console.error(e);
@@ -127,12 +129,27 @@ const processGeneratePuzzle = async (interaction) => {
 export const makeWholePuzzle = async (username, imageUrl, nop) => {
   const startPage = "https://jigsawexplorer.com/create-a-custom-jigsaw-puzzle";
 
+  let toReturnData = {
+    error: undefined,
+    singlePlayerUrl: undefined,
+    multiplayerUrl: undefined,
+  };
+
   console.error(1);
-  const browser = await puppeteer.launch({
-    executablePath: pup.executablePath(),
-    args: ["--no-sandbox"],
-    headless: "true",
-  });
+  let browser = undefined;
+  try {
+    browser = await puppeteer.launch({
+      executablePath: pup.executablePath(),
+      args: ["--no-sandbox"],
+      headless: "true",
+    });
+  } catch (e) {
+    toReturnData.error = `Headless mode puppeteer error: ${
+      e.message ? e.message : e
+    }`;
+    return toReturnData;
+  }
+
   console.error(2);
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
@@ -159,39 +176,24 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   const puzzleUrl = await page.evaluate((sl) => sl.value, sl);
 
   console.log("intermediate link:", puzzleUrl);
+  toReturnData.singlePlayerUrl = puzzleUrl;
+
   await page.goto(puzzleUrl, { timeout: 100000 });
 
-  console.error(6);
-  let toReturnData = {
-    error: undefined,
-    singlePlayerUrl: puzzleUrl,
-    multiplayerUrl: undefined,
-  };
-
-  let isError = false;
-
-  console.error(7);
-  try {
-    await page.waitForSelector("#jigex-msgbox-content", {
-      visible: true,
-      timeout: 5000,
-    });
-
-    const el = await page.$("#jigex-msgbox-content");
-    if (el) {
-      let value = await page.evaluate((el) => el.textContent, el);
-      if (
-        value.indexOf("The custom jigsaw puzzle subject failed to load") >= 0
-      ) {
-        isError = true;
-      }
+  let imageParseError = false;
+  await page.waitForSelector("#jigex-msgbox-content", {
+    visible: true,
+    timeout: 5000,
+  });
+  const el = await page.$("#jigex-msgbox-content");
+  if (el) {
+    let value = await page.evaluate((el) => el.textContent, el);
+    if (value.indexOf("The custom jigsaw puzzle subject failed to load") >= 0) {
+      imageParseError = true;
     }
-  } catch (e) {
-    console.error(e);
   }
 
-  console.error(8);
-  if (isError) {
+  if (imageParseError) {
     toReturnData.error = "jigex.com failed to parse the provided image";
     await browser.close();
 
