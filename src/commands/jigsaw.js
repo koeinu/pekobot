@@ -101,6 +101,9 @@ const processGeneratePuzzle = async (interaction) => {
         ? `Gomen! I couldn't make a multiplayer version! But here is your singleplayer link. Remember to set it to multiplayer. This message is not displayed publicly, so provide the link manually!`
         : "Got some unknown error..! Please contact my creator Hermit, as some black magic happened at jigsaw website! ...again!";
     }
+
+    console.error(`Puzzle generation result: ${JSON.stringify(result)}`);
+
     await followUpCustomEmbed(
       interaction,
       result.multiplayerUrl
@@ -135,7 +138,6 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
     multiplayerUrl: undefined,
   };
 
-  console.error(1);
   let browser = undefined;
   try {
     browser = await puppeteer.launch({
@@ -150,17 +152,14 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
     return toReturnData;
   }
 
-  console.error(2);
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   await page.goto(startPage, { waitUntil: "domcontentloaded" });
 
-  console.error(3);
   // url input, class=create-url, name=image-url
   await page.waitForSelector("input[name=image-url]");
   await page.type("input[name=image-url]", imageUrl);
 
-  console.error(4);
   // url input, class=create-url, name=puzzle-nop
   await page.type("input[name=puzzle-nop]", `${nop}`);
   await page.evaluate(() => {
@@ -170,7 +169,6 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
 
   // main result page
 
-  console.error(5);
   await page.waitForSelector("#short-link", { visible: true, timeout: 100000 });
   const sl = await page.$("#short-link");
   const puzzleUrl = await page.evaluate((sl) => sl.value, sl);
