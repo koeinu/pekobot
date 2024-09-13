@@ -1,22 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import {
-  Client,
-  Collection,
-  Events,
-  GatewayIntentBits,
-  ShardEvents,
-} from "discord.js";
+import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
 
-import {
-  fetchMessage,
-  fillMessage,
-  replyEmbedMessage,
-} from "./utils/discordUtils.js";
+import { fillMessage, replyEmbedMessage } from "./utils/discordUtils.js";
 
 import _path from "path";
 import { fileURLToPath } from "url";
-import { loadFile } from "./utils/fileUtils.js";
 import { getBotSettings } from "./model/botSettings.js";
 import { gatherSlashCommandInfo } from "./utils/stringUtils.js";
 
