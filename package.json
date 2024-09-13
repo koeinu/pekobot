@@ -41,7 +41,7 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": "16.14.2"
+    "node": "18.17.0"
   },
   "license": "MIT",
   "keywords": [
