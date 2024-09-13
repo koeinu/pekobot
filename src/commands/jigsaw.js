@@ -109,7 +109,7 @@ const processGeneratePuzzle = async (interaction) => {
         : "Singleplayer puzzle link",
       puzzleMessage,
       url,
-      result.url,
+      result.multiplayerUrl || result.singlePlayerUrl,
       `${numberOfPieces} pieces`,
       pingTheRole ? jigsawRole : undefined,
       false
