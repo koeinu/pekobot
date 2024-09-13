@@ -67,6 +67,7 @@ const processGeneratePuzzle = async (interaction) => {
       `${numberOfPieces} pieces`
     );
 
+    // error?, singlePlayerUrl, multiPlayerUrl?
     const result = await makeWholePuzzle(
       userInfo.userName,
       url,
@@ -89,17 +90,23 @@ const processGeneratePuzzle = async (interaction) => {
       jigsawRole || "jigsaw"
     } role in the ${chosenChannel || "roles"} channel!`;
     let puzzleMessage;
-    if (result.status) {
+    if (result.multiplayerUrl) {
       puzzleMessage = `Let's do some puzzle!`;
       if (pingTheRole) {
         puzzleMessage = puzzleMessage.concat("\n").concat(pingMessage);
       }
     } else {
-      puzzleMessage = `Gomen! I couldn't make a multiplayer version! But here is your singleplayer link. Remember to set it to multiplayer. This message is not displayed publicly, so provide the link manually!`;
+      puzzleMessage = result.error
+        ? result.error
+        : `Gomen! I couldn't make a multiplayer version! But here is your singleplayer link. Remember to set it to multiplayer. This message is not displayed publicly, so provide the link manually!`;
     }
     await followUpCustomEmbed(
       interaction,
-      result.status ? "Link to the puzzle" : "Singleplayer puzzle link",
+      result.multiplayerUrl
+        ? "Link to the puzzle"
+        : result.error || !result.singlePlayerUrl
+        ? undefined
+        : "Singleplayer puzzle link",
       puzzleMessage,
       url,
       result.url,
@@ -124,6 +131,7 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   const browser = await puppeteer.launch({
     executablePath: pup.executablePath(),
     args: ["--no-sandbox"],
+    headless: "new",
   });
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
@@ -149,8 +157,40 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
   console.log("intermediate link:", puzzleUrl);
   await page.goto(puzzleUrl, { timeout: 100000 });
 
-  let toReturn = puzzleUrl;
-  let isSuccessful = false;
+  let toReturnData = {
+    error: undefined,
+    singlePlayerUrl: puzzleUrl,
+    multiplayerUrl: undefined,
+  };
+
+  let isError = false;
+
+  try {
+    await page.waitForSelector("#jigex-msgbox-content", {
+      visible: true,
+      timeout: 100000,
+    });
+
+    const el = await page.$("#jigex-msgbox-content");
+    if (el) {
+      let value = await page.evaluate((el) => el.textContent, el);
+      if (
+        value.indexOf("The custom jigsaw puzzle subject failed to load") >= 0
+      ) {
+        isError = true;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (isError) {
+    toReturnData.error = "jigex.com failed to parse the provided image";
+    await browser.close();
+
+    return toReturnData;
+  }
+
   try {
     await page.waitForSelector("#jigex-multiplayer-btn", {
       visible: true,
@@ -176,19 +216,15 @@ export const makeWholePuzzle = async (username, imageUrl, nop) => {
       timeout: 100000,
     });
     const n = await page.$("#jigex-game-link");
-    toReturn = await page.evaluate((n) => n.value, n);
-    isSuccessful = true;
-    console.debug("successful multiplayer link:", toReturn);
+    toReturnData.multiplayerUrl = await page.evaluate((n) => n.value, n);
+    console.debug("successful multiplayer link:", toReturnData.multiplayerUrl);
   } catch (e) {
     console.error(
-      `Failed to make multiplayer puzzle link: ${e}. Unsuccessful link: ${toReturn}`
+      `Failed to make multiplayer puzzle link: ${e}. Unsuccessful link: ${toReturnData.multiplayerUrl}, single player link: ${toReturnData.singlePlayerUrl}`
     );
   }
 
   await browser.close();
 
-  return {
-    status: isSuccessful,
-    url: toReturn,
-  };
+  return toReturnData;
 };
