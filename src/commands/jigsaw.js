@@ -58,14 +58,14 @@ const processGeneratePuzzle = async (interaction) => {
     const numberOfPieces = interaction.options._hoistedOptions[1].value;
     const pingTheRole = interaction.options._hoistedOptions[2]?.value || false;
 
-    await replyCustomEmbed(
-      interaction,
-      "Puzzle is being generated",
-      "Please wait till the puzzle is created and converted to multiplayer. With the new way of things working, it may take up to 30 seconds.",
-      url,
-      undefined,
-      `${numberOfPieces} pieces`
-    );
+    // await replyCustomEmbed(
+    //   interaction,
+    //   "Puzzle is being generated",
+    //   "Please wait till the puzzle is created and converted to multiplayer. With the new way of things working, it may take up to 30 seconds.",
+    //   url,
+    //   undefined,
+    //   `${numberOfPieces} pieces`
+    // );
 
     // error?, singlePlayerUrl, multiPlayerUrl?
     const result = await makeWholePuzzle(
