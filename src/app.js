@@ -1,12 +1,5 @@
 import { Application } from "./application.js";
-import {
-  originalConsoleDebug,
-  originalConsoleError,
-  originalConsoleLog,
-  originalConsoleWarn,
-  TelegramBotWrapper,
-} from "./telegramLogger.js";
-import { cronTask } from "./resetCounterCronJob.js";
+import { originalConsoleLog, TelegramBotWrapper } from "./telegramLogger.js";
 
 import dotenv from "dotenv";
 import express from "express";
@@ -17,14 +10,6 @@ import {
   createCalendarRoute,
   getCalendar,
 } from "./utils/calendarUtils.js";
-import { TwitterClient } from "./twitterClient.js";
-import {
-  createLogsRoute,
-  DEBUGS_FILENAME,
-  ERRORS_FILENAME,
-  LOGS_FILENAME,
-  WARNINGS_FILENAME,
-} from "./model/logs.js";
 import { createUploadSettingsRoute } from "./model/botSettings.js";
 
 dotenv.config();
@@ -37,11 +22,12 @@ const IGNORED_WARNINGS = [
 ];
 
 if (!INACTIVE) {
+  // commented out for develop
+  /*
   const bot = new TelegramBotWrapper();
   console.log("Telegram bot started");
 
   console.log = (...args) => {
-    // writeLog(...args);
     originalConsoleLog(...args);
   };
   console.error = (...args) => {
@@ -52,7 +38,6 @@ if (!INACTIVE) {
     ) {
       return;
     }
-    // writeError(...args);
     bot.sendError(...args);
   };
   console.warn = (...args) => {
@@ -63,23 +48,23 @@ if (!INACTIVE) {
     ) {
       return;
     }
-    // writeWarning(...args);
     bot.sendWarning(...args);
   };
   console.debug = (...args) => {
-    // writeDebug(...args);
     bot.sendDebug(...args);
   };
+  */
   console.error("Logging override complete (a restart happened?)");
 
   const expressApp = express();
   const init = async () => {
     try {
-      const pekoBot = new Application("peko-bot");
-      const mikoBot = new Application("Mikodanye");
+      // commented out for develop
+      // const pekoBot = new Application("peko-bot");
+      // const mikoBot = new Application("Mikodanye");
 
-      const twitterClient = new TwitterClient();
-      twitterClient.init([pekoBot, mikoBot]);
+      // for develop only
+      const developBot = new Application("developer-bot");
     } catch (e) {
       console.error(`Couldn't initialize discord bots:`, e);
     }
@@ -97,10 +82,6 @@ if (!INACTIVE) {
         );
       }
       expressApp.use("/cal", createCalendarRoute());
-      // expressApp.use("/log", createLogsRoute(LOGS_FILENAME));
-      // expressApp.use("/warn", createLogsRoute(WARNINGS_FILENAME));
-      // expressApp.use("/error", createLogsRoute(ERRORS_FILENAME));
-      // expressApp.use("/debug", createLogsRoute(DEBUGS_FILENAME));
       expressApp.put("/upload", createUploadSettingsRoute);
       expressApp.put("/uploadCalendars", createUploadSettingsRoute);
 

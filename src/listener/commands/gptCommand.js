@@ -20,6 +20,7 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_ALLOWED_GPT,
   DDF_CONSULTING,
+  DEVELOP_GPT_CHANNEL,
   MIKO_ALLOWED_RNG_GPT,
   MIKO_BOT_SPAM_CHANNEL,
   MIKODANYE_CHANNEL,
@@ -44,7 +45,12 @@ export class GptCommand extends AbstractCommand {
       5,
       S_MS * H_M_S * 3,
       ["Mod", this.settings.name],
-      [PEKO_GPT_OK_CHANNEL, TEST_GPT_OK_CHANNEL, MIKODANYE_CHANNEL],
+      [
+        PEKO_GPT_OK_CHANNEL,
+        TEST_GPT_OK_CHANNEL,
+        MIKODANYE_CHANNEL,
+        DEVELOP_GPT_CHANNEL,
+      ],
       AlertUserMode.Emote
     );
     this.allowedChannels = [
@@ -55,6 +61,8 @@ export class GptCommand extends AbstractCommand {
       ...DDF_ALLOWED_GPT,
       MIKO_BOT_SPAM_CHANNEL,
       MIKODANYE_CHANNEL,
+      // for develop only, comment out when rolling out
+      DEVELOP_GPT_CHANNEL,
     ];
     this.consultingChanels = [
       ...RP_CHANNELS,
