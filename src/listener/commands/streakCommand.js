@@ -82,9 +82,10 @@ export class StreakCommand extends AbstractCommand {
     const emojiPattern = /^<:\w+:\d+>$/;
     return (
       emojiPattern.test(text) ||
-      streakData.some((data) =>
-        data.triggers.some((trigger) => text.toLowerCase().includes(trigger))
-      )
+      (streakData &&
+        streakData.some((data) =>
+          data.triggers.some((trigger) => text.toLowerCase().includes(trigger))
+        ))
     );
   }
 }
