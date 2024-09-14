@@ -5,7 +5,7 @@ import { ImageAnnotatorClient } from "@google-cloud/vision";
 import dotenv from "dotenv";
 import { SENTENCE_ENDERS } from "./constants.js";
 import { gptGetLanguage, gptl } from "./openaiUtils.js";
-import { getMsgInfo, trimBrackets } from "./stringUtils.js";
+import { trimBrackets } from "./stringUtils.js";
 import extractUrls from "extract-urls";
 
 dotenv.config();
@@ -56,20 +56,8 @@ export class ApiUtils {
   }
 
   // throws
-  static async GetTranslation(
-    text,
-    source,
-    msg = undefined,
-    settings,
-    isGpt = false,
-    isFallback = false,
-    isGpt4 = false
-  ) {
-    if (
-      tlCache[text] &&
-      tlCache[text].isGpt === isGpt &&
-      tlCache[text].isGpt4 === isGpt4
-    ) {
+  static async GetTranslation(text, msg, settings) {
+    if (tlCache[text] && tlCache[text].isGpt === true) {
       console.log(`cached translation`, tlCache[text]);
       return tlCache[text];
     }
@@ -82,116 +70,65 @@ export class ApiUtils {
     const startTime = new Date();
     let response = undefined;
     let metadata = undefined;
-    let isGptResult = isGpt;
-    if (isGpt) {
-      if (textToTranslate.length > 0) {
-        let responseData = { text: undefined };
-        await gptGetLanguage(textToTranslate, settings)
-          .then((response) => {
-            const notTranslatedKeywords = ["eng", "unknown", "undetermined"];
-            if (
-              response &&
-              notTranslatedKeywords.some((w) =>
-                response.text.toLowerCase().includes(w)
-              )
-            ) {
-              console.debug(
-                `Not translating, as the text is already in English: ${textToTranslate}`
-              );
-              return Promise.resolve({
-                text: textToTranslate,
-                data: response.data,
-              });
-            } else {
-              return gptl(msg, settings, textToTranslate, isGpt4);
-            }
-          })
-          .then((res) => {
-            responseData = res;
-          })
-          .catch((e) => {
-            console.error(`Couldn't GPTL: ${e}`);
-          });
-
-        if (!responseData.text) {
-          response = "";
-        } else {
-          response = trimBrackets(responseData.text);
-        }
-
-        metadata = responseData.data;
-      } else {
-        response = "";
-      }
-
-      if (!response || response.length === 0) {
-        if (!isFallback) {
-          return ApiUtils.GetTranslation(
-            text,
-            source,
-            msg,
-            settings,
-            false,
-            true,
-            isGpt4
-          );
-        } else {
-          throw `Both deepl and gptl failed miserably.`;
-        }
-      }
-      if (response.length > 1990) {
-        const patterns = response.match(/(\w+\s*)\1+/g);
-        patterns.forEach((p) => {
-          const spaceSeparated = p.split(" ")[0];
-          const firstLetters = p.slice(0, 5);
-          const toReplace =
-            spaceSeparated.length < firstLetters.length
-              ? spaceSeparated
-              : firstLetters;
-          response = response.replaceAll(p, toReplace);
+    if (textToTranslate.length > 0) {
+      let responseData = { text: undefined };
+      await gptGetLanguage(textToTranslate, settings)
+        .then((response) => {
+          const notTranslatedKeywords = [
+            "en",
+            "eng",
+            "unknown",
+            "undetermined",
+          ];
+          if (
+            response &&
+            notTranslatedKeywords.some((w) =>
+              response.text.toLowerCase().includes(w)
+            )
+          ) {
+            console.debug(
+              `Not translating, as the text is already in English: ${textToTranslate}`
+            );
+            return Promise.resolve({
+              text: textToTranslate,
+              data: response.data,
+            });
+          } else {
+            return gptl(msg, settings, textToTranslate);
+          }
+        })
+        .then((res) => {
+          responseData = res;
+        })
+        .catch((e) => {
+          console.error(`Couldn't GPTL: ${e}`);
         });
+
+      if (!responseData.text) {
+        response = "";
+      } else {
+        response = trimBrackets(responseData.text);
       }
-      if (response.length > 3500) {
-        console.error(`${getMsgInfo(msg)}, Too long gptl message: ${response}`);
-        if (!isFallback) {
-          return ApiUtils.GetTranslation(
-            text,
-            source,
-            msg,
-            settings,
-            false,
-            true,
-            isGpt4
-          );
-        }
-      }
+
+      metadata = responseData.data;
+    } else {
+      response = "";
     }
 
-    if (!isGpt || !response) {
-      isGptResult = false;
-      const t = await translate({
-        free_api: true,
-        text: textToTranslate,
-        source_lang: source,
-        target_lang: "EN",
-        auth_key: "7b78071d-54ca-2f9c-2e1a-909f69927efd:fx",
+    if (!response || response.length === 0) {
+      return ApiUtils.GetDeepLTranslation(text);
+    }
+    if (response.length > 1990) {
+      const patterns = response.match(/(\w+\s*)\1+/g);
+      patterns.forEach((p) => {
+        const spaceSeparated = p.split(" ")[0];
+        const firstLetters = p.slice(0, 5);
+        const toReplace =
+          spaceSeparated.length < firstLetters.length
+            ? spaceSeparated
+            : firstLetters;
+        response = response.replaceAll(p, toReplace);
       });
-      response = t.data.translations[0].text;
-      if (response.length === 0) {
-        if (!isFallback) {
-          return ApiUtils.GetTranslation(
-            text,
-            source,
-            msg,
-            settings,
-            true,
-            true,
-            isGpt4
-          );
-        } else {
-          throw `Both deepl and gptl failed miserably.`;
-        }
-      }
     }
 
     const urls = extractUrls(response);
@@ -207,13 +144,54 @@ export class ApiUtils {
       time: new Date().getTime() - startTime.getTime(),
       text: response,
       metaData: metadata,
-      isGpt: isGptResult,
-      isGpt4: isGpt4,
+      isGpt: true,
       translated: response !== textToTranslate,
     };
 
     console.debug(`final translation:`, toReturn);
     tlCache[text] = toReturn;
+    return toReturn;
+  }
+
+  static async GetDeepLTranslation(text, source = undefined) {
+    let textToTranslate = text
+      .trim()
+      .replace(
+        /([！あいうえおアイウエオｱｲｳｴｵぁぃぅぇぉァィゥェォｧｨｩｪｫ])\1\1+/gi,
+        "$1$1"
+      ); // replace 3+ same characters with 2
+    if (tlCache[textToTranslate] && tlCache[textToTranslate].isGpt === false) {
+      console.log(`cached translation`, tlCache[textToTranslate]);
+      return tlCache[textToTranslate];
+    }
+    const startTime = new Date();
+    const t = await translate({
+      free_api: true,
+      text: textToTranslate,
+      source_lang: source,
+      target_lang: "EN",
+      auth_key: "7b78071d-54ca-2f9c-2e1a-909f69927efd:fx",
+    });
+    let response = t.data.translations[0].text;
+
+    const urls = extractUrls(response);
+    if (urls) {
+      urls.forEach((escapeUrl) => {
+        if (escapeUrl.includes("t.co")) {
+          response = response.replaceAll(escapeUrl, `<${escapeUrl}>`);
+        }
+      });
+    }
+    const toReturn = {
+      time: new Date().getTime() - startTime.getTime(),
+      text: response,
+      metaData: undefined,
+      isGpt: false,
+      translated: response !== textToTranslate,
+    };
+
+    console.debug(`final translation:`, toReturn);
+    tlCache[textToTranslate] = toReturn;
     return toReturn;
   }
 }

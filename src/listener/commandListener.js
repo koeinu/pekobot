@@ -100,10 +100,8 @@ export class CommandListener {
 
             return ApiUtils.GetTranslation(
               textToTranslate,
-              undefined,
               msg,
-              this.settings,
-              true
+              this.settings
             ).then(async (tlData) => {
               if (tlData.text) {
                 const toSend = formatTLText(tlData.text, tlData.isGpt);

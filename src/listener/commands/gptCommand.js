@@ -1,9 +1,9 @@
 import { AbstractCommand } from "../abstractCommand.js";
 
 import {
-  gpt,
   messageContextArray,
   serverRules,
+  gpt,
 } from "../../utils/openaiUtils.js";
 import { MessageType } from "discord.js";
 import {
@@ -20,7 +20,9 @@ import { AlertUserMode, CustomRateLimiter } from "../../utils/rateLimiter.js";
 import {
   DDF_ALLOWED_GPT,
   DDF_CONSULTING,
+  DEVELOP_EX_CHANNEL,
   DEVELOP_GPT_CHANNEL,
+  DEVELOP_PEKO_CHANNEL,
   MIKO_ALLOWED_RNG_GPT,
   MIKO_BOT_SPAM_CHANNEL,
   MIKODANYE_CHANNEL,
@@ -34,6 +36,7 @@ import {
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
 import { BANNED_USERS } from "../../utils/ids/users.js";
+import { HumanMessage } from "@langchain/core/messages";
 
 export class GptCommand extends AbstractCommand {
   constructor(settings) {
@@ -50,6 +53,8 @@ export class GptCommand extends AbstractCommand {
         TEST_GPT_OK_CHANNEL,
         MIKODANYE_CHANNEL,
         DEVELOP_GPT_CHANNEL,
+        DEVELOP_PEKO_CHANNEL,
+        DEVELOP_EX_CHANNEL,
       ],
       AlertUserMode.Emote
     );
@@ -63,6 +68,8 @@ export class GptCommand extends AbstractCommand {
       MIKODANYE_CHANNEL,
       // for develop only, comment out when rolling out
       DEVELOP_GPT_CHANNEL,
+      DEVELOP_PEKO_CHANNEL,
+      DEVELOP_EX_CHANNEL,
     ];
     this.consultingChanels = [
       ...RP_CHANNELS,
@@ -134,13 +141,11 @@ export class GptCommand extends AbstractCommand {
 
       return gpt(
         [
-          messageContextArray(msg, this.settings),
-          serverRules(msg, this.settings),
-          gptPrompt,
-        ].join("\n"),
-        this.settings,
-        "",
-        this.completionSettings
+          ...messageContextArray(msg, this.settings),
+          ...serverRules(msg, this.settings),
+        ],
+        msg.channelId,
+        msg.content
       )
         .then(async (data) => {
           const response = data.text;

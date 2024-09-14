@@ -72,48 +72,42 @@ export class GptlCommand extends AbstractCommand {
         console.error(`Couldn't send typing: ${e}`);
       });
 
-      return ApiUtils.GetTranslation(
-        data.text,
-        undefined,
-        msg,
-        this.settings,
-        true,
-        false,
-        this.isGpt4
-      ).then(async (tlData) => {
-        if (tlData.text) {
-          const toSend = formatTLText(tlData.text, tlData.isGpt);
-          // return reply(msg, toSend, undefined, false, false);
-          if (this.settings.inactive) {
-            console.log("gptl inactive mode, doing nothing", toSend);
-            return Promise.resolve();
+      return ApiUtils.GetTranslation(data.text, msg, this.settings).then(
+        async (tlData) => {
+          if (tlData.text) {
+            const toSend = formatTLText(tlData.text, tlData.isGpt);
+            // return reply(msg, toSend, undefined, false, false);
+            if (this.settings.inactive) {
+              console.log("gptl inactive mode, doing nothing", toSend);
+              return Promise.resolve();
+            }
+            if (!(await this.rateLimitPass(msg))) {
+              return Promise.resolve();
+            }
+            return replyCustomEmbed(
+              msg,
+              undefined,
+              toSend,
+              undefined,
+              undefined,
+              printTLInfo(data.countObject, tlData.time, tlData.metaData)
+            );
+          } else {
+            if (this.settings.inactive) {
+              console.log("inactive mode, doing nothing");
+              return Promise.resolve();
+            }
+            return replyCustomEmbed(
+              msg,
+              undefined,
+              `Beep boop, looks like I'm overloaded with requests.. Try again later!`,
+              undefined,
+              undefined,
+              printTLInfo(data.countObject, tlData.time, tlData.metaData)
+            );
           }
-          if (!(await this.rateLimitPass(msg))) {
-            return Promise.resolve();
-          }
-          return replyCustomEmbed(
-            msg,
-            undefined,
-            toSend,
-            undefined,
-            undefined,
-            printTLInfo(data.countObject, tlData.time, tlData.metaData)
-          );
-        } else {
-          if (this.settings.inactive) {
-            console.log("inactive mode, doing nothing");
-            return Promise.resolve();
-          }
-          return replyCustomEmbed(
-            msg,
-            undefined,
-            `Beep boop, looks like I'm overloaded with requests.. Try again later!`,
-            undefined,
-            undefined,
-            printTLInfo(data.countObject, tlData.time, tlData.metaData)
-          );
         }
-      });
+      );
     }
   }
   async commandMatch(msg) {
