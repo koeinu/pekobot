@@ -5,7 +5,11 @@ import { OpenAIModerationChain } from "langchain/chains";
 
 import { InMemoryChatMessageHistory } from "@langchain/core/chat_history";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { RunnableWithMessageHistory } from "@langchain/core/runnables";
+import {
+  RunnableWithMessageHistory,
+  RunnablePassthrough,
+  RunnableSequence,
+} from "@langchain/core/runnables";
 
 import dotenv from "dotenv";
 import { listDictionary } from "../model/gptDict.js";
@@ -19,9 +23,6 @@ import {
 import { ASSISTANT_CHANNELS, RP_CHANNELS } from "./ids/channels.js";
 
 dotenv.config();
-
-import PQueue from "p-queue";
-const queue = new PQueue({ concurrency: 1 });
 
 import { parseHashtags } from "./stringUtils.js";
 
@@ -301,7 +302,7 @@ export const gptl = async (msg, settings, text) => {
   }));
   const messages = [
     new SystemMessage(
-      "Translate the following to English, preserving the original text structure and writing style. Leave untranslated and unformatted any hashtags, weird symbols and kaomojis."
+      "Translate the following to English, but preserve the original text structure, writing style, formatting, hashtags, symbols and kaomojis."
     ),
     new SystemMessage(
       `Additional slang dictionary: ${entries
@@ -324,6 +325,8 @@ export const gptl = async (msg, settings, text) => {
 
 const messageHistories = {};
 
+const MESSAGE_HISTORY_SIZE = 20;
+
 // throws
 export const gpt = (messages, id, input) => {
   const prompt = ChatPromptTemplate.fromMessages([
@@ -332,7 +335,16 @@ export const gpt = (messages, id, input) => {
     ["human", "{input}"],
   ]);
 
-  const chain = prompt.pipe(MODEL);
+  const filterMessages = (_input) =>
+    _input.chat_history.slice(-MESSAGE_HISTORY_SIZE);
+
+  const chain = RunnableSequence.from([
+    RunnablePassthrough.assign({
+      chat_history: filterMessages,
+    }),
+    prompt,
+    MODEL,
+  ]);
 
   const withMessageHistory = new RunnableWithMessageHistory({
     runnable: chain,
