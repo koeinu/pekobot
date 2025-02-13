@@ -60,11 +60,11 @@ if (!INACTIVE) {
   const init = async () => {
     try {
       // commented out for develop
-      // const pekoBot = new Application("peko-bot");
-      // const mikoBot = new Application("Mikodanye");
+      const pekoBot = new Application("peko-bot");
+      const mikoBot = new Application("Mikodanye");
 
       // for develop only
-      const developBot = new Application("developer-bot");
+      // const developBot = new Application("developer-bot");
     } catch (e) {
       console.error(`Couldn't initialize discord bots:`, e);
     }
