@@ -99,9 +99,9 @@ export class Application {
     this.client.on(Events.Warn, (e) => {
       console.warn(e);
     });
-    this.client.on(Events.Debug, (e) => {
-      console.log(e);
-    });
+    // this.client.on(Events.Debug, (e) => {
+    //   console.log(e);
+    // });
 
     this.client.once(Events.ClientReady, (c) => {
       console.error(`Logged in as ${c.user.tag}`);
