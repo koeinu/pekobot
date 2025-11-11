@@ -48,9 +48,9 @@ export class GptCommand extends AbstractCommand {
         PEKO_GPT_OK_CHANNEL,
         TEST_GPT_OK_CHANNEL,
         MIKODANYE_CHANNEL,
-        DEVELOP_GPT_CHANNEL,
-        DEVELOP_PEKO_CHANNEL,
-        DEVELOP_EX_CHANNEL,
+        // DEVELOP_GPT_CHANNEL,
+        // DEVELOP_PEKO_CHANNEL,
+        // DEVELOP_EX_CHANNEL,
       ],
       AlertUserMode.Emote
     );
@@ -63,9 +63,9 @@ export class GptCommand extends AbstractCommand {
       MIKO_BOT_SPAM_CHANNEL,
       MIKODANYE_CHANNEL,
       // for develop only, comment out when rolling out
-      DEVELOP_GPT_CHANNEL,
-      DEVELOP_PEKO_CHANNEL,
-      DEVELOP_EX_CHANNEL,
+      // DEVELOP_GPT_CHANNEL,
+      // DEVELOP_PEKO_CHANNEL,
+      // DEVELOP_EX_CHANNEL,
     ];
     this.consultingChanels = [
       ...RP_CHANNELS,

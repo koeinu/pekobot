@@ -22,8 +22,6 @@ const IGNORED_WARNINGS = [
 ];
 
 if (!INACTIVE) {
-  // commented out for develop
-  /*
   const bot = new TelegramBotWrapper();
   console.log("Telegram bot started");
 
@@ -53,7 +51,7 @@ if (!INACTIVE) {
   console.debug = (...args) => {
     bot.sendDebug(...args);
   };
-  */
+
   console.error("Logging override complete (a restart happened?)");
 
   const expressApp = express();
