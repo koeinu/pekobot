@@ -11,8 +11,8 @@ export class ModerateCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
     this.name = "moderate";
-    this.allowedGuilds = [TEST_SERVER];
-    this.channelsToSend = [TEST_MODERATION];
+    this.allowedGuilds = [PEKO_SERVER];
+    this.channelsToSend = [PEKO_MOD];
   }
   async execute(msg, discordClient) {
     return moderateMessage(msg)
