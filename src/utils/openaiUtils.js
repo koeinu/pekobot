@@ -59,6 +59,7 @@ const populateAssistantContext = (msg, settings) => {
       Your creator is Hermit. 
       Your name is ${settings.name}. 
       You are participating in a dialogue in a channel named ${msg.channel.name}. Write the ${settings.name}'s next reply in the dialogue. 
+      Currently, you are unable to use live search. It prevents you from performing tasks like telling weather or latest news. Be aware of that.
       `,
   });
 
