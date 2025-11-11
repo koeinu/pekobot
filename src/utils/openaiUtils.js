@@ -1,18 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import { ChatOpenAI } from "@langchain/openai";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { OpenAIModerationChain } from "langchain/chains";
-
-import { InMemoryChatMessageHistory } from "@langchain/core/chat_history";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import {
-  RunnableWithMessageHistory,
-  RunnablePassthrough,
-  RunnableSequence,
-} from "@langchain/core/runnables";
-
 import dotenv from "dotenv";
-import { listDictionary } from "../model/gptDict.js";
 import {
   DDF_SERVER,
   MIKO_SERVER,
@@ -21,57 +7,85 @@ import {
   TEST_SERVER_2,
 } from "./ids/guilds.js";
 import { ASSISTANT_CHANNELS, RP_CHANNELS } from "./ids/channels.js";
+import { get_encoding } from "tiktoken";
 
 dotenv.config();
 
-import { parseHashtags } from "./stringUtils.js";
-
-const MODEL = new ChatOpenAI({
-  model: "gpt-4o",
-  temperature: 1,
-});
-const GPTL_MODEL = new ChatOpenAI({ temperature: 0, model: "gpt-4o" });
-
-const MODERAIION_MODEL = new OpenAIModerationChain({
-  throwError: true,
-});
-
-export const MOD_THRESHOLDS = {
-  sexual: 0.8,
-  hate: 0.92,
-  violence: 0.92,
-  "self-harm": 0.75,
-  "sexual/minors": 0.5,
-  "hate/threatening": 0.6,
-  "violence/graphic": 0.6,
-};
-
-const fixModData = (data) => {
-  data.flagged = false;
-  Object.entries(data.category_scores).forEach(([category, value]) => {
-    const decision = value > MOD_THRESHOLDS[category];
-    data.categories[category] = decision;
-    if (decision) {
-      data.flagged = true;
-    }
+const populateRPContext = (msg, rpSettings) => {
+  const systemContext = [];
+  systemContext.push({
+    role: "system",
+    content: `Write next ${rpSettings.name}'s reply in this fictional chat with user ${msg.author.globalName}. 
+        Keep it simple. Decide only what ${rpSettings.name} does or says. 
+        Use Internet roleplay style: characters speech is written in usual text without quotation marks, and actions are written in italic in third person. 
+        Be initiative, proactive, creative, drive the conversation and story forward using ${rpSettings.name} actions or random events. 
+        Always stay in character. 
+        `,
   });
-  return data;
-};
-
-export const moderateMessage = async (msg) => {
-  const result = await MODERAIION_MODEL.invoke({
-    input: msg.content,
-  });
-  // console.log(`Moderation result: ${JSON.stringify(result.data?.results)}`);
-  if (result.results) {
-    if (result.results.length > 0) {
-      const data = result.results[0];
-      return fixModData(data);
-    }
+  if (
+    rpSettings["characterInstructions"] &&
+    rpSettings["characterInstructions"].length > 0
+  ) {
+    systemContext.push({
+      role: "system",
+      content: `Character Instructions: ${rpSettings[
+        "characterInstructions"
+      ].join(" ")}`,
+    });
   }
-  console.error(`Couldn't get moderation results: ${result}`);
-  return undefined;
+  if (rpSettings["traits"] && rpSettings["traits"].length > 0) {
+    systemContext.push({
+      role: "system",
+      content: `Traits: ${rpSettings["traits"].join(" ")}`,
+    });
+  }
+  if (rpSettings["appearances"] && rpSettings["appearances"].length > 0) {
+    systemContext.push({
+      role: "system",
+      content: `${rpSettings.name}'s appearance: ${rpSettings[
+        "appearances"
+      ].join(" ")}`,
+    });
+  }
+
+  return systemContext;
 };
+
+const populateAssistantContext = (msg, settings) => {
+  const systemContext = [];
+  systemContext.push({
+    role: "system",
+    content: `You are an assistant bot at a discord server named ${msg.guild.name}. 
+      Your creator is Hermit. 
+      Your name is ${settings.name}. 
+      You are participating in a dialogue in a channel named ${msg.channel.name}. Write the ${settings.name}'s next reply in the dialogue. 
+      `,
+  });
+
+  return systemContext;
+};
+
+const populateAssistantSemiRPContext = (msg, settings) => {
+  const systemContext = [];
+  if (settings.speechInstructions && settings.speechInstructions.length > 0) {
+    systemContext.push({
+      role: "system",
+      content: `Speech instructions: ${settings.speechInstructions.join(" ")}`,
+    });
+  }
+  if (settings.trivia && settings.trivia.length > 0) {
+    systemContext.push({
+      role: "system",
+      content: `Information and trivia about ${
+        settings.inspiration
+      }: ${settings.trivia.join(" ")}`,
+    });
+  }
+  return systemContext;
+};
+
+const doAssistantSemiRP = (msg) =>
+  !ASSISTANT_CHANNELS.includes(msg.channel.id) && msg.guild.id !== DDF_SERVER;
 
 export const messageContextArray = (msg, settings) => {
   const rpMode = RP_CHANNELS.includes(msg.channel.id);
@@ -80,87 +94,44 @@ export const messageContextArray = (msg, settings) => {
       ? settings.extendedRp[msg.channel.name]
       : undefined;
   const systemContext = [
-    ["system", `Current date and time: ${new Date().toUTCString()}.`],
+    { role: "system", content: `Current time: ${new Date().toUTCString()}.` },
   ];
   if (rpSettings) {
-    // RP mode
-    systemContext.push(
-      [
-        "system",
-        `Write next ${rpSettings.name}'s reply in this fictional chat.`,
-      ],
-      [
-        "system",
-        `Keep it simple. Decide only what ${rpSettings.name} does or says.`,
-      ],
-      [
-        "system",
-        `Use Internet roleplay style: no quotation marks, user actions are written in italic and in third person.`,
-      ],
-      [
-        "system",
-        `Be initiative, proactive, creative, drive the conversation and story forward using ${rpSettings.name} actions or random events.`,
-      ],
-      ["system", `Always stay in character.`]
-    );
-    if (rpSettings["characterInstructions"]) {
-      systemContext.push([
-        "system",
-        `Character Instructions: ${rpSettings["characterInstructions"].join(
-          " "
-        )}`,
-      ]);
-    }
-    if (rpSettings["traits"]) {
-      systemContext.push([
-        "system",
-        `Traits: ${rpSettings["traits"].join(" ")}`,
-      ]);
-    }
-    if (rpSettings["appearances"]) {
-      systemContext.push([
-        "system",
-        `${rpSettings.name}'s appearance: ${rpSettings["appearances"].join(
-          " "
-        )}`,
-      ]);
-    }
+    systemContext.push(...populateRPContext(msg, rpSettings));
   } else {
-    systemContext.push(
-      [
-        "system",
-        `You are an assistant bot at a discord server named ${msg.guild.name}`,
-      ],
-      ["system", `Your creator is Hermit.`],
-      ["system", `Your name is ${settings.name}.`],
-      [
-        "system",
-        `You are participating in a dialogue in a channel named ${msg.channel.name}. Write the ${settings.name}'s next reply in the dialogue.`,
-      ]
-    );
-    if (
-      !ASSISTANT_CHANNELS.includes(msg.channel.id) &&
-      msg.guild.id !== DDF_SERVER
-    ) {
-      if (settings.speechInstructions) {
-        systemContext.push([
-          "system",
-          `Speech instructions: ${settings.speechInstructions.join(" ")}`,
-        ]);
-      }
-      if (settings.trivia) {
-        systemContext.push([
-          "system",
-          `Information and trivia about ${
-            settings.inspiration
-          }: ${settings.trivia.join(" ")}`,
-        ]);
-      }
+    // usual assistant
+    systemContext.push(...populateAssistantContext(msg, settings));
+    if (doAssistantSemiRP(msg)) {
+      systemContext.push(...populateAssistantSemiRPContext(msg, settings));
     }
   }
 
   return systemContext;
 };
+
+const encoder = get_encoding("cl100k_base");
+
+export function estimateGrokTokens(prompt = "", completion = "") {
+  const p = typeof prompt === "string" ? prompt : "";
+  const c = typeof completion === "string" ? completion : "";
+
+  const promptTokens = encoder.encode(p).length;
+  const completionTokens = encoder.encode(c).length;
+  const totalTokens = promptTokens + completionTokens;
+
+  // Optional sanity-check logging
+  console.log({
+    promptTokens,
+    completionTokens,
+    totalTokens,
+    promptChars: p.length,
+    completionChars: c.length,
+    roughPromptEst: Math.ceil(p.length / 4),
+    roughCompletionEst: Math.ceil(c.length / 4),
+  });
+
+  return { promptTokens, completionTokens, totalTokens };
+}
 
 export const serverRules = (msg, settings) => {
   const guildId = msg.guild.id;
@@ -172,14 +143,16 @@ export const serverRules = (msg, settings) => {
   if (rpSettings || ASSISTANT_CHANNELS.includes(msg.channel.id)) {
     return [];
   }
-  const serverRules = [
-    ["system", `Server rules:`],
-    ["system", "1. Don't say anything controversial or sexual."],
-    [
-      "system",
-      "2. Reply in the same language as the previous message in the conversation.",
-    ],
-  ];
+
+  let rules = `Server rules:
+  1. Don't say anything controversial or sexual.
+  2. Reply in the same language as the previous message in the conversation.
+  `;
+
+  const extendedRules = `3. Don't pretend to be anyone else in any situation.
+  4. When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.
+  5. Respond only with statements. Don't ask anything and don't try to continue the dialogue.
+  `;
 
   // static rules
   switch (guildId) {
@@ -187,17 +160,7 @@ export const serverRules = (msg, settings) => {
     case MIKO_SERVER:
     case TEST_SERVER:
     case TEST_SERVER_2: {
-      serverRules.push(
-        ["system", "3. Don't pretend to be anyone else in any situation."],
-        [
-          "system",
-          "4. When speaking about vtubers, you are allowed to talk about their lore and public information. Don't disclose any private or real life information.",
-        ],
-        [
-          "system",
-          "5. Respond only with statements. Don't ask anything and don't try to continue the dialogue.",
-        ]
-      );
+      rules += extendedRules;
       break;
     }
     default: {
@@ -205,176 +168,10 @@ export const serverRules = (msg, settings) => {
     }
   }
 
-  return serverRules;
-};
-
-export const gptReaction = async (text, settings, actionsArray, reactMode) => {
-  if (!reactMode) {
-    return Promise.resolve({ text: undefined });
-  }
-  const messages = [
-    new SystemMessage(
-      `Guess an action ${
-        settings.inspiration
-      } would react with to the following. Polite requests may be answered with an affirmative action even if it doesn't fit the character's personality. To answer you may only choose one of actions from set [${actionsArray.join(
-        ", "
-      )}, other]. If there is no good option, respond 'other'. Any message about love, marriage or lewd things should be responded with 'other'.`
-    ),
-    new HumanMessage(text),
-  ];
-
-  return GPTL_MODEL.invoke(messages).then((aiMessage) => {
-    return {
-      text: aiMessage.content,
-      data: {
-        pt: aiMessage.response_metadata.tokenUsage.promptTokens,
-        ct: aiMessage.response_metadata.tokenUsage.completionTokens,
-      },
-    };
-  });
-};
-
-export const gptMood = async (text, settings, moodsArray, reactMode) => {
-  const initialLine = reactMode
-    ? `Determine the mood ${settings.inspiration} would react to the following.`
-    : `Determine the mood of a message.`;
-  const messages = [
-    new SystemMessage(
-      `${initialLine} You may choose one of moods from set [${moodsArray.join(
-        ", "
-      )}, other]. If there is no good option, respond 'other'. Any message about love, marriage or lewd things should be responded with 'blush'.`
-    ),
-    new HumanMessage(text),
-  ];
-
-  return GPTL_MODEL.invoke(messages).then((aiMessage) => {
-    return {
-      text: aiMessage.content,
-      data: {
-        pt: aiMessage.response_metadata.tokenUsage.promptTokens,
-        ct: aiMessage.response_metadata.tokenUsage.completionTokens,
-      },
-    };
-  });
-};
-
-export const gptGetLanguage = async (text) => {
-  const messages = [
-    new SystemMessage(
-      "Determine the primary language of the following, reply with the language code."
-    ),
-    new HumanMessage(text),
-  ];
-
-  return GPTL_MODEL.invoke(messages).then((aiMessage) => {
-    return {
-      text: aiMessage.content,
-      data: {
-        pt: aiMessage.response_metadata.tokenUsage.promptTokens,
-        ct: aiMessage.response_metadata.tokenUsage.completionTokens,
-      },
-    };
-  });
-};
-export const gptl = async (msg, settings, text) => {
-  const hashTags = parseHashtags(text);
-  let textWithoutHashtags = text;
-  if (hashTags) {
-    hashTags.forEach((tag) => {
-      textWithoutHashtags = textWithoutHashtags.replace(tag, "").trim();
-    });
-  }
-
-  if (textWithoutHashtags.length === 0) {
-    return {
-      text: text,
-      data: {
-        pt: 0,
-        ct: 0,
-      },
-    };
-  }
-
-  const dict = listDictionary(msg ? msg.guild.id : undefined);
-  const entries = Object.entries(dict).map((el) => ({
-    src: el[0],
-    tl: el[1],
-  }));
-  const messages = [
-    new SystemMessage(
-      "Translate the following to English, but preserve the original text structure, writing style, formatting, hashtags, symbols and kaomojis."
-    ),
-    new SystemMessage(
-      `Additional slang dictionary: ${entries
-        .map((el) => `${el.src} = ${el.tl}`)
-        .join("; ")}.`
-    ),
-    new HumanMessage(text),
-  ];
-
-  return GPTL_MODEL.invoke(messages).then((aiMessage) => {
-    return {
-      text: aiMessage.content,
-      data: {
-        pt: aiMessage.response_metadata.tokenUsage.promptTokens,
-        ct: aiMessage.response_metadata.tokenUsage.completionTokens,
-      },
-    };
-  });
-};
-
-const messageHistories = {};
-
-const MESSAGE_HISTORY_SIZE = 20;
-
-// throws
-export const gpt = (messages, id, input) => {
-  const prompt = ChatPromptTemplate.fromMessages([
-    ...messages,
-    ["placeholder", "{chat_history}"],
-    ["human", "{input}"],
-  ]);
-
-  const filterMessages = (_input) =>
-    _input.chat_history.slice(-MESSAGE_HISTORY_SIZE);
-
-  const chain = RunnableSequence.from([
-    RunnablePassthrough.assign({
-      chat_history: filterMessages,
-    }),
-    prompt,
-    MODEL,
-  ]);
-
-  const withMessageHistory = new RunnableWithMessageHistory({
-    runnable: chain,
-    getMessageHistory: async (sessionId) => {
-      if (messageHistories[sessionId] === undefined) {
-        messageHistories[sessionId] = new InMemoryChatMessageHistory();
-      }
-      return messageHistories[sessionId];
+  return [
+    {
+      role: "system",
+      content: rules,
     },
-    inputMessagesKey: "input",
-    historyMessagesKey: "chat_history",
-  });
-  return withMessageHistory
-    .invoke(
-      {
-        input: input,
-      },
-      {
-        configurable: {
-          sessionId: id,
-        },
-      }
-    )
-    .then((aiMessage) => {
-      return {
-        text: aiMessage.content,
-        data: {
-          pt: aiMessage.response_metadata.tokenUsage.promptTokens,
-          ct: aiMessage.response_metadata.tokenUsage.completionTokens,
-        },
-      };
-    });
+  ];
 };

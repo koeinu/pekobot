@@ -1,5 +1,3 @@
-import { formatMSToHMS, getMsgInfo } from "./stringUtils.js";
-
 export const AlertUserMode = { Silent: 0, Normal: 1, Emote: 2 };
 export class CustomRateLimiter {
   constructor(
@@ -23,9 +21,6 @@ export class CustomRateLimiter {
     if (this.entities[entityId] === undefined) {
       if (doIncrease) {
         this.entities[entityId] = { count: 1, ts: new Date().getTime() };
-        // console.debug(
-        //   `rate start for ${this.commandName}, entityId: ${entityId}, cd ${this.interval}`
-        // );
         setTimeout(() => {
           this.entities[entityId] = undefined;
         }, this.interval);

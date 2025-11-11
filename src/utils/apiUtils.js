@@ -4,9 +4,9 @@ import { ImageAnnotatorClient } from "@google-cloud/vision";
 
 import dotenv from "dotenv";
 import { SENTENCE_ENDERS } from "./constants.js";
-import { gptGetLanguage, gptl } from "./openaiUtils.js";
 import { trimBrackets } from "./stringUtils.js";
 import extractUrls from "extract-urls";
+import { gptGetLanguage, gptl } from "./langchain/translate.js";
 
 dotenv.config();
 

@@ -1,5 +1,5 @@
 import { AbstractCommand } from "../abstractCommand.js";
-import { gptMood, gptReaction } from "../../utils/openaiUtils.js";
+import { gptMood, gptReaction } from "../../utils/langchain/reactions.js";
 import extractUrls from "extract-urls";
 import { PEKO_SERVER } from "../../utils/ids/guilds.js";
 import {

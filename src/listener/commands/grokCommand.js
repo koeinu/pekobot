@@ -32,15 +32,15 @@ import {
   TEST_USUAL_PEKO_GPT,
 } from "../../utils/ids/channels.js";
 import { BANNED_USERS } from "../../utils/ids/users.js";
-import { roleplayGpt } from "../../utils/langchain/gptRp.js";
-import { gpt } from "../../utils/langchain/gptAssistant.js";
+import { roleplayGrok } from "../../utils/langchain/grokRp.js";
+import { grok } from "../../utils/langchain/grokAssistant.js";
 
-export class GptCommand extends AbstractCommand {
+export class GrokCommand extends AbstractCommand {
   constructor(settings) {
     super(settings);
-    this.name = "gpt";
+    this.name = "grok";
     this.rateLimiter = new CustomRateLimiter(
-      "GPT",
+      "GROK",
       5,
       S_MS * H_M_S * 3,
       ["Mod", this.settings.name],
@@ -131,7 +131,7 @@ export class GptCommand extends AbstractCommand {
         console.error(`Couldn't send typing: ${e}`);
       });
 
-      const call = rpMode ? roleplayGpt : gpt;
+      const call = rpMode ? roleplayGrok : grok;
 
       return call(
         [
@@ -145,7 +145,7 @@ export class GptCommand extends AbstractCommand {
           const response = data.text;
           if (response) {
             if (this.settings.inactive) {
-              console.log("gpt inactive mode, doing nothing", response);
+              console.log("grok inactive mode, doing nothing", response);
               return Promise.resolve();
             }
             if (!(await this.rateLimitPass(msg))) {
@@ -168,7 +168,7 @@ export class GptCommand extends AbstractCommand {
             `Couldn't GPT reply ${msg.content} in ${msg.channel}: ${e}`
           );
           if (this.settings.inactive) {
-            console.log("gpt error inactive mode, doing nothing");
+            console.log("grok error inactive mode, doing nothing");
             return Promise.resolve();
           }
           return reply(
@@ -197,7 +197,7 @@ export class GptCommand extends AbstractCommand {
       );
     }
     return (
-      msg.content.indexOf("~gpt") === 0 ||
+      msg.content.indexOf("~grok") === 0 ||
       this.consultingChanels.some((ch) => {
         return `${msg.channel.id}` === `${ch}`;
       })

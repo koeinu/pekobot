@@ -8,6 +8,7 @@ import { StreakCommand } from "./commands/streakCommand.js";
 import { CatchPoemCommand } from "./commands/catchPoemCommand.js";
 import { GptCommand } from "./commands/gptCommand.js";
 import { GptlCommand } from "./commands/gptlCommand.js";
+import { GrokCommand } from "./commands/grokCommand.js";
 import { SameReactCommand } from "./commands/sameReactCommand.js";
 import { BotMentionedCommand } from "./commands/botMentionedCommand.js";
 import { ModerateCommand } from "./commands/moderateCommand.js";
@@ -28,10 +29,11 @@ export class CommandListener {
     this.settings = settings;
     this.commands = [
       new CreatorMentionedCommand(settings), // ...
-      new LinkFilterCommand(settings), // top priority, intercepts
-      new RelayMessageCommand(settings), // high priority, intercepts
+      // new LinkFilterCommand(settings), // top priority, intercepts
+      // new RelayMessageCommand(settings), // high priority, intercepts
       new GptlCommand(settings), // intercepts
       new DeeplCommand(settings), // intercepts
+      new GrokCommand(settings), // intercepts
       new GptCommand(settings), // intercepts
       new ModerateCommand(settings), // doesn't intercept
       new CatchPoemCommand(settings), // intercepts

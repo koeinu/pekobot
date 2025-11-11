@@ -6,7 +6,7 @@ import { ApiUtils } from "./apiUtils.js";
 import extractUrls from "extract-urls";
 import { getYoutubeVideoInfo } from "./youtubeUtils.js";
 import { MessageType } from "discord.js";
-import { MOD_THRESHOLDS } from "./openaiUtils.js";
+import { MOD_THRESHOLDS } from "./langchain/moderation.js";
 import {
   GPT_INFORMATIVE_CONTENT_LIMIT_CHAR,
   MAX_TL_TAG_LENGTH,
@@ -44,55 +44,32 @@ export const formGPTPrompt = (repliedUsername, repliedText, username, text) => {
   return "";
 };
 
-export const formChainGPTPrompt = async (
-  msgStructList,
-  settings,
-  rpSettings = undefined
-) => {
+export const formChainGPTPrompt = async (msgStructList) => {
   const msgs = (
     await Promise.all(
-      msgStructList.map(async (msgStruct) => {
-        const extractedText = await extractCommandMessage(msgStruct.msg);
-        const extractedName = msgStruct.username;
-        const finalName =
-          rpSettings && extractedName === settings.name
-            ? rpSettings.nickname
-            : rpSettings && extractedName === "hermit.purple"
-            ? "Alex"
-            : extractedName;
+      msgStructList
+        .map(async (msgStruct) => {
+          const extractedText = await extractCommandMessage(msgStruct.msg);
+          const extractedName = msgStruct.username;
+          const role =
+            extractedName.toLowerCase().indexOf("hermit") >= 0 ? "human" : "ai";
 
-        const finalText =
-          extractedText && rpSettings
-            ? extractedText.replaceAll("Hermit", "Alex")
-            : extractedText;
-
-        return finalText && finalText.length > 0
-          ? `${finalName}: ${finalText}`
-          : undefined;
-      })
+          return extractedText && extractedText.length > 0
+            ? {
+                role,
+                content: extractedText,
+                name: msgStruct.isBot ? "AI" : msgStruct.username,
+              }
+            : undefined;
+        })
+        .filter((el) => el !== undefined)
     )
   ).filter((el) => el !== undefined);
-  const finalMsgArray = [];
-  const reversedMsgs = msgs.reverse();
-  for (let m of reversedMsgs) {
-    if (
-      finalMsgArray.map((el) => el).join("\n").length <
-      GPT_INFORMATIVE_CONTENT_LIMIT_CHAR
-    ) {
-      finalMsgArray.push(m);
-    }
-  }
+  const finalMsgArray = msgs;
 
-  finalMsgArray.reverse();
-  const toReturn =
-    finalMsgArray.length > 0
-      ? [
-          `{Current dialog starts here:}`,
-          finalMsgArray.join("\n"),
-          `${rpSettings?.nickname || settings.name}:`,
-        ]
-      : [];
-  return toReturn.join("\n");
+  const toReturn = [{ role: "system", content: "Current dialog starts here:" }];
+  toReturn.push(...finalMsgArray);
+  return toReturn;
 };
 
 export const extractCommandMessage = (str) => {
@@ -145,18 +122,9 @@ const getMessage = (msg) => {
   return "...";
 };
 
-export const gatherModerateMessageInfo = (msg, triggerData) => {
+export const gatherModerateMessageInfo = (msg) => {
   const parts = [];
   parts.push(`${msg.url}`);
-  parts.push(
-    `Reasons: ${Object.entries(triggerData.categories)
-      .filter((el) => el[1])
-      .map((el) => {
-        const category = el[0];
-        return `${category}: ${triggerData.category_scores[category]} > ${MOD_THRESHOLDS[category]}`;
-      })
-      .join(", ")}`
-  );
   parts.push(`Content: ${msg.content}`);
   return parts.join("\n");
 };
@@ -207,7 +175,9 @@ export const getGptMessagesContents = async (msgChain) => {
       const msgData = await getTextMessageContent(el, false, false, false);
       return {
         msg: msgData.text,
-        username: el.author.username,
+        username:
+          el.author.displayName || el.author.globalName || el.author.username,
+        isBot: el.author.isBot,
         originalMessage: msgData.originalMessage,
       };
     })

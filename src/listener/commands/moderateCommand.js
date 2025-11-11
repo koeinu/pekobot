@@ -1,6 +1,6 @@
 import { AbstractCommand } from "../abstractCommand.js";
 import extractUrls from "extract-urls";
-import { moderateMessage } from "../../utils/openaiUtils.js";
+import { moderateMessage } from "../../utils/langchain/moderation.js";
 import { PEKO_MOD } from "../../utils/ids/channels.js";
 
 import { PEKO_SERVER } from "../../utils/ids/guilds.js";
@@ -16,21 +16,17 @@ export class ModerateCommand extends AbstractCommand {
   }
   async execute(msg, discordClient) {
     return moderateMessage(msg)
-      .then((triggerData) => {
-        if (triggerData && triggerData.flagged) {
-          if (this.settings.inactive) {
-            console.log("moderate inactive mode, doing nothing");
-            return Promise.resolve();
-          }
+      .then(() => {
+        return Promise.resolve();
+      })
+      .catch((e) => {
+        if (e.message.indexOf("violates OpenAI") >= 0) {
           return sendToChannels(
             discordClient,
-            gatherModerateMessageInfo(msg, triggerData),
+            gatherModerateMessageInfo(msg),
             this.channelsToSend
           );
         }
-      })
-      .catch((e) => {
-        console.debug(`Couldn't moderate message ${msg.content}: ${e}`);
       });
   }
   async commandMatch(msg) {

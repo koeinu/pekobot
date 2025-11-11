@@ -16,7 +16,8 @@ const checkLine = (line) => {
 
 export const preprocessString = (str) =>
   str
-    .replace(/:[a-zA-Z]+:/g, "")
+    .replace(/:[a-zA-Z0-9]+:/g, "")
+    .replace(/[^a-zA-Z0-9\s]/g, "")
     .replace(/\n/g, " ")
     .split(" ")
     .map((el) => el.trim())
