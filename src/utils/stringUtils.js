@@ -122,10 +122,20 @@ const getMessage = (msg) => {
   return "...";
 };
 
-export const gatherModerateMessageInfo = (msg) => {
+export const gatherModerateMessageInfo = (msg, triggerData) => {
   const parts = [];
   parts.push(`${msg.url}`);
+  parts.push(
+    `Reasons: ${Object.entries(triggerData.categories)
+      .filter((el) => el[1])
+      .map((el) => {
+        const category = el[0];
+        return `${category}: ${triggerData.category_scores[category]} > ${MOD_THRESHOLDS[category]}`;
+      })
+      .join(", ")}`
+  );
   parts.push(`Content: ${msg.content}`);
+  parts.push(`Author: ${msg.author.displayName}`);
   return parts.join("\n");
 };
 

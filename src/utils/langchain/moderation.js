@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const API_KEY = process.env.OPENAI_API_KEY;
 const MODERAIION_MODEL = new OpenAIModerationChain({
-  throwError: true,
   apiKey: API_KEY,
 });
 
