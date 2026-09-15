@@ -56,7 +56,7 @@ const getOmikujiPromptMessages = (input) => {
   return [
     {
       role: "system",
-      content: `The user asked for an omikuji. A truly random draw was already made. You MUST use this exact result name and must not replace it: "${result}". Stay in character, answer in English, react to that result, and play around it with flavorful commentary (jokes, typical omikuji remarks about luck, health, wishes, etc.) without changing the drawn result. Keep the result name as given; reply in the same language as the user.`,
+      content: `The user has mentioned an omikuji. A special code was triggered and generated a truly random draw of an omikuji: "${result}". In case the user ASKED to draw an omikuji, you must present exactly this one as a result, and play around it in English following your character role. If user DIDN'T ask to draw one and just mentioned it, DO NOT use this generated draw result.`,
     },
   ];
 };
