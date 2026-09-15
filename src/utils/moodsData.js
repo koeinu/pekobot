@@ -9,6 +9,7 @@ export const MOODS_DATA = {};
 MOODS_DATA[PEKO_SERVER] = {
   moods: {
     joke: [
+      "<:PekoLaugh2:806449973977153566>",
       "<:PekoWheeze:1085512844541440000>",
       "<:PekoPrankStare:892820347232067615>",
     ],
@@ -16,6 +17,7 @@ MOODS_DATA[PEKO_SERVER] = {
       "<:PekomonNousagiDoya:890383978828271648>",
       "<:PekoPrankStare:892820347232067615>",
       "<:PekoHehSmug:1008006386451497080>",
+      "<:PekoClueless:1538367674394869831>",
     ],
     happy: [
       "<:PekoYaySupport:1015010669709492254>",
@@ -24,12 +26,17 @@ MOODS_DATA[PEKO_SERVER] = {
     anger: ["<:PekoPout:722170844473982986>", "<:PekoDerp:709152458978492477>"],
     shock: ["<:pek:775493108154236938>", "<:PekoDerp:709152458978492477>"],
     sad: ["<:PekoSad:745275854304837632>", "<:PekoDerp:709152458978492477>"],
-    disappoint: ["<:PekoDerp:709152458978492477>"],
+    disappoint: [
+      "<:PekoDerp:709152458978492477>",
+      "<:pekoyark:1199491960340226099>",
+    ],
     scare: ["<:PekoScaryStare:683467489925267472>"],
     love: ["<:PekoKyaaa:749644030962565171>"],
+    cute: ["<:PekoKids:758487643875966977>"],
   },
   moodsReacts: {
     laugh: [
+      "<:PekoLaugh2:806449973977153566>",
       "<:PekoWheeze:1085512844541440000>",
       "<:PekoPrankStare:892820347232067615>",
     ],
@@ -37,18 +44,31 @@ MOODS_DATA[PEKO_SERVER] = {
       "<:PekomonNousagiDoya:890383978828271648>",
       "<:PekoPrankStare:892820347232067615>",
       "<:PekoHehSmug:1008006386451497080>",
+      "<:PekoClueless:1538367674394869831>",
     ],
     happy: [
       "<:PekoYaySupport:1015010669709492254>",
       "<:PekoYayCheer:683470634806018089>",
+      "<:PekoKids:758487643875966977>",
     ],
     anger: ["<:PekoPout:722170844473982986>", "<:PekoDerp:709152458978492477>"],
     shock: ["<:pek:775493108154236938>", "<:PekoDerp:709152458978492477>"],
-    sad: ["<:PekoSad:745275854304837632>", "<:PekoDerp:709152458978492477>"],
-    disappointed: ["<:PekoDerp:709152458978492477>"],
+    sad: [
+      "<:PekoSad:745275854304837632>",
+      "<:PekoDerp:709152458978492477>",
+      "<:pekoyark:1199491960340226099>",
+    ],
+    disappointed: [
+      "<:PekoDerp:709152458978492477>",
+      "<:pekoyark:1199491960340226099>",
+    ],
     scared: ["<:PekoScaryStare:683467489925267472>"],
     blush: ["<:PekoKyaaa:749644030962565171>"],
     love: ["<:PekoKyaaa:749644030962565171>"],
+    grateful: [
+      "<:PekoPray:736615246587887687>",
+      "<:PekoNice:742201490097307798>",
+    ],
   },
   actions: {
     "wake up": [
@@ -61,7 +81,7 @@ MOODS_DATA[PEKO_SERVER] = {
       "<:PekoSleepZzz2:899468728666845214>",
     ],
     ok: ["<:PekoCoolOkay:717826022808092874>"],
-    no: ["<:PekoNo:1084473460572561418>"],
+    no: ["<:PekoNo:1084473460572561418>", "<:PekoPrank:892820347232067615>"],
     hi: ["<:PekoGreetKonichiwa:826481264466329630>"],
     shrug: ["<:PekoShrug:819720198692798484>"],
   },
