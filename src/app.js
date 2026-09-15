@@ -58,8 +58,11 @@ if (!INACTIVE) {
   const init = async () => {
     try {
       // commented out for develop
-      const pekoBot = new Application("peko-bot");
-      const mikoBot = new Application("Mikodanye");
+      // const pekoBot = new Application("peko-bot");
+      // const mikoBot = new Application("Mikodanye");
+
+      const pekoBot2026 = new Application("peko-bot2026");
+      const mikoBot2026 = new Application("Mikodanye2026");
 
       // for develop only
       // const developBot = new Application("developer-bot");
